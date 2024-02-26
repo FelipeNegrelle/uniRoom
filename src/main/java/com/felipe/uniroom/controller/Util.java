@@ -1,7 +1,4 @@
-package com.felipe.uniball.controller;
-
-import com.felipe.uniball.models.Match;
-import com.felipe.uniball.models.Player;
+package com.felipe.uniroom.controller;
 
 import javax.swing.table.DefaultTableModel;
 import java.sql.ResultSet;
@@ -9,85 +6,85 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Util {
-    public static List<Player> getPlayers(String campo, String ordem) {
-        final String query = "SELECT * FROM players ORDER BY " + campo + " " + ordem;
+    public static List<Object> getObjects(String campo, String ordem) {
+        final String query = "SELECT * FROM Objects ORDER BY " + campo + " " + ordem;
         try {
             Database.getConnection();
 
             ResultSet rs = Database.execute(query, new Object[]{}, false);
 
-            List<Player> players = new ArrayList<>();
+            List<Object> Objects = new ArrayList<>();
 
             while (rs.next()) {
-                Player p = new Player();
+                Object p = new Object();
 
-                p.setId(rs.getInt("id_player"));
-                p.setName(rs.getString("name"));
-                p.setNumber(rs.getInt("number"));
-                p.setPosition(rs.getString("position"));
-                p.setScore(rs.getInt("score"));
-                p.setUser(rs.getString("user"));
-                p.setScore(rs.getInt("score"));
-                p.setBestPlayerFromDb(rs.getInt("best_player"));
-                p.setBeautifulScoreFromDb(rs.getInt("beautiful_score"));
+                // p.setId(rs.getInt("id_Object"));
+                // p.setName(rs.getString("name"));
+                // p.setNumber(rs.getInt("number"));
+                // p.setPosition(rs.getString("position"));
+                // p.setScore(rs.getInt("score"));
+                // p.setUser(rs.getString("user"));
+                // p.setScore(rs.getInt("score"));
+                // p.setBestObjectFromDb(rs.getInt("best_Object"));
+                // p.setBeautifulScoreFromDb(rs.getInt("beautiful_score"));
 
-                players.add(p);
+                Objects.add(p);
             }
 
-            return players;
+            return Objects;
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
         return null;
     }
 
-    public static List<Match> getMatches() {
-        final String query = "SELECT * FROM matches ORDER BY id_match ASC";
+    public static List<Object> getObjectes() {
+        final String query = "SELECT * FROM Objectes ORDER BY id_Object ASC";
         try {
             Database.getConnection();
 
             ResultSet rs = Database.execute(query, new Object[]{}, false);
 
-            List<Match> matches = new ArrayList<>();
+            List<Object> Objectes = new ArrayList<>();
 
             while (rs.next()) {
-                Match m = new Match();
+                Object m = new Object();
 
-                String[] bests = getBests(rs.getInt("id_best_player"), rs.getInt("id_beautiful_score"));
+                String[] bests = getBests(rs.getInt("id_best_Object"), rs.getInt("id_beautiful_score"));
 
-                m.setId(rs.getInt("id_match"));
-                m.setDateTimeMatch(rs.getString("date_time_match"));
-                m.setScoreA(rs.getInt("team_a_score"));
-                m.setScoreB(rs.getInt("team_b_score"));
-                m.setWinner(rs.getString("winner"));
-                m.setBestPlayer(bests[0]);
-                m.setPlayerBeautifulScore(bests[1]);
+                // m.setId(rs.getInt("id_Object"));
+                // m.setDateTimeObject(rs.getString("date_time_Object"));
+                // m.setScoreA(rs.getInt("team_a_score"));
+                // m.setScoreB(rs.getInt("team_b_score"));
+                // m.setWinner(rs.getString("winner"));
+                // m.setBestObject(bests[0]);
+                // m.setObjectBeautifulScore(bests[1]);
 
-                matches.add(m);
+                Objectes.add(m);
             }
 
-            return matches;
+            return Objectes;
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
         return null;
     }
 
-    public static String[] getBests(int idBestPlayer, int idBeautifulScore) {
-        final String query = "SELECT id_player, name FROM players WHERE id_player IN (?, ?) ORDER BY id_player ASC";
+    public static String[] getBests(int idBestObject, int idBeautifulScore) {
+        final String query = "SELECT id_Object, name FROM Objects WHERE id_Object IN (?, ?) ORDER BY id_Object ASC";
 
         try {
             Database.getConnection();
 
             ResultSet rs = Database.execute(query, new Object[]{
-                    idBestPlayer,
+                    idBestObject,
                     idBeautifulScore
             }, false);
 
             String[] bests = new String[2];
 
             while (rs.next()) {
-                if (idBestPlayer == rs.getInt("id_player")) {
+                if (idBestObject == rs.getInt("id_Object")) {
                     bests[0] = rs.getString("name");
                 } else {
                     bests[1] = rs.getString("name");
@@ -101,19 +98,19 @@ public class Util {
         return null;
     }
 
-    public static Player getPlayer(int id) {
-        final String query = "SELECT id_player, name, number, position, score FROM players WHERE id_player = ?";
+    public static Object getObject(int id) {
+        final String query = "SELECT id_Object, name, number, position, score FROM Objects WHERE id_Object = ?";
         try {
             Database.getConnection();
             ResultSet rs = Database.execute(query, new Object[]{id}, false);
 
-            Player p = new Player();
+            Object p = new Object();
             while (rs.next()) {
-                p.setId(rs.getInt("id_player"));
-                p.setName(rs.getString("name"));
-                p.setNumber(rs.getInt("number"));
-                p.setPosition(rs.getString("position"));
-                p.setScore(rs.getInt("score"));
+                // p.setId(rs.getInt("id_Object"));
+                // p.setName(rs.getString("name"));
+                // p.setNumber(rs.getInt("number"));
+                // p.setPosition(rs.getString("position"));
+                // p.setScore(rs.getInt("score"));
             }
             return p;
         } catch (Exception e) {
@@ -122,8 +119,8 @@ public class Util {
         return null;
     }
 
-    public static void deletePlayer(int id) {
-        final String query = "DELETE FROM players WHERE id_player = ?";
+    public static void deleteObject(int id) {
+        final String query = "DELETE FROM Objects WHERE id_Object = ?";
         try {
             Database.execute(query, new Object[]{id}, true);
         } catch (Exception e) {
@@ -141,7 +138,7 @@ public class Util {
     }
 
     public static String getSecretPhrase(String username) {
-        final String query = "SELECT secret_phrase FROM players WHERE user = ?";
+        final String query = "SELECT secret_phrase FROM Objects WHERE user = ?";
         try {
             Database.getConnection();
             ResultSet rs = Database.execute(query, new Object[]{username}, false);
@@ -154,8 +151,8 @@ public class Util {
         return null;
     }
 
-    public static boolean checkPlayerExistence(String username) {
-        final String query = "SELECT user FROM players WHERE user = ?";
+    public static boolean checkObjectExistence(String username) {
+        final String query = "SELECT user FROM Objects WHERE user = ?";
         try {
             Database.getConnection();
             ResultSet rs = Database.execute(query, new Object[]{username}, false);
@@ -166,44 +163,44 @@ public class Util {
         return false;
     }
 
-    public static void updatePlayers(DefaultTableModel model, List<Player> playerList) {
+    public static void updateObjects(DefaultTableModel model, List<Object> ObjectList) {
         model.setRowCount(0);
 
-        for (Player player : playerList) {
+        for (Object Object : ObjectList) {
             model.addRow(new Object[]{
-                    player.getName(),
-                    player.getScore(),
-                    player.getTeam()
+                    // Object.getName(),
+                    // Object.getScore(),
+                    // Object.getTeam()
             });
         }
     }
 
-    public static String[] getPlayersWithScore(List<Player> players) {
-        String[] playersName = new String[players.size()];
+    public static String[] getObjectsWithScore(List<Object> Objects) {
+        String[] ObjectsName = new String[Objects.size()];
 
-        for (int i = 0; i < players.size(); i++) {
-            playersName[i] = players.get(i).getName();
+        for (int i = 0; i < Objects.size(); i++) {
+            // ObjectsName[i] = Objects.get(i).getName();
         }
 
-        return playersName;
+        return ObjectsName;
     }
 
-    public static ResultSet saveMatch(String dateTimeMatch, String teamAScore, String teamBScore,
-                                      int idBeautifulScore, int idBestPlayer) {
-        final String queryInsert = "INSERT INTO matches (date_time_match, team_a_score, team_b_score, winner, id_best_player, id_beautiful_score) VALUES (?, ?, ?, ?, ?, ?)";
-        final String querySelect = "SELECT id_match, id_beautiful_score, id_best_player FROM matches WHERE date_time_match = ? AND team_a_score = ? AND team_b_score = ?";
+    public static ResultSet saveObject(String dateTimeObject, String teamAScore, String teamBScore,
+                                      int idBeautifulScore, int idBestObject) {
+        final String queryInsert = "INSERT INTO Objectes (date_time_Object, team_a_score, team_b_score, winner, id_best_Object, id_beautiful_score) VALUES (?, ?, ?, ?, ?, ?)";
+        final String querySelect = "SELECT id_Object, id_beautiful_score, id_best_Object FROM Objectes WHERE date_time_Object = ? AND team_a_score = ? AND team_b_score = ?";
         try {
             Database.execute(queryInsert, new Object[]{
-                    dateTimeMatch,
+                    dateTimeObject,
                     teamAScore,
                     teamBScore,
                     getWinner(teamAScore, teamBScore),
-                    idBestPlayer,
+                    idBestObject,
                     idBeautifulScore
             }, true);
 
             return Database.execute(querySelect, new Object[]{
-                    dateTimeMatch,
+                    dateTimeObject,
                     teamAScore,
                     teamBScore
             }, false);
@@ -214,12 +211,12 @@ public class Util {
         return null;
     }
 
-    public static void relateMatchPlayer(int idMatch, int idPlayer, int score) {
-        final String query = "INSERT INTO matches_players (id_match, id_player, player_match_score) VALUES (?, ?, ?)";
+    public static void relateObjectObject(int idObject, int idObject2, int score) {
+        final String query = "INSERT INTO Objectes_Objects (id_Object, id_Object, Object_Object_score) VALUES (?, ?, ?)";
         try {
             Database.execute(query, new Object[]{
-                    idMatch,
-                    idPlayer,
+                    idObject,
+                    idObject,
                     score
             }, true);
         } catch (Exception e) {
@@ -227,14 +224,14 @@ public class Util {
         }
     }
 
-    public static void updateScores(int idPlayer, int idMatch) {
-        final String query = "UPDATE players SET score = score + (SELECT player_match_score FROM matches_players WHERE id_player = ? AND id_match = ?) WHERE id_player = ?";
+    public static void updateScores(int idObject, int idObject2) {
+        final String query = "UPDATE Objects SET score = score + (SELECT Object_Object_score FROM Objectes_Objects WHERE id_Object = ? AND id_Object = ?) WHERE id_Object = ?";
 
         try {
             Database.execute(query, new Object[]{
-                    idPlayer,
-                    idMatch,
-                    idPlayer
+                    idObject,
+                    idObject,
+                    idObject
             }, true);
 
         } catch (Exception e) {
@@ -242,14 +239,14 @@ public class Util {
         }
     }
 
-    public static void updateBeautifulScoreBestPlayer(int idMatch) {
-        final String querySelect = "SELECT id_beautiful_score, id_best_player FROM matches WHERE id_match = ?";
-        final String queryUpdateBeautifulScore = "UPDATE players SET beautiful_score = beautiful_score + 1 WHERE id_player = ?";
-        final String queryUpdateBestPlayer = "UPDATE players SET best_player = best_player + 1 WHERE id_player = ?";
+    public static void updateBeautifulScoreBestObject(int idObject) {
+        final String querySelect = "SELECT id_beautiful_score, id_best_Object FROM Objectes WHERE id_Object = ?";
+        final String queryUpdateBeautifulScore = "UPDATE Objects SET beautiful_score = beautiful_score + 1 WHERE id_Object = ?";
+        final String queryUpdateBestObject = "UPDATE Objects SET best_Object = best_Object + 1 WHERE id_Object = ?";
 
         try {
             ResultSet rs = Database.execute(querySelect, new Object[]{
-                    idMatch
+                    idObject
             }, false);
 
             if (rs.next()) {
@@ -257,8 +254,8 @@ public class Util {
                         rs.getInt("id_beautiful_score"),
                 }, true);
 
-                Database.execute(queryUpdateBestPlayer, new Object[]{
-                        rs.getInt("id_best_player"),
+                Database.execute(queryUpdateBestObject, new Object[]{
+                        rs.getInt("id_best_Object"),
                 }, true);
             }
         } catch (Exception e) {

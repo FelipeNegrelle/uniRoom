@@ -1,4 +1,4 @@
-package com.felipe.uniball.controller;
+package com.felipe.uniroom.controller;
 
 import org.springframework.security.crypto.bcrypt.BCrypt;
 
