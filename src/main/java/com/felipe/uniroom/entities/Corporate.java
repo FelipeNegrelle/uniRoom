@@ -19,7 +19,7 @@ public class Corporate {
     @Column(length = 50, nullable = false)
     private String name;
 
-    @Column(length = 14, nullable = false)
+    @Column(columnDefinition = "char(14)", nullable = false)
     private String cnpj;
 
     @Column(name = "id_user", nullable = false)

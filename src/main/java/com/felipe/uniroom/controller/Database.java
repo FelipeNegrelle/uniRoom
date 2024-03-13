@@ -1,51 +1,65 @@
 package com.felipe.uniroom.controller;
 
-import java.sql.*;
+import java.util.List;
 
+import com.felipe.uniroom.entities.User;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.transaction.Transactional;
+
+@Transactional
 public class Database {
-    private static Connection connection;
+    @PersistenceContext
+    private static EntityManager em;
 
-    private Database() {
+    public <T> List<T> findAll(Class<T> entity) {
         try {
-            connection = DriverManager.getConnection("jdbc:sqlite:" + System.getProperty("user.dir") + "/db/database.db");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
-        }
-    }
-
-    public static Connection getConnection() {
-        if (connection == null) {
-            new Database();
-        }
-        return connection;
-    }
-
-    public static ResultSet execute(String query, Object[] values, boolean notHasResultSet) {
-        Connection connection = getConnection();
-        try {
-            PreparedStatement statement = connection.prepareStatement(query);
-            for (int i = 0; i < values.length; i++) {
-                statement.setObject(i + 1, values[i]);
-            }
-            if (notHasResultSet) {
-                statement.executeUpdate();
-                return null;
-            } else {
-                return statement.executeQuery();
-            }
-        } catch (SQLException e) {
+            return em.createQuery("SELECT e FROM " + entity.getSimpleName() + " e", entity).getResultList();
+        } catch (Exception e) {
             e.printStackTrace();
+            return null;
         }
-        return null;
     }
 
-    public static void close() {
+    public <T> T findById(Class<T> entity, Integer id) {
         try {
-            if (connection != null) {
-                connection.close();
-            }
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            return em.find(entity, id);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public <T> boolean saveOrUpdate(T entity) {
+        try {
+            em.persist(entity);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public <T> boolean delete(Class<T> entity, Integer id) {
+        try {
+            final T obj = em.find(entity, id);
+            em.remove(obj);
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static User findByUsername(String username) {
+        final String query = "SELECT u FROM User u WHERE u.username = :username";
+
+        try {
+            return em.createQuery(query, User.class).setParameter("username", username).getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

@@ -28,18 +28,27 @@ public class User {
     @Column
     private Character role;
 
+    @Column(name = "secret_phrase", nullable = false)
+    private String secretPhrase;
+
+    @Column(name = "secret_answer", nullable = false)
+    private String secretAnswer;
+
     @Column(nullable = false)
     private Boolean active;
 
     public User() {
     }
 
-    public User(Integer idUser, String name, String username, String password, Character role, Boolean active) {
+    public User(Integer idUser, String name, String username, String password, Character role, String secretPhrase,
+            String secretAnswer, Boolean active) {
         this.idUser = idUser;
         this.name = name;
         this.username = username;
         this.password = password;
         this.role = role;
+        this.secretPhrase = secretPhrase;
+        this.secretAnswer = secretAnswer;
         this.active = active;
     }
 
@@ -83,6 +92,22 @@ public class User {
         this.role = role;
     }
 
+    public String getSecretPhrase() {
+        return this.secretPhrase;
+    }
+
+    public void setSecretPhrase(String secretPhrase) {
+        this.secretPhrase = secretPhrase;
+    }
+
+    public String getSecretAnswer() {
+        return this.secretAnswer;
+    }
+
+    public void setSecretAnswer(String secretAnswer) {
+        this.secretAnswer = secretAnswer;
+    }
+
     public Boolean isActive() {
         return this.active;
     }
@@ -120,6 +145,16 @@ public class User {
         return this;
     }
 
+    public User secretPhrase(String secretPhrase) {
+        setSecretPhrase(secretPhrase);
+        return this;
+    }
+
+    public User secretAnswer(String secretAnswer) {
+        setSecretAnswer(secretAnswer);
+        return this;
+    }
+
     public User active(Boolean active) {
         setActive(active);
         return this;
@@ -135,12 +170,13 @@ public class User {
         User user = (User) o;
         return Objects.equals(idUser, user.idUser) && Objects.equals(name, user.name)
                 && Objects.equals(username, user.username) && Objects.equals(password, user.password)
-                && Objects.equals(role, user.role) && Objects.equals(active, user.active);
+                && Objects.equals(role, user.role) && Objects.equals(secretPhrase, user.secretPhrase)
+                && Objects.equals(secretAnswer, user.secretAnswer) && Objects.equals(active, user.active);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idUser, name, username, password, role, active);
+        return Objects.hash(idUser, name, username, password, role, secretPhrase, secretAnswer, active);
     }
 
     @Override
@@ -151,6 +187,8 @@ public class User {
                 ", username='" + getUsername() + "'" +
                 ", password='" + getPassword() + "'" +
                 ", role='" + getRole() + "'" +
+                ", secretPhrase='" + getSecretPhrase() + "'" +
+                ", secretAnswer='" + getSecretAnswer() + "'" +
                 ", active='" + isActive() + "'" +
                 "}";
     }

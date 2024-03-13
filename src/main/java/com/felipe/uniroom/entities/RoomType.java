@@ -1,6 +1,7 @@
 package com.felipe.uniroom.entities;
 
 import jakarta.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "room_type")
@@ -14,16 +15,16 @@ public class RoomType {
     private String name;
 
     @Column(nullable = false)
-    private Integer capacity;
+    private Byte capacity;
 
     @Column(nullable = false)
     private Float price;
 
-    @Column(nullable = false)
+    @Column(name = "id_branch", nullable = false)
     private Integer idBranch;
 
     @Column(nullable = false)
-    private boolean active;
+    private Boolean active;
 
     public Integer getIdRoomType() {
         return idRoomType;
@@ -41,11 +42,11 @@ public class RoomType {
         this.name = name;
     }
 
-    public Integer getCapacity() {
+    public Byte getCapacity() {
         return capacity;
     }
 
-    public void setCapacity(Integer capacity) {
+    public void setCapacity(Byte capacity) {
         this.capacity = capacity;
     }
 
@@ -65,26 +66,87 @@ public class RoomType {
         this.idBranch = idBranch;
     }
 
-    public boolean isActive() {
+    public Boolean isActive() {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(Boolean active) {
         this.active = active;
+    }
+
+    public RoomType() {
+    }
+
+    public RoomType(Integer idRoomType, String name, Byte capacity, Float price, Integer idBranch, Boolean active) {
+        this.idRoomType = idRoomType;
+        this.name = name;
+        this.capacity = capacity;
+        this.price = price;
+        this.idBranch = idBranch;
+        this.active = active;
+    }
+
+    public Boolean getActive() {
+        return this.active;
+    }
+
+    public RoomType idRoomType(Integer idRoomType) {
+        setIdRoomType(idRoomType);
+        return this;
+    }
+
+    public RoomType name(String name) {
+        setName(name);
+        return this;
+    }
+
+    public RoomType capacity(Byte capacity) {
+        setCapacity(capacity);
+        return this;
+    }
+
+    public RoomType price(Float price) {
+        setPrice(price);
+        return this;
+    }
+
+    public RoomType idBranch(Integer idBranch) {
+        setIdBranch(idBranch);
+        return this;
+    }
+
+    public RoomType active(Boolean active) {
+        setActive(active);
+        return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this)
+            return true;
+        if (!(o instanceof RoomType)) {
+            return false;
+        }
+        RoomType roomType = (RoomType) o;
+        return Objects.equals(idRoomType, roomType.idRoomType) && Objects.equals(name, roomType.name)
+                && Objects.equals(capacity, roomType.capacity) && Objects.equals(price, roomType.price)
+                && Objects.equals(idBranch, roomType.idBranch) && Objects.equals(active, roomType.active);
     }
 
     @Override
     public int hashCode() {
-        return super.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        return super.equals(obj);
+        return Objects.hash(idRoomType, name, capacity, price, idBranch, active);
     }
 
     @Override
     public String toString() {
-        return super.toString();
+        return "{" +
+                " idRoomType='" + getIdRoomType() + "'" +
+                ", name='" + getName() + "'" +
+                ", capacity='" + getCapacity() + "'" +
+                ", price='" + getPrice() + "'" +
+                ", idBranch='" + getIdBranch() + "'" +
+                ", active='" + isActive() + "'" +
+                "}";
     }
 }
