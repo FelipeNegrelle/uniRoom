@@ -6,9 +6,10 @@ public class Constants {
     //Texts
     public static final String UNIROOM = "UniRoom";
     public static final String REGISTER = "Registrar";
-    public static final String FAILED_LOGIN = "Login falhou. Tente novamente.";
     public static final String SUCCESSFUL_REGISTER = "Registrado com sucesso!";
     public static final String FAILED_REGISTER = "Registrar falhou. Tente novamente.";
+    public static final String SUCCESSFUL_LOGIN = "Entrou com sucesso!";
+    public static final String FAILED_LOGIN = "Login falhou. Tente novamente.";
     public static final String LOGIN = "Login";
     public static final String USER = "Usuário";
     public static final String PASSWORD = "Senha";

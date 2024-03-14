@@ -8,13 +8,14 @@ import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
 public class Auth {
-    final static Database db = new Database();
+    private static Database db = new Database();
 
-    public Boolean register(User user) {
+    public static Boolean register(User user) {
+
         final String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
 
         try {
-            if (Database.findByUsername(user.getUsername()) != null) {
+            if (db.findByUsername(user.getUsername()) != null) {
                 final JDialog dialog = new JDialog();
 
                 dialog.setAlwaysOnTop(true);
@@ -44,7 +45,7 @@ public class Auth {
         return true;
     }
 
-    public static boolean login(User user) {
+    public static Boolean login(User user) {
         try {
             final User result = db.findByUsername(user.getUsername());
 
@@ -57,7 +58,7 @@ public class Auth {
         return false;
     }
 
-    public static boolean update(User user) {
+    public static Boolean update(User user) {
         try {
             final User result = db.findById(User.class, user.getIdUser());
 
@@ -83,7 +84,7 @@ public class Auth {
         return true;
     }
 
-    public static boolean checkSecretAnswer(User user) {
+    public static Boolean checkSecretAnswer(User user) {
         try {
             final User result = db.findByUsername(user.getUsername());
 
@@ -96,7 +97,7 @@ public class Auth {
         return false;
     }
 
-    public static boolean forgotPassword(User user) {
+    public static Boolean forgotPassword(User user) {
         final String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
 
         try {
@@ -104,13 +105,7 @@ public class Auth {
 
             if (result != null) {
                 user.setIdUser(result.getIdUser());
-                user.setName(result.getName());
-                user.setUsername(result.getUsername());
                 user.setPassword(hashedPassword);
-                user.setRole(result.getRole());
-                user.setSecretPhrase(result.getSecretPhrase());
-                user.setSecretAnswer(result.getSecretAnswer());
-                user.setActive(result.getActive());
 
                 db.saveOrUpdate(user);
 

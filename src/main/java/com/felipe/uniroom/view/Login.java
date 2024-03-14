@@ -4,16 +4,19 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.util.Arrays;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import com.felipe.uniroom.Constants;
 import com.felipe.uniroom.controller.Auth;
+import com.felipe.uniroom.entities.User;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -66,15 +69,24 @@ public class Login extends JFrame {
         loginButton.setForeground(Constants.GRAY);
         loginButton.addActionListener(e -> {
             try {
-                // if (!Auth.login()) {
-                // System.out.println(userField.getText() +
-                // Arrays.toString(passwordField.getPassword()));
-                // JOptionPane.showMessageDialog(this, Constants.FAILED_LOGIN);
-                // return;
-                // }
+                final User user = new User();
+                user.setUsername(userField.getText());
+                user.setPassword(passwordField.getPassword().toString());
+
+                if (!Auth.login(user)) {
+                    System.out.println(userField.getText() +
+                            Arrays.toString(passwordField.getPassword()));
+
+                    JOptionPane.showMessageDialog(this, Constants.FAILED_LOGIN);
+
+                    return;
+                }
                 // new Menu();
-                // Thread.sleep(50);
-                // dispose();
+                JOptionPane.showMessageDialog(this, Constants.SUCCESSFUL_LOGIN);
+
+                Thread.sleep(50);
+                
+                dispose();
 
                 System.out.println("Login button clicked");
             } catch (Exception exception) {
