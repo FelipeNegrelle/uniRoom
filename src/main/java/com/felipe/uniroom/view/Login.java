@@ -1,7 +1,6 @@
 package com.felipe.uniroom.view;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.util.Arrays;
@@ -13,10 +12,11 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
+import javax.swing.UIManager;
 
-import com.felipe.uniroom.Constants;
-import com.felipe.uniroom.controller.Auth;
+import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.entities.User;
+import com.felipe.uniroom.services.UserService;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -30,30 +30,25 @@ public class Login extends JFrame {
         final JPanel mainPanel = new JPanel(new MigLayout("fill, insets 20", "[grow]", "[align center]"));
         mainPanel.setBackground(Constants.WHITE);
 
-        final JLabel titlePage = new JLabel(Constants.UNIROOM);
-        titlePage.setFont(Constants.FONT.deriveFont(Font.BOLD, 60));
-        titlePage.setForeground(Constants.WHITE);
+        final JLabel titlePage = Components.getLabel(Constants.UNIROOM, null, Font.BOLD, 60, Constants.WHITE);
         add(titlePage, "align center");
 
-        final JLabel titleLabel = new JLabel(Constants.LOGIN);
-        titleLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 40));
-        titleLabel.setForeground(Constants.BLACK);
+        final JLabel titleLabel = Components.getLabel(Constants.LOGIN, null, Font.BOLD, 40, null);
         mainPanel.add(titleLabel, "align center, wrap");
 
         final JPanel inputPanel = new JPanel(new MigLayout("fillx, insets 20", "[grow]", "[]10[]"));
-        final JLabel userLabel = new JLabel(Constants.USER);
+        final JLabel userLabel = Components.getLabel(Constants.USER, null, Font.BOLD, null, null);
         userLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
-        final JLabel passwordLabel = new JLabel(Constants.PASSWORD);
-        passwordLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
+        final JLabel passwordLabel = Components.getLabel(Constants.PASSWORD, null, Font.BOLD, null, null);
 
         final JTextField userField = new JTextField(20);
-        userField.setPreferredSize(new Dimension(300, 30));
-        userField.setFont(Constants.FONT.deriveFont(Font.PLAIN, 20));
+        userField.setPreferredSize(Constants.TEXT_FIELD_SIZE);
+        userField.setFont(Constants.FONT);
 
         final JPasswordField passwordField = new JPasswordField(20);
-        passwordField.setPreferredSize(new Dimension(300, 30));
-        passwordField.setFont(Constants.FONT.deriveFont(Font.PLAIN, 20));
+        passwordField.setPreferredSize(Constants.TEXT_FIELD_SIZE);
+        passwordField.setFont(Constants.FONT);
 
         inputPanel.add(userLabel);
         inputPanel.add(userField, "wrap");
@@ -63,32 +58,33 @@ public class Login extends JFrame {
         mainPanel.add(inputPanel, "wrap, grow");
 
         final JButton loginButton = new JButton(Constants.LOGIN);
-        loginButton.setFont(new Font("Sans", Font.BOLD, 20));
+        loginButton.setFont(Constants.FONT);
         loginButton.setPreferredSize(new Dimension(300, 40));
         loginButton.setBackground(Constants.BLUE);
-        loginButton.setForeground(Constants.GRAY);
+        loginButton.setForeground(Constants.WHITE);
         loginButton.addActionListener(e -> {
             try {
                 final User user = new User();
                 user.setUsername(userField.getText());
                 user.setPassword(passwordField.getPassword().toString());
 
-                if (!Auth.login(user)) {
+                if (!UserService.login(user)) {
                     System.out.println(userField.getText() +
                             Arrays.toString(passwordField.getPassword()));
 
                     JOptionPane.showMessageDialog(this, Constants.FAILED_LOGIN);
 
                     return;
+                } else {
+                    // new Menu();
+                    JOptionPane.showMessageDialog(this, Constants.SUCCESSFUL_LOGIN);
+
+                    Thread.sleep(50);
+
+                    dispose();
+
+                    System.out.println("Login button clicked");
                 }
-                // new Menu();
-                JOptionPane.showMessageDialog(this, Constants.SUCCESSFUL_LOGIN);
-
-                Thread.sleep(50);
-                
-                dispose();
-
-                System.out.println("Login button clicked");
             } catch (Exception exception) {
                 exception.printStackTrace();
             }

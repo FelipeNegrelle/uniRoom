@@ -3,7 +3,7 @@ package com.felipe.uniroom;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import com.felipe.uniroom.controller.ConnectionManager;
+import com.felipe.uniroom.config.ConnectionManager;
 
 public class Main {
     public static void main(String[] args) throws Exception {

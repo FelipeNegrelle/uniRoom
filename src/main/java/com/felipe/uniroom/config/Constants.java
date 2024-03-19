@@ -1,4 +1,4 @@
-package com.felipe.uniroom;
+package com.felipe.uniroom.config;
 
 import java.awt.*;
 
@@ -37,5 +37,12 @@ public class Constants {
     public static final Color GRAY = new Color(0xCCCCCC);
 
     //Fonts
-    public static final Font FONT = new Font("Sans", Font.BOLD, 20);
+    public static final Font FONT = new Font("Sans", Font.PLAIN, 20);
+
+    //Sizes
+    public static final Dimension BUTTON_SIZE = new Dimension(150, 40);
+    public static final Dimension TEXT_FIELD_SIZE = new Dimension(300, 10);
+
+    //Icons
+    // private static final icone fodase = new icon();
 }

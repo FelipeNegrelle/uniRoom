@@ -1,14 +1,15 @@
-package com.felipe.uniroom.controller;
+package com.felipe.uniroom.services;
 
 import org.mindrot.jbcrypt.BCrypt;
 
 import com.felipe.uniroom.entities.User;
+import com.felipe.uniroom.repositories.DatabaseRepository;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
 
-public class Auth {
-    private static Database db = new Database();
+public class UserService {
+    private static DatabaseRepository db = new DatabaseRepository();
 
     public static Boolean register(User user) {
 
@@ -38,6 +39,12 @@ public class Auth {
                 dialog.setAlwaysOnTop(true);
 
                 JOptionPane.showMessageDialog(dialog, "Usuário " + user.getUsername() + " cadastrado com sucesso.");
+            } else {
+                final JDialog dialog = new JDialog();
+
+                dialog.setAlwaysOnTop(true);
+
+                JOptionPane.showMessageDialog(dialog, "Erro ao cadastrar usuário " + user.getUsername() + ".");
             }
         } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());

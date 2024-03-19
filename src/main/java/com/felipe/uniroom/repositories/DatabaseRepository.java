@@ -1,7 +1,8 @@
-package com.felipe.uniroom.controller;
+package com.felipe.uniroom.repositories;
 
 import java.util.List;
 
+import com.felipe.uniroom.config.ConnectionManager;
 import com.felipe.uniroom.entities.User;
 
 import jakarta.persistence.EntityManager;
@@ -9,7 +10,7 @@ import jakarta.persistence.NoResultException;
 import jakarta.transaction.Transactional;
 
 @Transactional
-public class Database {
+public class DatabaseRepository {
 
     public <T> List<T> findAll(Class<T> entity) {
         EntityManager em = null;
@@ -89,7 +90,7 @@ public class Database {
                     .setParameter("username", username)
                     .getSingleResult();
         } catch (NoResultException e) {
-            return null;
+            return null; 
         } finally {
             em.close();
         }

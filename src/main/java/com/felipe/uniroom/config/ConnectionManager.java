@@ -1,4 +1,4 @@
-package com.felipe.uniroom.controller;
+package com.felipe.uniroom.config;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
