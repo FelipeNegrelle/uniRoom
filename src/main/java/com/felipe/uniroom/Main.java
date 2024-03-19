@@ -12,8 +12,6 @@ public class Main {
 
         ConnectionManager.getEntityManager().close();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            ConnectionManager.close();
-        }));
+        Runtime.getRuntime().addShutdownHook(new Thread(ConnectionManager::close));
     }
 }
