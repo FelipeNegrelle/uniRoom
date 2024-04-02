@@ -151,4 +151,14 @@ public class Components {
 
         return label;
     }
+
+    public static JDialog getErrorDialog(JFrame parent, String message) {
+        final JDialog dialog = new JDialog(parent, Constants.ERROR, true);
+
+        dialog.setAlwaysOnTop(true);
+
+        JOptionPane.showMessageDialog(dialog, message, Constants.ERROR, JOptionPane.ERROR_MESSAGE);
+
+        return dialog;
+    }
 }

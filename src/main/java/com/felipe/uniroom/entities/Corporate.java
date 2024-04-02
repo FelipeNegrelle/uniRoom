@@ -2,10 +2,14 @@ package com.felipe.uniroom.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+
 import java.util.Objects;
 
 @Entity
@@ -22,8 +26,9 @@ public class Corporate {
     @Column(columnDefinition = "char(14)", nullable = false)
     private String cnpj;
 
-    @Column(name = "id_user", nullable = false)
-    private Integer idUser;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_user", nullable = false)
+    private User user;
 
     @Column(nullable = false)
     private Boolean active;
@@ -31,11 +36,11 @@ public class Corporate {
     public Corporate() {
     }
 
-    public Corporate(Integer idCorporate, String name, String cnpj, Integer idUser, Boolean active) {
+    public Corporate(Integer idCorporate, String name, String cnpj, User user, Boolean active) {
         this.idCorporate = idCorporate;
         this.name = name;
         this.cnpj = cnpj;
-        this.idUser = idUser;
+        this.user = user;
         this.active = active;
     }
 
@@ -63,12 +68,12 @@ public class Corporate {
         this.cnpj = cnpj;
     }
 
-    public Integer getIdUser() {
-        return this.idUser;
+    public User getUser() {
+        return this.user;
     }
 
-    public void setIdUser(Integer idUser) {
-        this.idUser = idUser;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Boolean isActive() {
@@ -83,57 +88,32 @@ public class Corporate {
         this.active = active;
     }
 
-    public Corporate idCorporate(Integer idCorporate) {
-        setIdCorporate(idCorporate);
-        return this;
-    }
-
-    public Corporate name(String name) {
-        setName(name);
-        return this;
-    }
-
-    public Corporate cnpj(String cnpj) {
-        setCnpj(cnpj);
-        return this;
-    }
-
-    public Corporate idUser(Integer idUser) {
-        setIdUser(idUser);
-        return this;
-    }
-
-    public Corporate active(Boolean active) {
-        setActive(active);
-        return this;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof Corporate)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
         Corporate corporate = (Corporate) o;
-        return Objects.equals(idCorporate, corporate.idCorporate) && Objects.equals(name, corporate.name)
-                && Objects.equals(cnpj, corporate.cnpj) && Objects.equals(idUser, corporate.idUser)
-                && Objects.equals(active, corporate.active);
+
+        if (!Objects.equals(idCorporate, corporate.idCorporate)) return false;
+        if (!Objects.equals(name, corporate.name)) return false;
+        if (!Objects.equals(cnpj, corporate.cnpj)) return false;
+        if (!Objects.equals(user, corporate.user)) return false;
+        return Objects.equals(active, corporate.active);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idCorporate, name, cnpj, idUser, active);
+        int result = idCorporate != null ? idCorporate.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (cnpj != null ? cnpj.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (active != null ? active.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
-        return "{" +
-                " idCorporate='" + getIdCorporate() + "'" +
-                ", name='" + getName() + "'" +
-                ", cnpj='" + getCnpj() + "'" +
-                ", idUser='" + getIdUser() + "'" +
-                ", active='" + isActive() + "'" +
-                "}";
+        return "Corporate{" + "idCorporate=" + idCorporate + ", name='" + name + '\'' + ", cnpj='" + cnpj + '\'' + ", user=" + user + ", active=" + active + '}';
     }
 }

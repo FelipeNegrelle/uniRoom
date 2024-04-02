@@ -1,11 +1,7 @@
 package com.felipe.uniroom.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
 @Entity
@@ -37,11 +33,13 @@ public class User {
     @Column(nullable = false)
     private Boolean active;
 
+    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    private Corporate corporate;
+
     public User() {
     }
 
-    public User(Integer idUser, String name, String username, String password, Character role, String secretPhrase,
-            String secretAnswer, Boolean active) {
+    public User(Integer idUser, String name, String username, String password, Character role, String secretPhrase, String secretAnswer, Boolean active, Corporate corporate) {
         this.idUser = idUser;
         this.name = name;
         this.username = username;
@@ -50,10 +48,11 @@ public class User {
         this.secretPhrase = secretPhrase;
         this.secretAnswer = secretAnswer;
         this.active = active;
+        this.corporate = corporate;
     }
 
     public Integer getIdUser() {
-        return this.idUser;
+        return idUser;
     }
 
     public void setIdUser(Integer idUser) {
@@ -61,7 +60,7 @@ public class User {
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public void setName(String name) {
@@ -69,7 +68,7 @@ public class User {
     }
 
     public String getUsername() {
-        return this.username;
+        return username;
     }
 
     public void setUsername(String username) {
@@ -77,7 +76,7 @@ public class User {
     }
 
     public String getPassword() {
-        return this.password;
+        return password;
     }
 
     public void setPassword(String password) {
@@ -85,7 +84,7 @@ public class User {
     }
 
     public Character getRole() {
-        return this.role;
+        return role;
     }
 
     public void setRole(Character role) {
@@ -93,7 +92,7 @@ public class User {
     }
 
     public String getSecretPhrase() {
-        return this.secretPhrase;
+        return secretPhrase;
     }
 
     public void setSecretPhrase(String secretPhrase) {
@@ -101,95 +100,73 @@ public class User {
     }
 
     public String getSecretAnswer() {
-        return this.secretAnswer;
+        return secretAnswer;
     }
 
     public void setSecretAnswer(String secretAnswer) {
         this.secretAnswer = secretAnswer;
     }
 
-    public Boolean isActive() {
-        return this.active;
-    }
-
     public Boolean getActive() {
-        return this.active;
+        return active;
     }
 
     public void setActive(Boolean active) {
         this.active = active;
     }
 
-    public User idUser(Integer idUser) {
-        setIdUser(idUser);
-        return this;
+    public Corporate getCorporate() {
+        return corporate;
     }
 
-    public User name(String name) {
-        setName(name);
-        return this;
-    }
-
-    public User username(String username) {
-        setUsername(username);
-        return this;
-    }
-
-    public User password(String password) {
-        setPassword(password);
-        return this;
-    }
-
-    public User role(Character role) {
-        setRole(role);
-        return this;
-    }
-
-    public User secretPhrase(String secretPhrase) {
-        setSecretPhrase(secretPhrase);
-        return this;
-    }
-
-    public User secretAnswer(String secretAnswer) {
-        setSecretAnswer(secretAnswer);
-        return this;
-    }
-
-    public User active(Boolean active) {
-        setActive(active);
-        return this;
+    public void setCorporate(Corporate corporate) {
+        this.corporate = corporate;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof User)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
         User user = (User) o;
-        return Objects.equals(idUser, user.idUser) && Objects.equals(name, user.name)
-                && Objects.equals(username, user.username) && Objects.equals(password, user.password)
-                && Objects.equals(role, user.role) && Objects.equals(secretPhrase, user.secretPhrase)
-                && Objects.equals(secretAnswer, user.secretAnswer) && Objects.equals(active, user.active);
+
+        if (!Objects.equals(idUser, user.idUser)) return false;
+        if (!Objects.equals(name, user.name)) return false;
+        if (!Objects.equals(username, user.username)) return false;
+        if (!Objects.equals(password, user.password)) return false;
+        if (!Objects.equals(role, user.role)) return false;
+        if (!Objects.equals(secretPhrase, user.secretPhrase)) return false;
+        if (!Objects.equals(secretAnswer, user.secretAnswer)) return false;
+        if (!Objects.equals(active, user.active)) return false;
+        return Objects.equals(corporate, user.corporate);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idUser, name, username, password, role, secretPhrase, secretAnswer, active);
+        int result = idUser != null ? idUser.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (username != null ? username.hashCode() : 0);
+        result = 31 * result + (password != null ? password.hashCode() : 0);
+        result = 31 * result + (role != null ? role.hashCode() : 0);
+        result = 31 * result + (secretPhrase != null ? secretPhrase.hashCode() : 0);
+        result = 31 * result + (secretAnswer != null ? secretAnswer.hashCode() : 0);
+        result = 31 * result + (active != null ? active.hashCode() : 0);
+        result = 31 * result + (corporate != null ? corporate.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
-        return "{" +
-                " idUser='" + getIdUser() + "'" +
-                ", name='" + getName() + "'" +
-                ", username='" + getUsername() + "'" +
-                ", password='" + getPassword() + "'" +
-                ", role='" + getRole() + "'" +
-                ", secretPhrase='" + getSecretPhrase() + "'" +
-                ", secretAnswer='" + getSecretAnswer() + "'" +
-                ", active='" + isActive() + "'" +
-                "}";
+        return "User{" +
+                "idUser=" + idUser +
+                ", name='" + name + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", role=" + role +
+                ", secretPhrase='" + secretPhrase + '\'' +
+                ", secretAnswer='" + secretAnswer + '\'' +
+                ", active=" + active +
+                ", corporate=" + corporate +
+                '}';
     }
 }

@@ -1,63 +1,45 @@
 package com.felipe.uniroom.entities;
 
 import jakarta.persistence.*;
+
+import java.io.Serializable;
 import java.util.Objects;
 
 @Entity
 @Table(name = "inventory_item")
-public class InvetoryItem {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_inventory")
-    private Integer idInvetory;
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_item")
-    private Integer idItem;
+public class InvetoryItem implements Serializable {
+    @EmbeddedId
+    private InventoryItemId id;
 
     @Column(nullable = false)
     private Integer quantity;
 
-    public Integer getIdInvetory() {
-        return idInvetory;
+    public InvetoryItem() {
     }
 
-    public void setIdInvetory(Integer idInvetory) {
-        this.idInvetory = idInvetory;
+    public InvetoryItem(InventoryItemId id, Integer quantity) {
+        this.id = id;
+        this.quantity = quantity;
     }
 
-    public Integer getIdItem() {
-        return idItem;
+    public InventoryItemId getId() {
+        return this.id;
     }
 
-    public void setIdItem(Integer idItem) {
-        this.idItem = idItem;
+    public void setId(InventoryItemId id) {
+        this.id = id;
     }
 
     public Integer getQuantity() {
-        return quantity;
+        return this.quantity;
     }
 
     public void setQuantity(Integer quantity) {
         this.quantity = quantity;
     }
 
-    public InvetoryItem() {
-    }
-
-    public InvetoryItem(Integer idInvetory, Integer idItem, Integer quantity) {
-        this.idInvetory = idInvetory;
-        this.idItem = idItem;
-        this.quantity = quantity;
-    }
-
-    public InvetoryItem idInvetory(Integer idInvetory) {
-        setIdInvetory(idInvetory);
-        return this;
-    }
-
-    public InvetoryItem idItem(Integer idItem) {
-        setIdItem(idItem);
+    public InvetoryItem id(InventoryItemId id) {
+        setId(id);
         return this;
     }
 
@@ -74,20 +56,18 @@ public class InvetoryItem {
             return false;
         }
         InvetoryItem invetoryItem = (InvetoryItem) o;
-        return Objects.equals(idInvetory, invetoryItem.idInvetory) && Objects.equals(idItem, invetoryItem.idItem)
-                && Objects.equals(quantity, invetoryItem.quantity);
+        return Objects.equals(id, invetoryItem.id) && Objects.equals(quantity, invetoryItem.quantity);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idInvetory, idItem, quantity);
+        return Objects.hash(id, quantity);
     }
 
     @Override
     public String toString() {
         return "{" +
-                " idInvetory='" + getIdInvetory() + "'" +
-                ", idItem='" + getIdItem() + "'" +
+                " id='" + getId() + "'" +
                 ", quantity='" + getQuantity() + "'" +
                 "}";
     }

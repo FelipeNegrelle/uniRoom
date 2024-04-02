@@ -12,7 +12,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
-import javax.swing.UIManager;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.entities.User;
@@ -58,8 +57,8 @@ public class Login extends JFrame {
         mainPanel.add(inputPanel, "wrap, grow");
 
         final JButton loginButton = new JButton(Constants.LOGIN);
-        loginButton.setFont(Constants.FONT);
-        loginButton.setPreferredSize(new Dimension(300, 40));
+        loginButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
+        loginButton.setPreferredSize(Constants.BUTTON_SIZE);
         loginButton.setBackground(Constants.BLUE);
         loginButton.setForeground(Constants.WHITE);
         loginButton.addActionListener(e -> {
@@ -92,7 +91,7 @@ public class Login extends JFrame {
 
         final JButton registerButton = new JButton(Constants.REGISTER);
         registerButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-        registerButton.setPreferredSize(new Dimension(300, 40));
+        registerButton.setPreferredSize(Constants.BUTTON_SIZE);
         registerButton.setBackground(Constants.BLUE);
         registerButton.setForeground(Constants.GRAY);
         registerButton.addActionListener(e -> {

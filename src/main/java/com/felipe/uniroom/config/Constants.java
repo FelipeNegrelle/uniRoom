@@ -2,6 +2,9 @@ package com.felipe.uniroom.config;
 
 import java.awt.*;
 
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+
 public class Constants {
     //Texts
     public static final String UNIROOM = "UniRoom";
@@ -23,10 +26,17 @@ public class Constants {
     public static final String SECRET_ANSWER = "Sua resposta";
     public static final String SEND = "Enviar";
     public static final String NEW_RESERVATION = "Nova reserva";
-    public static final String GUESTS = "Hóspedes";
+    public static final String GUEST = "Hóspede";
     public static final String ADD_GUEST = "Adicionar hóspede";
     public static final String BACK = "Voltar";
     public static final String RESERVATIONS_HISTORY = "Histórico de reservas";
+    public static final String CORPORATE = "Matriz";
+    public static final String BRANCH = "Filial";
+    public static final String INVENTORY = "Inventário";
+    public static final String ITEM = "Item";
+    public static final String RESERVATION = "Reserva";
+    public static final String ROOM = "Quarto";
+    public static final String ROOM_TYPE = "Tipo de quarto";
 
     //Colors
     public static final Color WHITE = new Color(0xFFFFFF);
@@ -40,9 +50,16 @@ public class Constants {
     public static final Font FONT = new Font("Sans", Font.PLAIN, 20);
 
     //Sizes
-    public static final Dimension BUTTON_SIZE = new Dimension(150, 40);
+    public static final Dimension BUTTON_SIZE = new Dimension(300, 40);
     public static final Dimension TEXT_FIELD_SIZE = new Dimension(300, 10);
 
     //Icons
-    // private static final icone fodase = new icon();
+    public static final Icon USER_ICON = new ImageIcon("src/main/resources/images/icons/user.png");
+    public static final Icon BRANCH_ICON = new ImageIcon("src/main/resources/images/icons/user.png");
+    public static final Icon CORPORATE_ICON = new ImageIcon("src/main/resources/images/icons/corporate.png");
+    public static final Icon INVENTORY_ICON = new ImageIcon("src/main/resources/images/icons/inventory.png");
+    public static final Icon ITEM_ICON = new ImageIcon("src/main/resources/images/icons/item.png");
+    public static final Icon RESERVATION_ICON = new ImageIcon("src/main/resources/images/icons/reservation.png");
+    public static final Icon ROOM_TYPE_ICON = new ImageIcon("src/main/resources/images/icons/user.png");
+    public static final Icon ROOM_ICON = new ImageIcon("src/main/resources/images/icons/room.png");
 }
