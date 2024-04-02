@@ -28,5 +28,4 @@ public class InventoryItemId implements Serializable {
     public void setIdItem(Integer idItem) {
         this.idItem = idItem;
     }
-
 }

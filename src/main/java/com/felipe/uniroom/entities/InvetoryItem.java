@@ -38,20 +38,9 @@ public class InvetoryItem implements Serializable {
         this.quantity = quantity;
     }
 
-    public InvetoryItem id(InventoryItemId id) {
-        setId(id);
-        return this;
-    }
-
-    public InvetoryItem quantity(Integer quantity) {
-        setQuantity(quantity);
-        return this;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (o == this)
-            return true;
+        if (o == this) return true;
         if (!(o instanceof InvetoryItem)) {
             return false;
         }
@@ -66,10 +55,6 @@ public class InvetoryItem implements Serializable {
 
     @Override
     public String toString() {
-        return "{" +
-                " id='" + getId() + "'" +
-                ", quantity='" + getQuantity() + "'" +
-                "}";
+        return "InvetoryItem{" + "id=" + id + ", quantity=" + quantity + '}';
     }
-
 }

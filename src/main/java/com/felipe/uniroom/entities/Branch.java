@@ -1,11 +1,7 @@
 package com.felipe.uniroom.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
 @Entity
@@ -19,8 +15,9 @@ public class Branch {
     @Column(length = 50, nullable = false)
     private String name;
 
+    @OneToOne(fetch = FetchType.LAZY)
     @Column(name = "id_corporate", nullable = false)
-    private Integer idCorporate;
+    private Corporate corporate;
 
     @Column(name = "id_user", nullable = false)
     private Integer idUser;
@@ -31,10 +28,10 @@ public class Branch {
     public Branch() {
     }
 
-    public Branch(Integer idBranch, String name, Integer idCorporate, Integer idUser, Boolean active) {
+    public Branch(Integer idBranch, String name, Corporate corporate, Integer idUser, Boolean active) {
         this.idBranch = idBranch;
         this.name = name;
-        this.idCorporate = idCorporate;
+        this.corporate = corporate;
         this.idUser = idUser;
         this.active = active;
     }
@@ -55,12 +52,12 @@ public class Branch {
         this.name = name;
     }
 
-    public Integer getIdCorporate() {
-        return this.idCorporate;
+    public Corporate getCorporate() {
+        return this.corporate;
     }
 
-    public void setIdCorporate(Integer idCorporate) {
-        this.idCorporate = idCorporate;
+    public void setCorporate(Corporate corporate) {
+        this.corporate = corporate;
     }
 
     public Integer getIdUser() {
@@ -83,57 +80,32 @@ public class Branch {
         this.active = active;
     }
 
-    public Branch idBranch(Integer idBranch) {
-        setIdBranch(idBranch);
-        return this;
-    }
-
-    public Branch name(String name) {
-        setName(name);
-        return this;
-    }
-
-    public Branch idCorporate(Integer idCorporate) {
-        setIdCorporate(idCorporate);
-        return this;
-    }
-
-    public Branch idUser(Integer idUser) {
-        setIdUser(idUser);
-        return this;
-    }
-
-    public Branch active(Boolean active) {
-        setActive(active);
-        return this;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof Branch)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
         Branch branch = (Branch) o;
-        return Objects.equals(idBranch, branch.idBranch) && Objects.equals(name, branch.name)
-                && Objects.equals(idCorporate, branch.idCorporate) && Objects.equals(idUser, branch.idUser)
-                && Objects.equals(active, branch.active);
+
+        if (!Objects.equals(idBranch, branch.idBranch)) return false;
+        if (!Objects.equals(name, branch.name)) return false;
+        if (!Objects.equals(corporate, branch.corporate)) return false;
+        if (!Objects.equals(idUser, branch.idUser)) return false;
+        return Objects.equals(active, branch.active);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idBranch, name, idCorporate, idUser, active);
+        int result = idBranch != null ? idBranch.hashCode() : 0;
+        result = 31 * result + (name != null ? name.hashCode() : 0);
+        result = 31 * result + (corporate != null ? corporate.hashCode() : 0);
+        result = 31 * result + (idUser != null ? idUser.hashCode() : 0);
+        result = 31 * result + (active != null ? active.hashCode() : 0);
+        return result;
     }
 
     @Override
     public String toString() {
-        return "{" +
-                " idBranch='" + getIdBranch() + "'" +
-                ", name='" + getName() + "'" +
-                ", idCorporate='" + getIdCorporate() + "'" +
-                ", idUser='" + getIdUser() + "'" +
-                ", active='" + isActive() + "'" +
-                "}";
+        return "Branch{" + "idBranch=" + idBranch + ", name='" + name + '\'' + ", corporate=" + corporate + ", idUser=" + idUser + ", active=" + active + '}';
     }
 }
