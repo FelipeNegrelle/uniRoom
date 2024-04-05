@@ -9,10 +9,11 @@ public class Inventory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_inventory")
-    private Integer idInvetory;
+    private Integer idInventory;
 
-    @Column(name = "id_room", nullable = false)
-    private Integer idRoom;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_room", nullable = false)
+    private Room room;
 
     @Column(length = 255)
     private String description;
@@ -20,20 +21,20 @@ public class Inventory {
     @Column(nullable = false)
     private Boolean active;
 
-    public Integer getIdInvetory() {
-        return idInvetory;
+    public Integer getIdInventory() {
+        return idInventory;
     }
 
-    public void setIdInvetory(Integer idInvetory) {
-        this.idInvetory = idInvetory;
+    public void setIdInventory(Integer idInventory) {
+        this.idInventory = idInventory;
     }
 
-    public Integer getIdRoom() {
-        return idRoom;
+    public Room getRoom() {
+        return room;
     }
 
-    public void setIdRoom(Integer idRoom) {
-        this.idRoom = idRoom;
+    public void setRoom(Room room) {
+        this.room = room;
     }
 
     public String getDescription() {
@@ -55,62 +56,32 @@ public class Inventory {
     public Inventory() {
     }
 
-    public Inventory(Integer idInvetory, Integer idRoom, String description, Boolean active) {
-        this.idInvetory = idInvetory;
-        this.idRoom = idRoom;
+    public Inventory(Room room, String description, Boolean active) {
+        this.room = room;
         this.description = description;
         this.active = active;
     }
 
-    public Boolean isActive() {
-        return this.active;
-    }
-
-    public Inventory idInvetory(Integer idInvetory) {
-        setIdInvetory(idInvetory);
-        return this;
-    }
-
-    public Inventory idRoom(Integer idRoom) {
-        setIdRoom(idRoom);
-        return this;
-    }
-
-    public Inventory description(String description) {
-        setDescription(description);
-        return this;
-    }
-
-    public Inventory active(Boolean active) {
-        setActive(active);
-        return this;
-    }
-
     @Override
     public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof Inventory)) {
-            return false;
-        }
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Inventory inventory = (Inventory) o;
-        return Objects.equals(idInvetory, inventory.idInvetory) && Objects.equals(idRoom, inventory.idRoom)
-                && Objects.equals(description, inventory.description) && Objects.equals(active, inventory.active);
+        return Objects.equals(idInventory, inventory.idInventory);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idInvetory, idRoom, description, active);
+        return Objects.hash(idInventory);
     }
 
     @Override
     public String toString() {
-        return "{" +
-                " idInvetory='" + getIdInvetory() + "'" +
-                ", idRoom='" + getIdRoom() + "'" +
-                ", description='" + getDescription() + "'" +
-                ", active='" + isActive() + "'" +
-                "}";
+        return "Inventory{" +
+                "idInventory=" + idInventory +
+                ", description='" + description + '\'' +
+                ", active=" + active +
+                '}';
     }
 
 }

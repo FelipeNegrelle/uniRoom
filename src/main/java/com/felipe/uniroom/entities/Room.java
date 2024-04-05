@@ -14,11 +14,13 @@ public class Room {
     @Column(name = "room_number", nullable = false)
     private Integer roomNumber;
 
-    @Column(name = "id_room_type", nullable = false)
-    private Integer idRoomType;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_room_type", nullable = false)
+    private RoomType roomType;
 
-    @Column(name = "id_branch", nullable = false)
-    private Integer idBranch;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_branch", nullable = false)
+    private Branch branch;
 
     @Column(nullable = false)
     private Boolean active;
@@ -26,16 +28,16 @@ public class Room {
     public Room() {
     }
 
-    public Room(Integer idRoom, Integer roomNumber, Integer idRoomType, Integer idBranch, Boolean active) {
+    public Room(Integer idRoom, Integer roomNumber, RoomType roomType, Branch branch, Boolean active) {
         this.idRoom = idRoom;
         this.roomNumber = roomNumber;
-        this.idRoomType = idRoomType;
-        this.idBranch = idBranch;
+        this.roomType = roomType;
+        this.branch = branch;
         this.active = active;
     }
 
     public Integer getIdRoom() {
-        return this.idRoom;
+        return idRoom;
     }
 
     public void setIdRoom(Integer idRoom) {
@@ -43,64 +45,35 @@ public class Room {
     }
 
     public Integer getRoomNumber() {
-        return this.roomNumber;
+        return roomNumber;
     }
 
     public void setRoomNumber(Integer roomNumber) {
         this.roomNumber = roomNumber;
     }
 
-    public Integer getIdRoomType() {
-        return this.idRoomType;
+    public RoomType getRoomType() {
+        return roomType;
     }
 
-    public void setIdRoomType(Integer idRoomType) {
-        this.idRoomType = idRoomType;
+    public void setRoomType(RoomType roomType) {
+        this.roomType = roomType;
     }
 
-    public Integer getIdBranch() {
-        return this.idBranch;
+    public Branch getBranch() {
+        return branch;
     }
 
-    public void setIdBranch(Integer idBranch) {
-        this.idBranch = idBranch;
-    }
-
-    public Boolean isActive() {
-        return this.active;
+    public void setBranch(Branch branch) {
+        this.branch = branch;
     }
 
     public Boolean getActive() {
-        return this.active;
+        return active;
     }
 
     public void setActive(Boolean active) {
         this.active = active;
-    }
-
-    public Room idRoom(Integer idRoom) {
-        setIdRoom(idRoom);
-        return this;
-    }
-
-    public Room roomNumber(Integer roomNumber) {
-        setRoomNumber(roomNumber);
-        return this;
-    }
-
-    public Room idRoomType(Integer idRoomType) {
-        setIdRoomType(idRoomType);
-        return this;
-    }
-
-    public Room idBranch(Integer idBranch) {
-        setIdBranch(idBranch);
-        return this;
-    }
-
-    public Room active(Boolean active) {
-        setActive(active);
-        return this;
     }
 
     @Override
@@ -111,22 +84,22 @@ public class Room {
             return false;
         }
         Room room = (Room) o;
-        return Objects.equals(idRoom, room.idRoom) && Objects.equals(roomNumber, room.roomNumber) && Objects.equals(idRoomType, room.idRoomType) && Objects.equals(idBranch, room.idBranch) && Objects.equals(active, room.active);
+        return Objects.equals(idRoom, room.idRoom) && Objects.equals(roomNumber, room.roomNumber) && Objects.equals(roomType, room.roomType) && Objects.equals(branch, room.branch) && Objects.equals(active, room.active);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idRoom, roomNumber, idRoomType, idBranch, active);
+        return Objects.hash(idRoom, roomNumber, roomType, branch, active);
     }
 
     @Override
     public String toString() {
-        return "{" +
-            " idRoom='" + getIdRoom() + "'" +
-            ", roomNumber='" + getRoomNumber() + "'" +
-            ", idRoomType='" + getIdRoomType() + "'" +
-            ", idBranch='" + getIdBranch() + "'" +
-            ", active='" + isActive() + "'" +
-            "}";
+        return "Room{" +
+                "idRoom=" + idRoom +
+                ", roomNumber=" + roomNumber +
+                ", roomType=" + roomType +
+                ", branch=" + branch +
+                ", active=" + active +
+                '}';
     }
 }

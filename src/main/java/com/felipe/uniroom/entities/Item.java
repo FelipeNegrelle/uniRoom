@@ -1,11 +1,7 @@
 package com.felipe.uniroom.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
+
 import java.util.Objects;
 
 @Entity
@@ -19,11 +15,15 @@ public class Item {
     @Column(nullable = false)
     private Float price;
 
-    @Column(name = "id_branch", nullable = false)
-    private Integer idBranch;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_branch", nullable = false)
+    private Branch branch;
 
     @Column(nullable = false)
     private Boolean active;
+
+    // Getters e setters mantidos
+
 
     public Integer getIdItem() {
         return idItem;
@@ -41,12 +41,12 @@ public class Item {
         this.price = price;
     }
 
-    public Integer getIdBranch() {
-        return idBranch;
+    public Branch getBranch() {
+        return branch;
     }
 
-    public void setIdBranch(Integer idBranch) {
-        this.idBranch = idBranch;
+    public void setBranch(Branch branch) {
+        this.branch = branch;
     }
 
     public Boolean getActive() {
@@ -60,57 +60,34 @@ public class Item {
     public Item() {
     }
 
-    public Item(Integer idItem, Float price, Integer idBranch, Boolean active) {
-        this.idItem = idItem;
+    public Item(Float price, Branch branch, Boolean active) {
         this.price = price;
-        this.idBranch = idBranch;
+        this.branch = branch;
         this.active = active;
     }
 
-    public Item idItem(Integer idItem) {
-        setIdItem(idItem);
-        return this;
-    }
-
-    public Item price(Float price) {
-        setPrice(price);
-        return this;
-    }
-
-    public Item idBranch(Integer idBranch) {
-        setIdBranch(idBranch);
-        return this;
-    }
-
-    public Item active(Boolean active) {
-        setActive(active);
-        return this;
-    }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this)
-            return true;
-        if (!(o instanceof Item)) {
-            return false;
-        }
+        if (o == this) return true;
+        if (!(o instanceof Item)) return false;
         Item item = (Item) o;
         return Objects.equals(idItem, item.idItem) && Objects.equals(price, item.price)
-                && Objects.equals(idBranch, item.idBranch) && Objects.equals(active, item.active);
+                && Objects.equals(branch, item.branch) && Objects.equals(active, item.active);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idItem, price, idBranch, active);
+        return Objects.hash(idItem, price, branch, active);
     }
 
     @Override
     public String toString() {
-        return "{" +
-                " idItem='" + getIdItem() + "'" +
-                ", price='" + getPrice() + "'" +
-                ", idBranch='" + getIdBranch() + "'" +
-                ", active='" + getActive() + "'" +
-                "}";
+        return "Item{" +
+                "idItem=" + idItem +
+                ", price=" + price +
+                ", branchId=" + branch +
+                ", active=" + active +
+                '}';
     }
 }

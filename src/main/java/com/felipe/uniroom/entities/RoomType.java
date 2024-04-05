@@ -20,8 +20,9 @@ public class RoomType {
     @Column(nullable = false)
     private Float price;
 
-    @Column(name = "id_branch", nullable = false)
-    private Integer idBranch;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_branch", nullable = false)
+    private Branch branch;
 
     @Column(nullable = false)
     private Boolean active;
@@ -58,12 +59,12 @@ public class RoomType {
         this.price = price;
     }
 
-    public Integer getIdBranch() {
-        return idBranch;
+    public Branch getBranch() {
+        return branch;
     }
 
-    public void setIdBranch(Integer idBranch) {
-        this.idBranch = idBranch;
+    public void setBranch(Branch branch) {
+        this.branch = branch;
     }
 
     public Boolean isActive() {
@@ -77,12 +78,12 @@ public class RoomType {
     public RoomType() {
     }
 
-    public RoomType(Integer idRoomType, String name, Byte capacity, Float price, Integer idBranch, Boolean active) {
+    public RoomType(Integer idRoomType, String name, Byte capacity, Float price, Branch branch, Boolean active) {
         this.idRoomType = idRoomType;
         this.name = name;
         this.capacity = capacity;
         this.price = price;
-        this.idBranch = idBranch;
+        this.branch = branch;
         this.active = active;
     }
 
@@ -110,8 +111,8 @@ public class RoomType {
         return this;
     }
 
-    public RoomType idBranch(Integer idBranch) {
-        setIdBranch(idBranch);
+    public RoomType idBranch(Branch branch) {
+        setBranch(branch);
         return this;
     }
 
@@ -130,23 +131,23 @@ public class RoomType {
         RoomType roomType = (RoomType) o;
         return Objects.equals(idRoomType, roomType.idRoomType) && Objects.equals(name, roomType.name)
                 && Objects.equals(capacity, roomType.capacity) && Objects.equals(price, roomType.price)
-                && Objects.equals(idBranch, roomType.idBranch) && Objects.equals(active, roomType.active);
+                && Objects.equals(branch, roomType.branch) && Objects.equals(active, roomType.active);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idRoomType, name, capacity, price, idBranch, active);
+        return Objects.hash(idRoomType, name, capacity, price, branch, active);
     }
 
     @Override
     public String toString() {
-        return "{" +
-                " idRoomType='" + getIdRoomType() + "'" +
-                ", name='" + getName() + "'" +
-                ", capacity='" + getCapacity() + "'" +
-                ", price='" + getPrice() + "'" +
-                ", idBranch='" + getIdBranch() + "'" +
-                ", active='" + isActive() + "'" +
-                "}";
+        return "RoomType{" +
+                "idRoomType=" + idRoomType +
+                ", name='" + name + '\'' +
+                ", capacity=" + capacity +
+                ", price=" + price +
+                ", branch=" + branch +
+                ", active=" + active +
+                '}';
     }
 }

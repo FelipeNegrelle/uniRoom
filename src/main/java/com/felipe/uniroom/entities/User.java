@@ -33,7 +33,7 @@ public class User {
     @Column(nullable = false)
     private Boolean active;
 
-    @OneToOne(mappedBy = "user", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "corporate", fetch = FetchType.LAZY)
     private Corporate corporate;
 
     public User() {
