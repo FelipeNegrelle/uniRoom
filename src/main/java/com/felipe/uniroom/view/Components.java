@@ -134,6 +134,52 @@ public class Components {
     // }
     // }
 
+    public static class ForgetPasswordDialog extends JDialog {
+        public ForgetPasswordDialog(JFrame parent, String user) {
+            super(parent, Constants.FORGOT, true);
+            setSize(750, 500);
+            setLocationRelativeTo(parent);
+
+            final JLabel nameLabel = new JLabel(Constants.USER + ": " + user);
+            nameLabel.setFont(new Font("Sans", Font.BOLD, 20));
+
+            final JLabel questionLabel = getLabel(Constants.SECRET_PHRASE, null, Font.BOLD, null, null);
+
+            final JLabel answerLabel = getLabel(Constants.SECRET_ANSWER, null, Font.BOLD, null, null);
+
+            final JTextField answerField = new JTextField(30);
+            answerField.setFont(Constants.FONT);
+            answerField.setPreferredSize(Constants.TEXT_FIELD_SIZE);
+
+            JButton sendButton = new JButton(Constants.SEND);
+            sendButton.setFont(Constants.FONT);
+            sendButton.setPreferredSize(Constants.BUTTON_SIZE);
+            sendButton.setBackground(Constants.BLUE);
+            sendButton.setForeground(Color.white);
+
+            JPanel panel = new JPanel(new MigLayout("fill", "[grow][fill]", "[]10[]"));
+            panel.add(nameLabel, "alignx left, wrap");
+            panel.add(questionLabel, "alignx left, wrap");
+            panel.add(answerLabel, "alignx left, wrap");
+            panel.add(answerField, "growx, wrap");
+            panel.add(sendButton, "span 2, align center");
+
+            sendButton.addActionListener(e -> {
+//                if (Auth.checkSecretAnswer(user, answerField.getText().replaceAll(" ", "").toLowerCase())) {
+//                    dispose();
+//                    new ResetPasswordDialog(parent, user).setVisible(true);
+//                    System.out.println(user);
+//                } else {
+//                    JOptionPane.showMessageDialog(ForgetPasswordDialog.this, "Resposta incorreta", "Erro", JOptionPane.ERROR_MESSAGE);
+//                    System.out.println(answerField.getText().trim().toLowerCase());
+//                }
+                System.out.println(user);
+            });
+
+            add(panel);
+        }
+    }
+
     public static JLabel getLabel(String text, String fontFamily, Integer fontStyle, Integer fontSize, Color color) {
         final JLabel label = new JLabel(text);
 

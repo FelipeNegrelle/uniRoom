@@ -23,8 +23,6 @@ public class Item {
     private Boolean active;
 
     // Getters e setters mantidos
-
-
     public Integer getIdItem() {
         return idItem;
     }
@@ -72,8 +70,7 @@ public class Item {
         if (o == this) return true;
         if (!(o instanceof Item)) return false;
         Item item = (Item) o;
-        return Objects.equals(idItem, item.idItem) && Objects.equals(price, item.price)
-                && Objects.equals(branch, item.branch) && Objects.equals(active, item.active);
+        return Objects.equals(idItem, item.idItem) && Objects.equals(price, item.price) && Objects.equals(branch, item.branch) && Objects.equals(active, item.active);
     }
 
     @Override
@@ -83,11 +80,6 @@ public class Item {
 
     @Override
     public String toString() {
-        return "Item{" +
-                "idItem=" + idItem +
-                ", price=" + price +
-                ", branchId=" + branch +
-                ", active=" + active +
-                '}';
+        return "Item{" + "idItem=" + idItem + ", price=" + price + ", branchId=" + branch + ", active=" + active + '}';
     }
 }

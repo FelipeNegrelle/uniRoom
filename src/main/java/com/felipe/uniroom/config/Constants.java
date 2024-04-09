@@ -13,6 +13,7 @@ public class Constants {
     public static final String FAILED_REGISTER = "Registrar falhou. Tente novamente.";
     public static final String SUCCESSFUL_LOGIN = "Entrou com sucesso!";
     public static final String FAILED_LOGIN = "Login falhou. Tente novamente.";
+    public static final String GENERIC_ERROR = "Um erro ocorreu. Tente novamente.";
     public static final String LOGIN = "Login";
     public static final String USER = "Usuário";
     public static final String PASSWORD = "Senha";
@@ -42,9 +43,11 @@ public class Constants {
     public static final Color WHITE = new Color(0xFFFFFF);
     public static final Color BLACK = new Color(0x000000);
     public static final Color GREEN = new Color(0x096B06);
-    public static final Color BLUE = new Color(18, 52, 86);
+    public static final Color BLUE = new Color(0x123456);
     public static final Color RED = new Color(0xBE0606);
     public static final Color GRAY = new Color(0xCCCCCC);
+    public static final Color BROWN = new Color(0x563412);
+    public static final Color YELLOW = new Color(0xE49E00);
 
     //Fonts
     public static final Font FONT = new Font("Sans", Font.PLAIN, 20);

@@ -33,13 +33,10 @@ public class User {
     @Column(nullable = false)
     private Boolean active;
 
-    @OneToOne(mappedBy = "corporate", fetch = FetchType.LAZY)
-    private Corporate corporate;
-
     public User() {
     }
 
-    public User(Integer idUser, String name, String username, String password, Character role, String secretPhrase, String secretAnswer, Boolean active, Corporate corporate) {
+    public User(Integer idUser, String name, String username, String password, Character role, String secretPhrase, String secretAnswer, Boolean active) {
         this.idUser = idUser;
         this.name = name;
         this.username = username;
@@ -48,7 +45,6 @@ public class User {
         this.secretPhrase = secretPhrase;
         this.secretAnswer = secretAnswer;
         this.active = active;
-        this.corporate = corporate;
     }
 
     public Integer getIdUser() {
@@ -115,14 +111,6 @@ public class User {
         this.active = active;
     }
 
-    public Corporate getCorporate() {
-        return corporate;
-    }
-
-    public void setCorporate(Corporate corporate) {
-        this.corporate = corporate;
-    }
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -137,8 +125,7 @@ public class User {
         if (!Objects.equals(role, user.role)) return false;
         if (!Objects.equals(secretPhrase, user.secretPhrase)) return false;
         if (!Objects.equals(secretAnswer, user.secretAnswer)) return false;
-        if (!Objects.equals(active, user.active)) return false;
-        return Objects.equals(corporate, user.corporate);
+        return Objects.equals(active, user.active);
     }
 
     @Override
@@ -151,22 +138,6 @@ public class User {
         result = 31 * result + (secretPhrase != null ? secretPhrase.hashCode() : 0);
         result = 31 * result + (secretAnswer != null ? secretAnswer.hashCode() : 0);
         result = 31 * result + (active != null ? active.hashCode() : 0);
-        result = 31 * result + (corporate != null ? corporate.hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "idUser=" + idUser +
-                ", name='" + name + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", role=" + role +
-                ", secretPhrase='" + secretPhrase + '\'' +
-                ", secretAnswer='" + secretAnswer + '\'' +
-                ", active=" + active +
-                ", corporate=" + corporate +
-                '}';
     }
 }

@@ -14,7 +14,9 @@ import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import com.felipe.uniroom.config.Constants;
+import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.User;
+import com.felipe.uniroom.repositories.UserRepository;
 import com.felipe.uniroom.services.UserService;
 
 import net.miginfocom.swing.MigLayout;
@@ -63,41 +65,30 @@ public class Login extends JFrame {
         loginButton.setForeground(Constants.WHITE);
         loginButton.addActionListener(e -> {
             try {
-                final User user = new User();
+                User user = new User();
                 user.setUsername(userField.getText());
-                user.setPassword(passwordField.getPassword().toString());
+                user.setPassword(passwordField.getText());
 
                 if (!UserService.login(user)) {
-                    System.out.println(userField.getText() +
-                            Arrays.toString(passwordField.getPassword()));
+                    System.out.println(user.getUsername());
+                    System.out.println(user.getPassword());
 
                     JOptionPane.showMessageDialog(this, Constants.FAILED_LOGIN);
-
-                    return;
                 } else {
-                    // new Menu();
+                    user = UserRepository.findByUsername(user.getUsername());
+
                     JOptionPane.showMessageDialog(this, Constants.SUCCESSFUL_LOGIN);
 
                     Thread.sleep(50);
 
                     dispose();
 
-                    System.out.println("Login button clicked");
+                    if (user != null) {
+                        new Home(Util.getRoleUser(user));
+                    } else {
+                        JOptionPane.showMessageDialog(this, Constants.GENERIC_ERROR);
+                    }
                 }
-            } catch (Exception exception) {
-                exception.printStackTrace();
-            }
-        });
-
-        final JButton registerButton = new JButton(Constants.REGISTER);
-        registerButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-        registerButton.setPreferredSize(Constants.BUTTON_SIZE);
-        registerButton.setBackground(Constants.BLUE);
-        registerButton.setForeground(Constants.GRAY);
-        registerButton.addActionListener(e -> {
-            try {
-                // new Components.RegistrationDialog(this).setVisible(true);
-                System.out.println("Register button clicked");
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
@@ -107,19 +98,18 @@ public class Login extends JFrame {
         forgetPasswordButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
         forgetPasswordButton.setPreferredSize(new Dimension(300, 40));
         forgetPasswordButton.setBackground(Constants.BLUE);
-        forgetPasswordButton.setForeground(Constants.GRAY);
+        forgetPasswordButton.setForeground(Constants.WHITE);
         forgetPasswordButton.addActionListener(e -> {
             try {
-                // new Components.GetUserForgetPasswordDialog(this).setVisible(true);
+                new Components.ForgetPasswordDialog(this, userField.getText()).setVisible(true);
                 System.out.println("Forget password button clicked");
             } catch (Exception exception) {
                 exception.printStackTrace();
             }
         });
 
-        mainPanel.add(registerButton, "align center, split 2");
-        mainPanel.add(loginButton, "align center, wrap");
-        mainPanel.add(forgetPasswordButton, "grow");
+        mainPanel.add(loginButton, "align center, split 2");
+        mainPanel.add(forgetPasswordButton, "align center, wrap");
         add(mainPanel, BorderLayout.CENTER);
 
         pack();

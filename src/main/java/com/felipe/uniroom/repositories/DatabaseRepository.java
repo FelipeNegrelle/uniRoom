@@ -1,18 +1,15 @@
 package com.felipe.uniroom.repositories;
 
-import java.util.List;
-
 import com.felipe.uniroom.config.ConnectionManager;
-import com.felipe.uniroom.entities.User;
-
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
+import jakarta.persistence.EntityTransaction;
 import jakarta.transaction.Transactional;
+
+import java.util.List;
 
 @Transactional
 public class DatabaseRepository {
-
-    public <T> List<T> findAll(Class<T> entity) {
+    public static <T> List<T> findAll(Class<T> entity) {
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             return em.createQuery("SELECT e FROM " + entity.getSimpleName() + " e", entity).getResultList();
         } catch (Exception e) {
@@ -21,7 +18,7 @@ public class DatabaseRepository {
         }
     }
 
-    public <T> T findById(Class<T> entity, Integer id) {
+    public static <T> T findById(Class<T> entity, Integer id) {
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             return em.find(entity, id);
         } catch (Exception e) {
@@ -30,18 +27,33 @@ public class DatabaseRepository {
         }
     }
 
-    public <T> boolean saveOrUpdate(T entity) {
-        try (EntityManager em = ConnectionManager.getEntityManager()) {
-            em.persist(entity);
+    public static <T> boolean saveOrUpdate(T entity) {
+        EntityManager em = null;
 
+        EntityTransaction transaction = null;
+
+        try {
+            em = ConnectionManager.getEntityManager();
+            transaction = em.getTransaction();
+            transaction.begin();
+
+            em.merge(entity);
+
+            transaction.commit();
             return true;
         } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+
             e.printStackTrace();
             return false;
+        } finally {
+            ConnectionManager.closeEntityManager(em);
         }
     }
 
-    public <T> boolean delete(Class<T> entity, Integer id) {
+    public static <T> boolean delete(Class<T> entity, Integer id) {
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             final T obj = em.find(entity, id);
 

@@ -9,7 +9,6 @@ import java.util.List;
 
 public enum Role {
     ADMIN('A'), MANAGER('M'), EMPLOYEE('E');
-
     private final char role;
     private final List<Menu> menus;
 
