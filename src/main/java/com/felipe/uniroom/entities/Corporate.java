@@ -26,7 +26,7 @@ public class Corporate {
     @Column(columnDefinition = "char(14)", nullable = false)
     private String cnpj;
 
-    @OneToOne(fetch = FetchType.LAZY, mappedBy = "user")
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 

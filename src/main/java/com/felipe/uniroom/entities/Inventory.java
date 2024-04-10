@@ -1,6 +1,7 @@
 package com.felipe.uniroom.entities;
 
 import jakarta.persistence.*;
+
 import java.util.Objects;
 
 @Entity
@@ -77,11 +78,7 @@ public class Inventory {
 
     @Override
     public String toString() {
-        return "Inventory{" +
-                "idInventory=" + idInventory +
-                ", description='" + description + '\'' +
-                ", active=" + active +
-                '}';
+        return "Inventory{" + "idInventory=" + idInventory + ", description='" + description + '\'' + ", active=" + active + '}';
     }
 
 }

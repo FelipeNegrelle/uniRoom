@@ -7,8 +7,8 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
 public class UserRepository extends DatabaseRepository {
-    public User findByUsername(String username) {
-        final String query = "SELECT u.password FROM User u WHERE u.username = :username";
+    public static User findByUsername(String username) {
+        final String query = "SELECT u FROM User u WHERE u.username = :username";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             return em.createQuery(query, User.class)

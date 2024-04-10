@@ -1,6 +1,7 @@
 package com.felipe.uniroom.entities;
 
 import jakarta.persistence.*;
+
 import java.util.Objects;
 
 @Entity
@@ -106,13 +107,6 @@ public class Reservation {
 
     @Override
     public String toString() {
-        return "Reservation{" +
-                "idReservation=" + idReservation +
-                ", room=" + room +
-                ", days=" + days +
-                ", user=" + user +
-                ", status='" + status + '\'' +
-                ", branch=" + branch +
-                '}';
+        return "Reservation{" + "idReservation=" + idReservation + ", room=" + room + ", days=" + days + ", user=" + user + ", status='" + status + '\'' + ", branch=" + branch + '}';
     }
 }
