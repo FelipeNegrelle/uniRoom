@@ -36,7 +36,7 @@ public class Home extends JFrame {
             button.setForeground(Constants.BLACK);
             button.addActionListener(e -> {
                 try {
-                    menu.getDestination().getDeclaredConstructor().newInstance();
+                    menu.getDestination().getDeclaredConstructor(Role.class).newInstance(role);
 
                     dispose();
                 } catch (Exception ex) {

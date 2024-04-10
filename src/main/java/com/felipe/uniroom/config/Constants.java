@@ -38,6 +38,10 @@ public class Constants {
     public static final String RESERVATION = "Reserva";
     public static final String ROOM = "Quarto";
     public static final String ROOM_TYPE = "Tipo de quarto";
+    public static final String EDIT_WARN = "Selecione um item para editar.";
+    public static final String DELETE_WARN = "Selecione um item para excluir.";
+    public static final String WARN = "Aviso.";
+    public static final String NEW = "Novo";
 
     //Colors
     public static final Color WHITE = new Color(0xFFFFFF);
