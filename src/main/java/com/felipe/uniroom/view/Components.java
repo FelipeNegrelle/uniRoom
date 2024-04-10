@@ -1,23 +1,16 @@
 package com.felipe.uniroom.view;
 
+import java.awt.*;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Objects;
 
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JDialog;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
+import javax.swing.*;
+import javax.swing.text.MaskFormatter;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.services.UserService;
 
-import java.awt.Font;
-import java.awt.Color;
 import net.miginfocom.swing.MigLayout;
 
 public class Components {
