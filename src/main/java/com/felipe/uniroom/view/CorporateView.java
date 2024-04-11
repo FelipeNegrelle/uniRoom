@@ -51,7 +51,7 @@ public class CorporateView extends JFrame {
         newCorporate.setFont(Constants.FONT.deriveFont(Font.BOLD, 50));
         newCorporate.addActionListener(e -> {
 //                new Components.RegistrationDialog(this).setVisible(true);
-            new CorporateCreationForm();
+            new CorporateCreationForm(role);
             dispose();
             updateCorporateTable();
         });

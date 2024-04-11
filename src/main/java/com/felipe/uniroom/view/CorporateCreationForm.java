@@ -10,7 +10,7 @@ import java.awt.*;
 import java.text.ParseException;
 
 public class CorporateCreationForm extends JFrame {
-    public CorporateCreationForm() {
+    public CorporateCreationForm(Role role) {
         super(Constants.CORPORATE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 50", "[grow]", "[grow]"));
@@ -71,19 +71,20 @@ public class CorporateCreationForm extends JFrame {
 
         mainPanel.add(inputPanel, "wrap, grow");
 
-        JButton saveButton = new JButton("Salvar");
+        JButton saveButton = new JButton(Constants.REGISTER);
         saveButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
         saveButton.setPreferredSize(Constants.BUTTON_SIZE);
-        saveButton.setBackground(Constants.BLUE); // Cor semelhante ao GREEN
-        saveButton.setForeground(Color.lightGray);
+        saveButton.setBackground(Constants.BLUE);
+        saveButton.setForeground(Color.WHITE);
 
-        JButton cancelButton = new JButton("Cancelar");
+        JButton cancelButton = new JButton(Constants.BACK);
         cancelButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
         cancelButton.setPreferredSize(Constants.BUTTON_SIZE);
-        cancelButton.setBackground(Constants.BLUE);
-        cancelButton.setForeground(Color.lightGray);
+        cancelButton.setBackground(Constants.RED);
+        cancelButton.setForeground(Color.WHITE);
         cancelButton.addActionListener(e -> {
-//            new CorporateView();
+            new CorporateView(role);
+            dispose();
         });
 
         mainPanel.add(saveButton, "split 2, align center");
@@ -97,7 +98,4 @@ public class CorporateCreationForm extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(CorporateCreationForm::new);
-    }
 }

@@ -4,11 +4,12 @@ import javax.swing.*;
 import java.awt.*;
 
 import com.felipe.uniroom.config.Constants;
+import com.felipe.uniroom.config.Role;
 import net.miginfocom.swing.MigLayout;
 
 public class BranchCreationForm extends JFrame {
 
-    public BranchCreationForm() {
+    public BranchCreationForm(Role role) {
         super(Constants.BRANCH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 50", "[grow]", "[grow]"));
@@ -52,19 +53,19 @@ public class BranchCreationForm extends JFrame {
 
         mainPanel.add(inputPanel, "wrap, grow");
 
-        JButton saveButton = new JButton("Salvar");
+        JButton saveButton = new JButton(Constants.REGISTER);
         saveButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
         saveButton.setPreferredSize(Constants.BUTTON_SIZE);
-        saveButton.setBackground(Constants.BLUE); // Cor semelhante ao GREEN
-        saveButton.setForeground(Color.lightGray);
+        saveButton.setBackground(Constants.BLUE);
+        saveButton.setForeground(Color.WHITE);
 
-        JButton cancelButton = new JButton("Cancelar");
+        JButton cancelButton = new JButton(Constants.BACK);
         cancelButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
         cancelButton.setPreferredSize(Constants.BUTTON_SIZE);
-        cancelButton.setBackground(Constants.BLUE);
-        cancelButton.setForeground(Color.lightGray);
+        cancelButton.setBackground(Constants.RED);
+        cancelButton.setForeground(Color.WHITE);
         cancelButton.addActionListener(e -> {
-//        new BranchView();
+        new BranchView(role);
         dispose();
         });
 
@@ -79,8 +80,5 @@ public class BranchCreationForm extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    public static void main(String[] args) {
-        SwingUtilities.invokeLater(BranchCreationForm::new);
-    }
 }
 

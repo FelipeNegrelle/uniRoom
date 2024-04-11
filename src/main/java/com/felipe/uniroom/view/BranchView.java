@@ -49,7 +49,7 @@ public class BranchView extends JFrame {
         newBranch.setForeground(Constants.BLACK);
         newBranch.setFont(Constants.FONT.deriveFont(Font.BOLD, 50));
         newBranch.addActionListener(e -> {
-            new BranchCreationForm();
+            new BranchCreationForm(role);
             dispose();
             updateBranchTable();
         });
