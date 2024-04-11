@@ -1,6 +1,7 @@
 package com.felipe.uniroom.view;
 
 import com.felipe.uniroom.config.Constants;
+import com.felipe.uniroom.config.Role;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -81,6 +82,9 @@ public class CorporateCreationForm extends JFrame {
         cancelButton.setPreferredSize(Constants.BUTTON_SIZE);
         cancelButton.setBackground(Constants.BLUE);
         cancelButton.setForeground(Color.lightGray);
+        cancelButton.addActionListener(e -> {
+//            new CorporateView();
+        });
 
         mainPanel.add(saveButton, "split 2, align center");
         mainPanel.add(cancelButton, "align center, wrap");
@@ -94,6 +98,6 @@ public class CorporateCreationForm extends JFrame {
     }
 
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(BranchCreationForm::new);
+        SwingUtilities.invokeLater(CorporateCreationForm::new);
     }
 }

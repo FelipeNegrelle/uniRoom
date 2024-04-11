@@ -39,7 +39,6 @@ public class CorporateView extends JFrame {
         final JButton returnButton = new JButton(Constants.BACK);
         returnButton.addActionListener(e -> {
             new Home(role);
-
             dispose();
         });
         returnButton.setBackground(Constants.RED);
@@ -52,6 +51,8 @@ public class CorporateView extends JFrame {
         newCorporate.setFont(Constants.FONT.deriveFont(Font.BOLD, 50));
         newCorporate.addActionListener(e -> {
 //                new Components.RegistrationDialog(this).setVisible(true);
+            new CorporateCreationForm();
+            dispose();
             updateCorporateTable();
         });
 

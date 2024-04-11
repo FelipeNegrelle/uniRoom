@@ -19,8 +19,9 @@ public class Branch {
     @JoinColumn(name = "id_corporate", nullable = false)
     private Corporate corporate;
 
-    @Column(name = "id_user", nullable = false)
-    private Integer idUser;
+    @OneToOne()
+    @JoinColumn(name = "id_user", nullable = false)
+    private User user;
 
     @Column(nullable = false)
     private Boolean active;
@@ -28,11 +29,11 @@ public class Branch {
     public Branch() {
     }
 
-    public Branch(Integer idBranch, String name, Corporate corporate, Integer idUser, Boolean active) {
+    public Branch(Integer idBranch, String name, Corporate corporate, User user, Boolean active) {
         this.idBranch = idBranch;
         this.name = name;
         this.corporate = corporate;
-        this.idUser = idUser;
+        this.user = user;
         this.active = active;
     }
 
@@ -60,12 +61,12 @@ public class Branch {
         this.corporate = corporate;
     }
 
-    public Integer getIdUser() {
-        return this.idUser;
+    public User getUser() {
+        return this.user;
     }
 
-    public void setIdUser(Integer idUser) {
-        this.idUser = idUser;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Boolean isActive() {
@@ -90,7 +91,7 @@ public class Branch {
         if (!Objects.equals(idBranch, branch.idBranch)) return false;
         if (!Objects.equals(name, branch.name)) return false;
         if (!Objects.equals(corporate, branch.corporate)) return false;
-        if (!Objects.equals(idUser, branch.idUser)) return false;
+        if (!Objects.equals(user, branch.user)) return false;
         return Objects.equals(active, branch.active);
     }
 
@@ -99,13 +100,19 @@ public class Branch {
         int result = idBranch != null ? idBranch.hashCode() : 0;
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (corporate != null ? corporate.hashCode() : 0);
-        result = 31 * result + (idUser != null ? idUser.hashCode() : 0);
+        result = 31 * result + (user != null ? user.hashCode() : 0);
         result = 31 * result + (active != null ? active.hashCode() : 0);
         return result;
     }
 
     @Override
     public String toString() {
-        return "Branch{" + "idBranch=" + idBranch + ", name='" + name + '\'' + ", corporate=" + corporate + ", idUser=" + idUser + ", active=" + active + '}';
+        return "Branch{" +
+                "idBranch=" + idBranch +
+                ", name='" + name + '\'' +
+                ", corporate=" + corporate +
+                ", user=" + user +
+                ", active=" + active +
+                '}';
     }
 }

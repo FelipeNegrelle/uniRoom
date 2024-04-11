@@ -63,6 +63,10 @@ public class BranchCreationForm extends JFrame {
         cancelButton.setPreferredSize(Constants.BUTTON_SIZE);
         cancelButton.setBackground(Constants.BLUE);
         cancelButton.setForeground(Color.lightGray);
+        cancelButton.addActionListener(e -> {
+//        new BranchView();
+        dispose();
+        });
 
         mainPanel.add(saveButton, "split 2, align center");
         mainPanel.add(cancelButton, "align center, wrap");
