@@ -31,6 +31,7 @@ public class UserService {
             if (result != null) {
                 final String teste = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
                 System.out.println(teste);
+
                 System.out.println(result.getPassword());
                 System.out.println(teste == result.getPassword());
                 return BCrypt.checkpw(user.getPassword(), result.getPassword());

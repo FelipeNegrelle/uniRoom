@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.Objects;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.text.MaskFormatter;
 
 import com.felipe.uniroom.config.Constants;
@@ -200,4 +201,27 @@ public class Components {
 
         return dialog;
     }
+
+    public static class IconCellRenderer extends DefaultTableCellRenderer {
+        private final Icon activeIcon;
+        private final Icon inactiveIcon;
+
+        public IconCellRenderer() {
+            activeIcon = Constants.CHECKBOX_ICON;
+
+            inactiveIcon = Constants.BOX_ICON;
+
+            setHorizontalAlignment(SwingConstants.LEADING);
+        }
+
+        @Override
+        protected void setValue(Object value) {
+            if (value instanceof Boolean isActive) {
+                setIcon(isActive ? activeIcon : inactiveIcon);
+            } else {
+                super.setValue(value);
+            }
+        }
+    }
+
 }

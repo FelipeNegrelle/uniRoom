@@ -40,6 +40,7 @@ public class DatabaseRepository {
             em.merge(entity);
 
             transaction.commit();
+
             return true;
         } catch (Exception e) {
             if (transaction != null && transaction.isActive()) {

@@ -15,7 +15,7 @@ public class Branch {
     @Column(length = 50, nullable = false)
     private String name;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "id_corporate", nullable = false)
     private Corporate corporate;
 

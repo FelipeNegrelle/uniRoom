@@ -12,6 +12,7 @@ public class Constants {
     public static final String SUCCESSFUL_REGISTER = "Registrado com sucesso!";
     public static final String FAILED_REGISTER = "Registrar falhou. Tente novamente.";
     public static final String SUCCESSFUL_LOGIN = "Entrou com sucesso!";
+    public static final String SUCCESS = "Sucesso";
     public static final String FAILED_LOGIN = "Login falhou. Tente novamente.";
     public static final String GENERIC_ERROR = "Um erro ocorreu. Tente novamente.";
     public static final String LOGIN = "Login";
@@ -69,4 +70,6 @@ public class Constants {
     public static final Icon RESERVATION_ICON = new ImageIcon("src/main/resources/images/icons/reservation.png");
     public static final Icon ROOM_TYPE_ICON = new ImageIcon("src/main/resources/images/icons/user.png");
     public static final Icon ROOM_ICON = new ImageIcon("src/main/resources/images/icons/room.png");
+    public static final Icon CHECKBOX_ICON = new ImageIcon("src/main/resources/images/icons/checkbox.png");
+    public static final Icon BOX_ICON = new ImageIcon("src/main/resources/images/icons/box.png");
 }

@@ -9,6 +9,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.util.List;
 import java.util.Objects;
@@ -35,6 +36,11 @@ public class CorporateView extends JFrame {
         table.setFont(new Font("Sans", Font.PLAIN, 20));
         table.setSelectionBackground(Constants.BLUE);
         table.setSelectionForeground(Color.WHITE);
+
+        final Components.IconCellRenderer iconCellRenderer = new Components.IconCellRenderer();
+
+        final TableColumn activeColumn = table.getColumnModel().getColumn(4);
+        activeColumn.setCellRenderer(iconCellRenderer);
 
         final JButton returnButton = new JButton(Constants.BACK);
         returnButton.addActionListener(e -> {

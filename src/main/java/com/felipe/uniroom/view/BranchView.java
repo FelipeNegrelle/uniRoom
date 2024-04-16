@@ -3,18 +3,19 @@ package com.felipe.uniroom.view;
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Branch;
-import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.repositories.CorporateRepository;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.util.List;
 import java.util.Objects;
 
 public class BranchView extends JFrame {
     private static DefaultTableModel model;
+
     public BranchView(Role role) {
         super(Constants.BRANCH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -35,6 +36,11 @@ public class BranchView extends JFrame {
         table.setSelectionBackground(Constants.BLUE);
         table.setSelectionForeground(Color.WHITE);
 
+        final Components.IconCellRenderer iconCellRenderer = new Components.IconCellRenderer();
+
+        final TableColumn activeColumn = table.getColumnModel().getColumn(4);
+        activeColumn.setCellRenderer(iconCellRenderer);
+
         final JButton returnButton = new JButton(Constants.BACK);
         returnButton.addActionListener(e -> {
             new Home(role);
@@ -49,9 +55,8 @@ public class BranchView extends JFrame {
         newBranch.setForeground(Constants.BLACK);
         newBranch.setFont(Constants.FONT.deriveFont(Font.BOLD, 50));
         newBranch.addActionListener(e -> {
-            new BranchCreationForm(role);
+            new BranchForm(role);
             dispose();
-            updateBranchTable();
         });
 
         final JButton editBranch = new JButton(Constants.EDIT);
