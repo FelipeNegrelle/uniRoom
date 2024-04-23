@@ -1,5 +1,5 @@
 # Uniball 
-Um projeto desenvolvido como projeto integrador do segundo semestre do curso de sistemas de informação. Este projeto foi pensado para jogadores de futebol amador que querem acompanhar o desempenho durante o ano ou então tornar seu jogo mais competitivo entre os jogadores. Desenvolvido em Java 20 com a biblioteca Swing este programa leve e simples com uma interface limpa e intuitiva, é capaz de manter informações sobre jogadores, partidas. As informações mantidas são visualizadas em telas de histórico de partidas e de ranking.
+Um projeto desenvolvido como projeto integrador do terceiro semestre do curso de sistemas de informação. Este projeto foi pensado para donos de hotéis que querem acompanhar, gerenciar e faturar seus hotéis. Desenvolvido em Java 21 com a biblioteca Swing este programa leve e simples com uma interface limpa e intuitiva, é capaz de manter informações sobre matrizes, filiais, quartos, inventários e reservas. As informações mantidas são visualizadas em telas com a disposição completa dos dados.
 
 ## Como rodar
 
@@ -11,4 +11,4 @@ Um projeto desenvolvido como projeto integrador do segundo semestre do curso de 
 #### Pelo terminal
 - Clone o projeto
 - Abra seu terminal na pasta do projeto e digite `mvn clean install`
-- Digite `java -jar target/Uniball-1.0-SNAPSHOT-jar-with-dependencies.jar`
+- Digite `java -jar target/UniRoom-1.0-SNAPSHOT-jar-with-dependencies.jar`
