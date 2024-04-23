@@ -5,12 +5,10 @@ import com.felipe.uniroom.config.Role;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
-import javax.swing.text.MaskFormatter;
 import java.awt.*;
-import java.text.ParseException;
 
-public class CorporateCreationForm extends JFrame {
-    public CorporateCreationForm(Role role) {
+public class CorporateForm extends JFrame {
+    public CorporateForm(Role role) {
         super(Constants.CORPORATE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 50", "[grow]", "[grow]"));
@@ -33,17 +31,10 @@ public class CorporateCreationForm extends JFrame {
         nameField.setPreferredSize(new Dimension(300, 30));
         nameField.setFont(new Font("Sans", Font.PLAIN, 20));
 
-        MaskFormatter cnpjMask = null;
-        try {
-            cnpjMask = new MaskFormatter("##.###.###/####-##");
-            cnpjMask.setPlaceholderCharacter('_');
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-
         JLabel cnpjLabel = new JLabel("CNPJ:");
         cnpjLabel.setFont(new Font("Sans", Font.BOLD, 20));
-        JFormattedTextField cnpjField = new JFormattedTextField(cnpjMask);
+
+        JFormattedTextField cnpjField = new JFormattedTextField(Components.getCnpjFormatter());
         cnpjField.setPreferredSize(new Dimension(300, 30));
         cnpjField.setFont(new Font("Sans", Font.PLAIN, 20));
 

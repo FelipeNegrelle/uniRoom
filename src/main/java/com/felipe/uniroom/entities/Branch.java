@@ -1,6 +1,7 @@
 package com.felipe.uniroom.entities;
 
 import jakarta.persistence.*;
+import org.hibernate.validator.constraints.br.CNPJ;
 
 import java.util.Objects;
 
@@ -23,22 +24,27 @@ public class Branch {
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
+    @CNPJ
+    @Column(columnDefinition = "char(14)", nullable = false)
+    private String cnpj;
+
     @Column(nullable = false)
     private Boolean active;
 
     public Branch() {
     }
 
-    public Branch(Integer idBranch, String name, Corporate corporate, User user, Boolean active) {
+    public Branch(Integer idBranch, String name, Corporate corporate, User user, String cnpj, Boolean active) {
         this.idBranch = idBranch;
         this.name = name;
         this.corporate = corporate;
         this.user = user;
+        this.cnpj = cnpj;
         this.active = active;
     }
 
     public Integer getIdBranch() {
-        return this.idBranch;
+        return idBranch;
     }
 
     public void setIdBranch(Integer idBranch) {
@@ -46,7 +52,7 @@ public class Branch {
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public void setName(String name) {
@@ -54,7 +60,7 @@ public class Branch {
     }
 
     public Corporate getCorporate() {
-        return this.corporate;
+        return corporate;
     }
 
     public void setCorporate(Corporate corporate) {
@@ -62,19 +68,23 @@ public class Branch {
     }
 
     public User getUser() {
-        return this.user;
+        return user;
     }
 
     public void setUser(User user) {
         this.user = user;
     }
 
-    public Boolean isActive() {
-        return this.active;
+    public String getCnpj() {
+        return cnpj;
+    }
+
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
     }
 
     public Boolean getActive() {
-        return this.active;
+        return active;
     }
 
     public void setActive(Boolean active) {
@@ -92,6 +102,7 @@ public class Branch {
         if (!Objects.equals(name, branch.name)) return false;
         if (!Objects.equals(corporate, branch.corporate)) return false;
         if (!Objects.equals(user, branch.user)) return false;
+        if (!Objects.equals(cnpj, branch.cnpj)) return false;
         return Objects.equals(active, branch.active);
     }
 
@@ -101,18 +112,8 @@ public class Branch {
         result = 31 * result + (name != null ? name.hashCode() : 0);
         result = 31 * result + (corporate != null ? corporate.hashCode() : 0);
         result = 31 * result + (user != null ? user.hashCode() : 0);
+        result = 31 * result + (cnpj != null ? cnpj.hashCode() : 0);
         result = 31 * result + (active != null ? active.hashCode() : 0);
         return result;
-    }
-
-    @Override
-    public String toString() {
-        return "Branch{" +
-                "idBranch=" + idBranch +
-                ", name='" + name + '\'' +
-                ", corporate=" + corporate +
-                ", user=" + user +
-                ", active=" + active +
-                '}';
     }
 }

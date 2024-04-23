@@ -3,9 +3,13 @@ package com.felipe.uniroom.repositories;
 import com.felipe.uniroom.config.ConnectionManager;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
+import java.util.Objects;
 
 @Transactional
 public class DatabaseRepository {
@@ -55,15 +59,51 @@ public class DatabaseRepository {
     }
 
     public static <T> boolean delete(Class<T> entity, Integer id) {
-        try (EntityManager em = ConnectionManager.getEntityManager()) {
-            final T obj = em.find(entity, id);
+        EntityManager em = ConnectionManager.getEntityManager();
 
-            em.remove(obj);
+        EntityTransaction transaction = em.getTransaction();
+
+        try {
+            transaction.begin();
+
+            final T entityToDelete = em.find(entity, id);
+
+            em.remove(entityToDelete);
+
+            transaction.commit();
 
             return true;
         } catch (Exception e) {
+            if (transaction != null && transaction.isActive()) {
+                transaction.rollback();
+            }
+
             e.printStackTrace();
+
             return false;
+        }
+    }
+
+    public static <T> List<T> search(Class<T> entity, String search, String field) {
+        // se esse cara soltar null pointer verificar se o field foi setado
+        try {
+            entity.getDeclaredField(field);
+        } catch (NoSuchFieldException e) {
+            e.printStackTrace();
+            return null;
+        }
+
+        try (EntityManager em = ConnectionManager.getEntityManager()) {
+            final CriteriaBuilder cb = em.getCriteriaBuilder();
+            final CriteriaQuery<T> cq = cb.createQuery(entity);
+            final Root<T> root = cq.from(entity);
+
+            cq.where(cb.like(root.get(field), "%" + search + "%"));
+
+            return em.createQuery(cq).getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
         }
     }
 }

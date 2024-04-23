@@ -9,6 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
+import org.hibernate.validator.constraints.br.CNPJ;
 
 import java.util.Objects;
 
@@ -23,6 +24,7 @@ public class Corporate {
     @Column(length = 50, nullable = false)
     private String name;
 
+    @CNPJ
     @Column(columnDefinition = "char(14)", nullable = false)
     private String cnpj;
 

@@ -224,4 +224,21 @@ public class Components {
         }
     }
 
+    public static MaskFormatter getCnpjFormatter() {
+        MaskFormatter cnpjMask;
+        try {
+            cnpjMask = new MaskFormatter("##.###.###/####-##");
+            cnpjMask.setPlaceholderCharacter('_');
+
+            return cnpjMask;
+        } catch (ParseException e) {
+            e.printStackTrace();
+
+            return null;
+        }
+    }
+
+    public static void showGenericError(JFrame parent) {
+        JOptionPane.showMessageDialog(parent, Constants.GENERIC_ERROR, Constants.ERROR, JOptionPane.ERROR_MESSAGE);
+    }
 }

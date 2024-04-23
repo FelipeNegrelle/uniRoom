@@ -20,6 +20,7 @@ public class Constants {
     public static final String PASSWORD = "Senha";
     public static final String ERROR = "Erro";
     public static final String EDIT = "Editar";
+    public static final String SAVE = "Salvar";
     public static final String DELETE = "Apagar";
     public static final String NAME = "Nome";
     public static final String NUMBER = "Número do quarto";
@@ -43,6 +44,8 @@ public class Constants {
     public static final String DELETE_WARN = "Selecione um item para excluir.";
     public static final String WARN = "Aviso.";
     public static final String NEW = "Novo";
+    public static final String SEARCH = "Pesquisa";
+    public static final String CNPJ = "Cnpj";
 
     //Colors
     public static final Color WHITE = new Color(0xFFFFFF);

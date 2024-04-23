@@ -4,7 +4,6 @@ import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.repositories.CorporateRepository;
-import com.felipe.uniroom.repositories.DatabaseRepository;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -56,8 +55,7 @@ public class CorporateView extends JFrame {
         newCorporate.setForeground(Constants.BLACK);
         newCorporate.setFont(Constants.FONT.deriveFont(Font.BOLD, 50));
         newCorporate.addActionListener(e -> {
-//                new Components.RegistrationDialog(this).setVisible(true);
-            new CorporateCreationForm(role);
+            new CorporateForm(role);
             dispose();
             updateCorporateTable();
         });

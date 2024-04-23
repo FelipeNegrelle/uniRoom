@@ -2,6 +2,7 @@ package com.felipe.uniroom.view;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.entities.User;
@@ -20,7 +21,7 @@ public class BranchForm extends JFrame {
     List<Corporate> corporates = new ArrayList<>();
     List<User> users = new ArrayList<>();
 
-    public BranchForm(Role role) {
+    public BranchForm(Role role, Branch entity) {
         super(Constants.BRANCH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 50", "[grow]", "[grow]"));
@@ -41,25 +42,36 @@ public class BranchForm extends JFrame {
         nameLabel.setFont(new Font("Sans", Font.BOLD, 20));
 
         final JTextField nameField = new JTextField(20);
+        if (Objects.nonNull(entity)) nameField.setText(entity.getName());
         nameField.setPreferredSize(new Dimension(300, 30));
         nameField.setFont(new Font("Sans", Font.PLAIN, 20));
+
+        final JLabel cnpjLabel = Components.getLabel(Constants.CNPJ, null, Font.BOLD, null, null);
+
+        final JFormattedTextField cnpjField = new JFormattedTextField(Components.getCnpjFormatter());
+        if (Objects.nonNull(entity)) cnpjField.setText(Util.formatCnpj(entity.getCnpj()));
+        cnpjField.setPreferredSize(new Dimension(300, 30));
+        cnpjField.setFont(Constants.FONT);
 
         final JLabel corporateLabel = Components.getLabel(Constants.CORPORATE, null, Font.BOLD, null, null);
         final JComboBox<String> corporateCombo = new JComboBox<>();
         corporateCombo.setPreferredSize(new Dimension(300, 30));
         corporateCombo.setFont(Constants.FONT);
 
-        populateCorporateCombo(corporateCombo);
+        populateCorporateCombo(corporateCombo, entity);
 
         final JLabel userLabel = Components.getLabel(Constants.USER, null, Font.BOLD, null, null);
         final JComboBox<String> userCombo = new JComboBox<>();
         userCombo.setPreferredSize(new Dimension(300, 30));
         userCombo.setFont(Constants.FONT);
 
-        populateUserCombo(userCombo);
+        populateUserCombo(userCombo, entity);
 
         inputPanel.add(nameLabel);
         inputPanel.add(nameField, "wrap");
+
+        inputPanel.add(cnpjLabel);
+        inputPanel.add(cnpjField, "wrap");
 
         inputPanel.add(corporateLabel);
         inputPanel.add(corporateCombo, "wrap");
@@ -69,26 +81,26 @@ public class BranchForm extends JFrame {
 
         mainPanel.add(inputPanel, "wrap, grow");
 
-        final JButton saveButton = new JButton(Constants.REGISTER);
+        final JButton saveButton = new JButton(Constants.SAVE);
         saveButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
         saveButton.setPreferredSize(Constants.BUTTON_SIZE);
         saveButton.setBackground(Constants.BLUE);
         saveButton.setForeground(Color.WHITE);
         saveButton.addActionListener(e -> {
             final Branch branch = new Branch();
+            branch.setIdBranch(Objects.nonNull(entity) ? entity.getIdBranch() : null);
             branch.setName(nameField.getText());
+            branch.setCnpj(cnpjField.getText());
             branch.setCorporate(corporates.get(corporateCombo.getSelectedIndex()));
             branch.setUser(users.get(userCombo.getSelectedIndex()));
             branch.setActive(true);
 
-            final Boolean result = BranchService.save(branch);
+            final Boolean result = Objects.nonNull(entity) ? BranchService.update(branch) : BranchService.save(branch);
 
-            if (result) {
+            if (Objects.nonNull(result) && result) {
                 JOptionPane.showMessageDialog(this, Constants.SUCCESSFUL_REGISTER, Constants.SUCCESS, JOptionPane.PLAIN_MESSAGE);
                 new BranchView(role);
                 dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Erro ao salvar a filial", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         });
 
@@ -113,7 +125,7 @@ public class BranchForm extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    private void populateCorporateCombo(JComboBox<String> corporateCombo) {
+    private void populateCorporateCombo(JComboBox<String> corporateCombo, Branch entity) {
         final List<Corporate> corporateList = CorporateRepository.findAll(Corporate.class);
 
         if (Objects.isNull(corporateList) || corporateList.isEmpty()) {
@@ -126,9 +138,13 @@ public class BranchForm extends JFrame {
                 corporates.add(corporate);
             }
         }
+
+        if (Objects.nonNull(entity)) {
+            corporateCombo.setSelectedItem(entity.getCorporate().getName());
+        }
     }
 
-    private void populateUserCombo(JComboBox<String> userCombo) {
+    private void populateUserCombo(JComboBox<String> userCombo, Branch entity) {
         final List<User> userList = UserRepository.findAll(User.class);
 
         if (Objects.isNull(userList) || userList.isEmpty()) {
@@ -140,6 +156,10 @@ public class BranchForm extends JFrame {
                 userCombo.addItem(user.getName());
                 users.add(user);
             }
+        }
+
+        if (Objects.nonNull(entity)) {
+            userCombo.setSelectedItem(entity.getUser().getName());
         }
     }
 }
