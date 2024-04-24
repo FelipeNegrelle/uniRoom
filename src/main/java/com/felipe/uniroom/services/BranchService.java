@@ -24,16 +24,25 @@ public class BranchService {
     public static Boolean save(Branch branch) {
         final StringBuilder errorsSb = new StringBuilder();
         try {
+            // Remova caracteres não numéricos antes da validação
+            branch.setCnpj(branch.getCnpj().replaceAll("[^0-9]", ""));
+
+            if (branch.getCnpj().equals("00000000000000")) {
+                errorsSb.append("CNPJ inválido!\n");
+            }
+
             final Set<ConstraintViolation<Branch>> violations = validator.validate(branch);
 
             if (!violations.isEmpty()) {
-                violations.forEach(violation -> errorsSb.append(violation.getMessage()).append("\n"));
+                violations.forEach(violation -> errorsSb.append(violation.getMessage().equals("número do registro de contribuinte corporativo brasileiro (CNPJ) inválido") ? "CNPJ Inválido" : violation.getMessage()).append("\n"));
             }
-
-            branch.setCnpj(branch.getCnpj().replaceAll("[^0-9]", ""));
 
             if (BranchRepository.findByCnpj(branch.getCnpj()) != null) {
                 errorsSb.append("CNPJ já cadastrado!\n");
+            }
+
+            if (branch.getName().isBlank()) {
+                errorsSb.append("Nome da filial não pode ser vazio!\n");
             }
 
             if (branch.getName().length() > 50) {
@@ -48,14 +57,14 @@ public class BranchService {
             }
         } catch (Exception e) {
             e.printStackTrace();
-
             Components.showGenericError(null);
-
             return null;
         }
     }
 
     public static Boolean update(Branch branch) {
+        final StringBuilder errorsSb = new StringBuilder();
+
         try {
             final Branch result = UserRepository.findById(Branch.class, branch.getIdBranch());
 
@@ -63,15 +72,22 @@ public class BranchService {
                 final Set<ConstraintViolation<Branch>> violations = validator.validate(branch);
 
                 if (!violations.isEmpty()) {
-                    final StringBuilder violationsSb = new StringBuilder();
-
-                    violations.forEach(violation -> violationsSb.append(violation.getMessage()).append("\n"));
-
-                    JOptionPane.showMessageDialog(null, violationsSb.toString());
-                    return false;
+                    violations.forEach(violation -> errorsSb.append(violation.getMessage().equals("número do registro de contribuinte corporativo brasileiro (CNPJ) inválido") ? "CNPJ Inválido" : violation.getMessage()).append("\n"));
                 }
 
                 branch.setCnpj(branch.getCnpj().replaceAll("[^0-9]", ""));
+
+                if (branch.getCnpj().equals("00000000000000")) {
+                    errorsSb.append("CNPJ inválido!\n");
+                }
+
+                if (branch.getName().isBlank()) {
+                    errorsSb.append("Nome da filial não pode ser vazio!\n");
+                }
+
+                if (branch.getName().length() > 50) {
+                    errorsSb.append("Nome da filial deve ter no máximo 50 caracteres!\n");
+                }
 
                 if (!BranchRepository.hasDuplicateCnpj(branch.getCnpj(), branch.getIdBranch())) {
                     result.setIdBranch(branch.getIdBranch());
@@ -81,12 +97,17 @@ public class BranchService {
                     result.setUser(branch.getUser());
                     result.setActive(branch.getActive());
                 } else {
-                    JOptionPane.showMessageDialog(null, "CNPJ já cadastrado!");
+                    errorsSb.append("CNPJ já cadastrado!\n");
 
                     return false;
                 }
 
-                return BranchRepository.saveOrUpdate(result);
+                if (!errorsSb.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, errorsSb.toString());
+                    return false;
+                } else {
+                    return BranchRepository.saveOrUpdate(branch);
+                }
             } else {
                 JOptionPane.showMessageDialog(null, "Filial não encontrada!");
 
@@ -122,10 +143,10 @@ public class BranchService {
     }
 
     public static List<Branch> search(String search, String field) {
-        if(Objects.isNull(field) || field.isEmpty() || field.isBlank()) {
+        if (Objects.isNull(field) || field.isEmpty() || field.isBlank()) {
             field = "name";
         }
-        
+
         return BranchRepository.search(Branch.class, search, field);
     }
 }
