@@ -75,4 +75,9 @@ public class Constants {
     public static final Icon ROOM_ICON = new ImageIcon("src/main/resources/images/icons/room.png");
     public static final Icon CHECKBOX_ICON = new ImageIcon("src/main/resources/images/icons/checkbox.png");
     public static final Icon BOX_ICON = new ImageIcon("src/main/resources/images/icons/box.png");
+    public static final Icon MORE_ICON = new ImageIcon("src/main/resources/images/icons/more.png");
+    public static final Icon EDIT_ICON = new ImageIcon("src/main/resources/images/icons/edit.png");
+    public static final Icon DELETE_ICON = new ImageIcon("src/main/resources/images/icons/delete.png");
+    public static final Icon BACK_ICON = new ImageIcon("src/main/resources/images/icons/arrow-back.png");
+    public static final Icon ADD_ICON = new ImageIcon("src/main/resources/images/icons/add.png");
 }

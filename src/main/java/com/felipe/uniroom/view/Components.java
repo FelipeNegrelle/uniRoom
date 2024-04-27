@@ -1,18 +1,18 @@
 package com.felipe.uniroom.view;
 
-import java.awt.*;
-import java.text.ParseException;
-import java.util.Arrays;
-import java.util.Objects;
+import com.felipe.uniroom.config.Constants;
+import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.text.MaskFormatter;
-
-import com.felipe.uniroom.config.Constants;
-import com.felipe.uniroom.services.UserService;
-
-import net.miginfocom.swing.MigLayout;
+import java.awt.*;
+import java.util.List;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.text.ParseException;
+import java.util.Objects;
 
 public class Components {
     // public static class RegistrationDialog extends JDialog {
@@ -223,6 +223,68 @@ public class Components {
             }
         }
     }
+
+    public static class OptionsCellRenderer extends JLabel implements TableCellRenderer {
+
+        private final Icon icon;
+
+        public OptionsCellRenderer() {
+            icon = Constants.MORE_ICON;
+
+            setOpaque(true);
+            setHorizontalAlignment(SwingConstants.CENTER);
+        }
+
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            setIcon(icon);
+
+            if (isSelected) {
+                setBackground(table.getSelectionBackground());
+                setForeground(table.getSelectionForeground());
+            } else {
+                setBackground(table.getBackground());
+                setForeground(table.getForeground());
+            }
+
+            return this;
+        }
+    }
+
+    @FunctionalInterface
+    public interface MouseAction {
+        void execute(JTable table, MouseEvent evt);
+    }
+
+    public static class GenericMouseListener extends MouseAdapter {
+        private final JTable table;
+        private final int column;
+        private final MouseAction action;
+
+        public GenericMouseListener(JTable table, int column, MouseAction action) {
+            this.table = table;
+            this.column = column;
+            this.action = action;
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent evt) {
+            final int col = table.columnAtPoint(evt.getPoint());
+
+            if (col == column) {
+                action.execute(table, evt);
+            }
+        }
+    }
+
+    public static void showOptionsMenu(JTable table, List<JMenuItem> itens, MouseEvent evt) {
+        final JPopupMenu menu = new JPopupMenu();
+
+        itens.forEach(menu::add);
+
+        menu.show(table, evt.getX(), evt.getY());
+    }
+
 
     public static MaskFormatter getCnpjFormatter() {
         MaskFormatter cnpjMask;

@@ -2,7 +2,6 @@ package com.felipe.uniroom.services;
 
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.repositories.BranchRepository;
-import com.felipe.uniroom.repositories.UserRepository;
 import com.felipe.uniroom.view.Components;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -21,36 +20,55 @@ public class BranchService {
             .buildValidatorFactory()
             .getValidator();
 
-    public static Boolean save(Branch branch) {
+    private static String validateBranch(Branch branch, boolean isUpdate) {
         final StringBuilder errorsSb = new StringBuilder();
-        try {
-            // Remova caracteres não numéricos antes da validação
-            branch.setCnpj(branch.getCnpj().replaceAll("[^0-9]", ""));
 
-            if (branch.getCnpj().equals("00000000000000")) {
-                errorsSb.append("CNPJ inválido!\n");
+        if (branch.getCnpj().equals("00000000000000")) {
+            errorsSb.append("CNPJ inválido!\n");
+        }
+
+        final Set<ConstraintViolation<Branch>> violations = validator.validate(branch);
+
+        if (!violations.isEmpty()) {
+            violations.forEach(violation -> errorsSb.append(violation.getMessage().equals("número do registro de contribuinte corporativo brasileiro (CNPJ) inválido") ? "CNPJ Inválido" : violation.getMessage()).append("\n"));
+        }
+
+        if (isUpdate) {
+            if (BranchRepository.hasDuplicateCnpj(branch.getCnpj(), branch.getIdBranch())) {
+                errorsSb.append("CNPJ já cadastrado!\n");
             }
-
-            final Set<ConstraintViolation<Branch>> violations = validator.validate(branch);
-
-            if (!violations.isEmpty()) {
-                violations.forEach(violation -> errorsSb.append(violation.getMessage().equals("número do registro de contribuinte corporativo brasileiro (CNPJ) inválido") ? "CNPJ Inválido" : violation.getMessage()).append("\n"));
-            }
-
+        } else {
             if (BranchRepository.findByCnpj(branch.getCnpj()) != null) {
                 errorsSb.append("CNPJ já cadastrado!\n");
             }
+        }
 
-            if (branch.getName().isBlank()) {
-                errorsSb.append("Nome da filial não pode ser vazio!\n");
-            }
+        if (branch.getName().isBlank()) {
+            errorsSb.append("Nome da filial não pode ser vazio!\n");
+        }
 
-            if (branch.getName().length() > 50) {
-                errorsSb.append("Nome da filial deve ter no máximo 50 caracteres!\n");
-            }
+        if (branch.getName().length() > 50) {
+            errorsSb.append("Nome da filial deve ter no máximo 50 caracteres!\n");
+        }
 
-            if (!errorsSb.isEmpty()) {
-                JOptionPane.showMessageDialog(null, errorsSb.toString());
+        if (Objects.isNull(branch.getCorporate())) {
+            errorsSb.append("Matriz não pode ser vazia!\n");
+        }
+
+        if (Objects.isNull(branch.getUser())) {
+            errorsSb.append("Usuário não pode ser vazio!\n");
+        }
+
+        return errorsSb.toString();
+    }
+
+    public static Boolean save(Branch branch) {
+        try {
+            branch.setCnpj(branch.getCnpj().replaceAll("[^0-9]", ""));
+
+            final String validations = validateBranch(branch, false);
+            if (!validations.isEmpty()) {
+                JOptionPane.showMessageDialog(null, validations);
                 return false;
             } else {
                 return BranchRepository.saveOrUpdate(branch);
@@ -63,49 +81,25 @@ public class BranchService {
     }
 
     public static Boolean update(Branch branch) {
-        final StringBuilder errorsSb = new StringBuilder();
-
         try {
-            final Branch result = UserRepository.findById(Branch.class, branch.getIdBranch());
+            final Branch result = BranchRepository.findById(Branch.class, branch.getIdBranch());
 
             if (Objects.nonNull(result)) {
-                final Set<ConstraintViolation<Branch>> violations = validator.validate(branch);
-
-                if (!violations.isEmpty()) {
-                    violations.forEach(violation -> errorsSb.append(violation.getMessage().equals("número do registro de contribuinte corporativo brasileiro (CNPJ) inválido") ? "CNPJ Inválido" : violation.getMessage()).append("\n"));
-                }
-
                 branch.setCnpj(branch.getCnpj().replaceAll("[^0-9]", ""));
 
-                if (branch.getCnpj().equals("00000000000000")) {
-                    errorsSb.append("CNPJ inválido!\n");
-                }
+                final String validations = validateBranch(branch, true);
 
-                if (branch.getName().isBlank()) {
-                    errorsSb.append("Nome da filial não pode ser vazio!\n");
-                }
-
-                if (branch.getName().length() > 50) {
-                    errorsSb.append("Nome da filial deve ter no máximo 50 caracteres!\n");
-                }
-
-                if (!BranchRepository.hasDuplicateCnpj(branch.getCnpj(), branch.getIdBranch())) {
+                if (!validations.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, validations);
+                    return false;
+                } else {
                     result.setIdBranch(branch.getIdBranch());
                     result.setName(branch.getName());
                     result.setCnpj(branch.getCnpj());
                     result.setCorporate(branch.getCorporate());
                     result.setUser(branch.getUser());
                     result.setActive(branch.getActive());
-                } else {
-                    errorsSb.append("CNPJ já cadastrado!\n");
 
-                    return false;
-                }
-
-                if (!errorsSb.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, errorsSb.toString());
-                    return false;
-                } else {
                     return BranchRepository.saveOrUpdate(branch);
                 }
             } else {
@@ -143,7 +137,7 @@ public class BranchService {
     }
 
     public static List<Branch> search(String search, String field) {
-        if (Objects.isNull(field) || field.isEmpty() || field.isBlank()) {
+        if (Objects.isNull(field) || field.isBlank()) {
             field = "name";
         }
 
