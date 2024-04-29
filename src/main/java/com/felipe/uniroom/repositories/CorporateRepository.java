@@ -31,4 +31,5 @@ public class CorporateRepository extends DatabaseRepository {
             return false;
         }
     }
+
 }

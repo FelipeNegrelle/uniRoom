@@ -2,14 +2,19 @@ package com.felipe.uniroom.view;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.repositories.CorporateRepository;
+import com.felipe.uniroom.repositories.DatabaseRepository;
+import com.felipe.uniroom.services.CorporateService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.util.List;
 import java.util.Objects;
 
@@ -19,119 +24,137 @@ public class CorporateView extends JFrame {
     public CorporateView(Role role) {
         super(Constants.CORPORATE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new MigLayout("fill, insets 0", "[grow]", "[grow]"));
+        setLayout(new MigLayout("fill, insets 0"));
 
-        final JPanel panel = new JPanel(new MigLayout("align center, wrap 4", "[grow]", "[][grow][]"));
+        final JPanel panel = new JPanel(new MigLayout("fill, wrap 1", "[grow]", ""));
         panel.setBackground(Constants.BLUE);
 
         final JLabel titleLabel = new JLabel(Constants.CORPORATE);
         titleLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 40));
         titleLabel.setForeground(Color.WHITE);
-        panel.add(titleLabel, "span, center, gapbottom 15");
+        panel.add(titleLabel, "align center");
 
-        model = new DefaultTableModel(new Object[]{"Código", "Nome", "CNPJ", "Gerente", "Ativo"}, 0);
+        final JPanel searchPanel = new JPanel(new MigLayout("insets 0", "[right]unrel[grow]unrel[]", "[grow]"));
+        searchPanel.setBackground(Constants.BLUE);
 
-        final JTable table = new JTable(model);
-        table.setFont(new Font("Sans", Font.PLAIN, 20));
-        table.setSelectionBackground(Constants.BLUE);
-        table.setSelectionForeground(Color.WHITE);
-
-        final Components.IconCellRenderer iconCellRenderer = new Components.IconCellRenderer();
-
-        final TableColumn activeColumn = table.getColumnModel().getColumn(4);
-        activeColumn.setCellRenderer(iconCellRenderer);
-
-        final JButton returnButton = new JButton(Constants.BACK);
-        returnButton.addActionListener(e -> {
+        final JButton backButton = new JButton(Constants.BACK);
+        backButton.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        backButton.setBackground(Constants.WHITE);
+        backButton.setIcon(Constants.BACK_ICON);
+        backButton.addActionListener(e -> {
             new Home(role);
             dispose();
         });
-        returnButton.setBackground(Constants.RED);
-        returnButton.setForeground(Color.WHITE);
-        returnButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 50));
+        searchPanel.add(backButton, "align left ");
 
         final JButton newCorporate = new JButton(Constants.NEW);
         newCorporate.setBackground(Constants.WHITE);
         newCorporate.setForeground(Constants.BLACK);
-        newCorporate.setFont(Constants.FONT.deriveFont(Font.BOLD, 50));
+        newCorporate.setFont(Constants.FONT.deriveFont(Font.BOLD));
         newCorporate.addActionListener(e -> {
             new CorporateForm(role);
             dispose();
-            updateCorporateTable();
         });
+        searchPanel.add(newCorporate, "align left");
 
-        final JButton editCorporate = new JButton(Constants.EDIT);
-        editCorporate.setBackground(Constants.WHITE);
-        editCorporate.setForeground(Constants.BLACK);
-        editCorporate.setFont(Constants.FONT.deriveFont(Font.BOLD, 50));
-        editCorporate.addActionListener(e -> {
-            final int selectedRow = table.getSelectedRow();
-            if (selectedRow != -1) {
-//                    Corporate Corporate = new Corporate();
+        final JLabel searchLabel = new JLabel(Constants.SEARCH);
+        searchLabel.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        searchLabel.setForeground(Color.WHITE);
+        searchLabel.setPreferredSize(new Dimension(70, 40));
+        searchPanel.add(searchLabel, "align right");
 
-//                    Corporate.setId((int) model.getValueAt(selectedRow, 0));
-//                    Corporate.setName((String) model.getValueAt(selectedRow, 1));
-//                    Corporate.setNumber((int) model.getValueAt(selectedRow, 2));
-//                    Corporate.setPosition((String) model.getValueAt(selectedRow, 3));
-
-//                    new Components.EditCorporateDialog(this, Corporate).setVisible(true);
-
-                updateCorporateTable();
-            } else {
-                JOptionPane.showMessageDialog(this, Constants.EDIT_WARN, Constants.WARN, JOptionPane.WARNING_MESSAGE);
+        final JTextField searchField = new JTextField(20);
+        searchField.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        searchField.setPreferredSize(new Dimension(200, 40));
+        searchField.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                updateCorporateTable(searchField.getText());
             }
         });
+        searchPanel.add(searchField, "align left");
 
-        final JButton deleteCorporate = new JButton(Constants.DELETE);
-        deleteCorporate.setBackground(Constants.RED);
-        deleteCorporate.setForeground(Color.WHITE);
-        deleteCorporate.setFont(Constants.FONT.deriveFont(Font.BOLD, 50));
-        deleteCorporate.addActionListener(e -> {
-            final int selectedRow = table.getSelectedRow();
-            if (selectedRow != -1) {
-//                    Corporate Corporate = new Corporate();
-//                    Corporate.setId((int) model.getValueAt(selectedRow, 0));
+        panel.add(searchPanel, "growx");
 
-//                    new Components.DeleteDialog(this, Corporate).setVisible(true);
+        model = new DefaultTableModel(new Object[]{"", "Código", "Nome", "CNPJ", "Gerente", "Ativo"}, 0);
 
-                updateCorporateTable();
-            } else {
-                JOptionPane.showMessageDialog(this, Constants.DELETE_WARN, Constants.WARN, JOptionPane.WARNING_MESSAGE);
-            }
-        });
-
-        updateCorporateTable();
-
-        table.getSelectionModel().addListSelectionListener(e -> table.repaint());
+        final JTable table = new JTable(model);
+        table.setFont(new Font("Sans", Font.PLAIN, 20));
+        table.setSelectionForeground(Color.WHITE);
         table.setAutoCreateRowSorter(true);
         table.setRowHeight(30);
         table.setDefaultEditor(Object.class, null);
         table.getTableHeader().setReorderingAllowed(false);
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
-        final JScrollPane scrollPane = new JScrollPane(table);
-        panel.add(scrollPane, "wrap, align center, grow");
-        panel.add(returnButton, "split 4, align left, grow");
-        panel.add(newCorporate, "align right, grow");
-        panel.add(editCorporate, "align center, grow");
-        panel.add(deleteCorporate, "align right, grow");
+        final TableColumn optionsColumn = table.getColumnModel().getColumn(0);
+        optionsColumn.setCellRenderer(new Components.OptionsCellRenderer());
 
-        add(panel, "align center, grow");
+        final TableColumn activeColumn = table.getColumnModel().getColumn(5);
+        activeColumn.setCellRenderer(new Components.IconCellRenderer());
+
+        final Components.MouseAction mouseAction = (tableEvt, evt) -> {
+            final int row = tableEvt.rowAtPoint(evt.getPoint());
+            final int column = tableEvt.columnAtPoint(evt.getPoint());
+
+            if (column == 0) {
+                final JPopupMenu popupMenu = new JPopupMenu();
+
+                final JMenuItem editItem = new JMenuItem(Constants.EDIT);
+                editItem.setIcon(Constants.EDIT_ICON);
+                editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
+                editItem.addActionListener(e -> {
+                    final Corporate corporate = CorporateRepository.findById(Corporate.class, (int) model.getValueAt(row, 1));
+
+                    new CorporateForm(role);
+                    dispose();
+                });
+
+                final JMenuItem deleteItem = new JMenuItem(Constants.DELETE);
+                deleteItem.setIcon(Constants.DELETE_ICON);
+                deleteItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
+                deleteItem.addActionListener(e -> {
+                    final Corporate corporate = CorporateRepository.findById(Corporate.class, (int) model.getValueAt(row, 1));
+
+                    if (CorporateService.delete(corporate)) {
+                        updateCorporateTable(searchField.getText());
+                    } else {
+                        Components.showGenericError(this);
+                    }
+                });
+
+                popupMenu.add(editItem);
+                popupMenu.add(deleteItem);
+
+                popupMenu.show(tableEvt, evt.getX(), evt.getY());
+            }
+        };
+        final Components.GenericMouseListener genericMouseListener = new Components.GenericMouseListener(table, 0, mouseAction);
+
+        table.addMouseListener(genericMouseListener);
+
+        final JScrollPane scrollPane = new JScrollPane(table);
+        panel.add(scrollPane, "grow");
+
+        updateCorporateTable("");
+
+        add(panel, "grow");
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
         pack();
         setVisible(true);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    private static void updateCorporateTable() {
+    private static void updateCorporateTable(String searchText) {
         model.setRowCount(0);
 
-        final List<Corporate> corporateList = CorporateRepository.findAll(Corporate.class);
+        final List<Corporate> corporateList = DatabaseRepository.search(Corporate.class, searchText, "name");
         if (Objects.nonNull(corporateList)) {
             for (Corporate corporate : corporateList) {
                 model.addRow(new Object[]{
+                        "...", // Adiciona os três pontinhos como uma opção de edição e exclusão
                         corporate.getIdCorporate(),
                         corporate.getName(),
-                        corporate.getCnpj(),
+                        Util.formatCnpj(corporate.getCnpj()),
                         corporate.getUser().getName(),
                         corporate.isActive()
                 });
