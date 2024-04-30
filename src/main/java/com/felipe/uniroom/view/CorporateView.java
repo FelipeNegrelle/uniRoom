@@ -52,7 +52,7 @@ public class CorporateView extends JFrame {
         newCorporate.setForeground(Constants.BLACK);
         newCorporate.setFont(Constants.FONT.deriveFont(Font.BOLD));
         newCorporate.addActionListener(e -> {
-            new CorporateForm(role);
+            new CorporateForm(role, null);
             dispose();
         });
         searchPanel.add(newCorporate, "align left");
@@ -106,7 +106,7 @@ public class CorporateView extends JFrame {
                 editItem.addActionListener(e -> {
                     final Corporate corporate = CorporateRepository.findById(Corporate.class, (int) model.getValueAt(row, 1));
 
-                    new CorporateForm(role);
+                    new CorporateForm(role, corporate);
                     dispose();
                 });
 

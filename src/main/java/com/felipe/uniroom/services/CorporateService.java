@@ -1,6 +1,8 @@
 package com.felipe.uniroom.services;
 
+import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Corporate;
+import com.felipe.uniroom.repositories.BranchRepository;
 import com.felipe.uniroom.repositories.CorporateRepository;
 import com.felipe.uniroom.repositories.UserRepository;
 import com.felipe.uniroom.view.Components;
@@ -22,70 +24,86 @@ public class CorporateService {
             .buildValidatorFactory()
             .getValidator();
 
-    public static Boolean save(Corporate Corporate) {
-        try {
-            final Set<ConstraintViolation<Corporate>> violations = validator.validate(Corporate);
 
-            if (!violations.isEmpty()) {
-                final StringBuilder violationsSb = new StringBuilder();
+    private static String validateCorporate(Corporate corporate, boolean isUpdate) {
+        final StringBuilder errorsSb = new StringBuilder();
 
-                violations.forEach(violation -> violationsSb.append(violation.getMessage()).append("\n"));
+        if (corporate.getCnpj().equals("00000000000000")) {
+            errorsSb.append("CNPJ inválido!\n");
+        }
 
-                JOptionPane.showMessageDialog(null, violationsSb.toString());
-                return false;
+        final Set<ConstraintViolation<Corporate>> violations = validator.validate(corporate);
+
+        if (!violations.isEmpty()) {
+            violations.forEach(violation -> errorsSb.append(violation.getMessage().equals("número do registro de contribuinte corporativo brasileiro (CNPJ) inválido") ? "CNPJ Inválido" : violation.getMessage()).append("\n"));
+        }
+
+        if (isUpdate) {
+            if (BranchRepository.hasDuplicateCnpj(corporate.getCnpj(), corporate.getIdCorporate())) {
+                errorsSb.append("CNPJ já cadastrado!\n");
             }
+        } else {
+            if (BranchRepository.findByCnpj(corporate.getCnpj()) != null) {
+                errorsSb.append("CNPJ já cadastrado!\n");
+            }
+        }
 
-            Corporate.setCnpj(Corporate.getCnpj().replaceAll("[^0-9]", ""));
+        if (corporate.getName().isBlank()) {
+            errorsSb.append("Nome da filial não pode ser vazio!\n");
+        }
 
-            if (CorporateRepository.findByCnpj(Corporate.getCnpj()) != null) {
-                JOptionPane.showMessageDialog(null, "CNPJ já cadastrado!");
+        if (corporate.getName().length() > 50) {
+            errorsSb.append("Nome da matriz deve ter no máximo 50 caracteres!\n");
+        }
 
+
+        if (Objects.isNull(corporate.getUser())) {
+            errorsSb.append("Usuário não pode ser vazio!\n");
+        }
+
+        return errorsSb.toString();
+    }
+    public static Boolean save(Corporate corporate) {
+        try {
+            corporate.setCnpj(corporate.getCnpj().replaceAll("[^0-9]", ""));
+
+            final String validations = validateCorporate(corporate, false);
+            if (!validations.isEmpty()) {
+                JOptionPane.showMessageDialog(null, validations);
                 return false;
             } else {
-                return CorporateRepository.saveOrUpdate(Corporate);
+                return BranchRepository.saveOrUpdate(corporate);
             }
         } catch (Exception e) {
             e.printStackTrace();
-
             Components.showGenericError(null);
-
             return null;
         }
     }
 
-    public static Boolean update(Corporate Corporate) {
+    public static Boolean update(Corporate corporate) {
         try {
-            final Corporate result = UserRepository.findById(Corporate.class, Corporate.getIdCorporate());
+            final Corporate result = CorporateRepository.findById(Corporate.class, corporate.getIdCorporate());
 
             if (Objects.nonNull(result)) {
-                final Set<ConstraintViolation<Corporate>> violations = validator.validate(Corporate);
+                corporate.setCnpj(corporate.getCnpj().replaceAll("[^0-9]", ""));
 
-                if (!violations.isEmpty()) {
-                    final StringBuilder violationsSb = new StringBuilder();
+                final String validations = validateCorporate(corporate, true);
 
-                    violations.forEach(violation -> violationsSb.append(violation.getMessage()).append("\n"));
-
-                    JOptionPane.showMessageDialog(null, violationsSb.toString());
+                if (!validations.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, validations);
                     return false;
-                }
-
-                Corporate.setCnpj(Corporate.getCnpj().replaceAll("[^0-9]", ""));
-
-                if (!CorporateRepository.hasDuplicateCnpj(Corporate.getCnpj(), Corporate.getIdCorporate())) {
-                    result.setIdCorporate(Corporate.getIdCorporate());
-                    result.setName(Corporate.getName());
-                    result.setCnpj(Corporate.getCnpj());
-                    result.setUser(Corporate.getUser());
-                    result.setActive(Corporate.getActive());
                 } else {
-                    JOptionPane.showMessageDialog(null, "CNPJ já cadastrado!");
+                    result.setIdCorporate(corporate.getIdCorporate());
+                    result.setName(corporate.getName());
+                    result.setCnpj(corporate.getCnpj());
+                    result.setUser(corporate.getUser());
+                    result.setActive(corporate.getActive());
 
-                    return false;
+                    return CorporateRepository.saveOrUpdate(corporate);
                 }
-
-                return CorporateRepository.saveOrUpdate(result);
             } else {
-                JOptionPane.showMessageDialog(null, "Filial não encontrada!");
+                JOptionPane.showMessageDialog(null, "Matriz não encontrada!");
 
                 return false;
             }
