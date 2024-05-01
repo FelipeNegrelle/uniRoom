@@ -34,8 +34,14 @@ public class CorporateService {
             violations.forEach(violation -> errorsSb.append(violation.getMessage().equals("número do registro de contribuinte corporativo brasileiro (CNPJ) inválido") ? "CNPJ Inválido" : violation.getMessage()).append("\n"));
         }
 
-        if ((isUpdate && CorporateRepository.hasDuplicateCnpj(corporate.getCnpj(), corporate.getIdCorporate()) || CorporateRepository.findByCnpj(corporate.getCnpj()) != null)) {
-            errorsSb.append("CNPJ já cadastrado!\n");
+        if (isUpdate) {
+            if (CorporateRepository.hasDuplicateCnpj(corporate.getCnpj(), corporate.getIdCorporate())) {
+                errorsSb.append("CNPJ já cadastrado!\n");
+            }
+        } else {
+            if (Objects.nonNull(CorporateRepository.findByCnpj(corporate.getCnpj()))) {
+                errorsSb.append("CNPJ já cadastrado!\n");
+            }
         }
 
         if (corporate.getName().isBlank()) {
@@ -85,7 +91,7 @@ public class CorporateService {
                 final String validations = validateCorporate(corporate, true);
 
                 if (!validations.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, "CNPJ já cadastrado!");
+                    JOptionPane.showMessageDialog(null, validations);
 
                     return false;
                 } else {

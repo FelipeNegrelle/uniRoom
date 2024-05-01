@@ -5,7 +5,7 @@ import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.repositories.CorporateRepository;
-import com.felipe.uniroom.repositories.DatabaseRepository;
+import com.felipe.uniroom.services.BranchService;
 import com.felipe.uniroom.services.CorporateService;
 import net.miginfocom.swing.MigLayout;
 
@@ -15,11 +15,13 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class CorporateView extends JFrame {
     private static DefaultTableModel model;
+    private static final List<Corporate> searchItens = new ArrayList<>();
 
     public CorporateView(Role role) {
         super(Constants.CORPORATE);
@@ -69,7 +71,8 @@ public class CorporateView extends JFrame {
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                updateCorporateTable(searchField.getText());
+                searchItens.addAll(CorporateService.search(searchField.getText(), null));
+                updateCorporateTable();
             }
         });
         searchPanel.add(searchField, "align left");
@@ -114,10 +117,12 @@ public class CorporateView extends JFrame {
                 deleteItem.setIcon(Constants.DELETE_ICON);
                 deleteItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 deleteItem.addActionListener(e -> {
-                    final Corporate corporate = CorporateRepository.findById(Corporate.class, (int) model.getValueAt(row, 1));
+                    final Corporate corporate = new Corporate();
+
+                    corporate.setIdCorporate((int) model.getValueAt(row, 1));
 
                     if (CorporateService.delete(corporate)) {
-                        updateCorporateTable(searchField.getText());
+                        updateCorporateTable();
                     } else {
                         Components.showGenericError(this);
                     }
@@ -136,7 +141,7 @@ public class CorporateView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateCorporateTable("");
+        updateCorporateTable();
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -144,23 +149,37 @@ public class CorporateView extends JFrame {
         setVisible(true);
     }
 
-    private static void updateCorporateTable(String searchText) {
+    private static void updateCorporateTable() {
         model.setRowCount(0);
 
-        final List<Corporate> corporateList = DatabaseRepository.search(Corporate.class, searchText, "name");
-        if (Objects.nonNull(corporateList)) {
-            for (Corporate corporate : corporateList) {
+        if (!searchItens.isEmpty()) {
+            for (Corporate corporate : searchItens) {
                 model.addRow(new Object[]{
-                        "...", // Adiciona os três pontinhos como uma opção de edição e exclusão
+                        null,
                         corporate.getIdCorporate(),
                         corporate.getName(),
                         Util.formatCnpj(corporate.getCnpj()),
                         corporate.getUser().getName(),
-                        corporate.isActive()
+                        corporate.getActive(),
                 });
             }
+            searchItens.clear();
         } else {
-            JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);
+            final List<Corporate> corporateList = CorporateRepository.findAll(Corporate.class);
+            if (Objects.nonNull(corporateList)) {
+                for (Corporate branch : corporateList) {
+                    model.addRow(new Object[]{
+                            null,
+                            branch.getIdCorporate(),
+                            branch.getName(),
+                            Util.formatCnpj(branch.getCnpj()),
+                            branch.getUser().getName(),
+                            branch.getActive(),
+                    });
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);
+            }
         }
     }
 }

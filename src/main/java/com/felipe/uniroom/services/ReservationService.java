@@ -87,8 +87,10 @@ public class ReservationService {
         try {
             final Reservation result = ReservationRepository.findById(Reservation.class, reservation.getIdReservation());
 
-            if(Objects.nonNull(reservation)) {
-                return ReservationRepository.cancel(reservation.getIdReservation());
+            if(Objects.nonNull(result)) {
+                result.setStatus("C");
+
+                return ReservationRepository.cancel(result);
             } else {
                 JOptionPane.showMessageDialog(null, "Reserva não encontrada.");
 

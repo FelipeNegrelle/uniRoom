@@ -29,7 +29,7 @@ public class Main {
 
             final Corporate uniroom = new Corporate();
             uniroom.setName(Constants.UNIROOM);
-            uniroom.setCnpj("12312312312312");
+            uniroom.setCnpj("24786224000139");
             uniroom.setUser(UserRepository.findByUsername(admin.getUsername()));
             uniroom.setActive(true);
 
