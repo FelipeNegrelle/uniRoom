@@ -33,14 +33,8 @@ public class BranchService {
             violations.forEach(violation -> errorsSb.append(violation.getMessage().equals("número do registro de contribuinte corporativo brasileiro (CNPJ) inválido") ? "CNPJ Inválido" : violation.getMessage()).append("\n"));
         }
 
-        if (isUpdate) {
-            if (BranchRepository.hasDuplicateCnpj(branch.getCnpj(), branch.getIdBranch())) {
-                errorsSb.append("CNPJ já cadastrado!\n");
-            }
-        } else {
-            if (BranchRepository.findByCnpj(branch.getCnpj()) != null) {
-                errorsSb.append("CNPJ já cadastrado!\n");
-            }
+        if ((isUpdate && BranchRepository.hasDuplicateCnpj(branch.getCnpj(), branch.getIdBranch()) || BranchRepository.findByCnpj(branch.getCnpj()) != null)) {
+            errorsSb.append("CNPJ já cadastrado!\n");
         }
 
         if (branch.getName().isBlank()) {

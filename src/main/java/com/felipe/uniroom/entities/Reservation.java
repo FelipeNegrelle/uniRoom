@@ -7,31 +7,29 @@ import java.util.Objects;
 @Entity
 @Table(name = "reservation")
 public class Reservation {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_reservation")
     private Integer idReservation;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "id_room", nullable = false)
     private Room room;
 
     @Column(nullable = false)
     private Short days;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne()
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
     @Column(nullable = false, length = 2)
     private String status;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne()
     @JoinColumn(name = "id_branch", nullable = false)
     private Branch branch;
 
-    // Getters e Setters
     public Integer getIdReservation() {
         return idReservation;
     }
@@ -91,12 +89,10 @@ public class Reservation {
         this.branch = branch;
     }
 
-    // hashCode, equals, toString
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Reservation)) return false;
-        Reservation that = (Reservation) o;
+        if (!(o instanceof Reservation that)) return false;
         return Objects.equals(idReservation, that.idReservation);
     }
 

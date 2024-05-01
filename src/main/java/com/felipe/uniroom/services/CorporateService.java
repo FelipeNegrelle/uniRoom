@@ -1,10 +1,7 @@
 package com.felipe.uniroom.services;
 
-import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Corporate;
-import com.felipe.uniroom.repositories.BranchRepository;
 import com.felipe.uniroom.repositories.CorporateRepository;
-import com.felipe.uniroom.repositories.UserRepository;
 import com.felipe.uniroom.view.Components;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -24,7 +21,6 @@ public class CorporateService {
             .buildValidatorFactory()
             .getValidator();
 
-
     private static String validateCorporate(Corporate corporate, boolean isUpdate) {
         final StringBuilder errorsSb = new StringBuilder();
 
@@ -38,24 +34,17 @@ public class CorporateService {
             violations.forEach(violation -> errorsSb.append(violation.getMessage().equals("número do registro de contribuinte corporativo brasileiro (CNPJ) inválido") ? "CNPJ Inválido" : violation.getMessage()).append("\n"));
         }
 
-        if (isUpdate) {
-            if (BranchRepository.hasDuplicateCnpj(corporate.getCnpj(), corporate.getIdCorporate())) {
-                errorsSb.append("CNPJ já cadastrado!\n");
-            }
-        } else {
-            if (BranchRepository.findByCnpj(corporate.getCnpj()) != null) {
-                errorsSb.append("CNPJ já cadastrado!\n");
-            }
+        if ((isUpdate && CorporateRepository.hasDuplicateCnpj(corporate.getCnpj(), corporate.getIdCorporate()) || CorporateRepository.findByCnpj(corporate.getCnpj()) != null)) {
+            errorsSb.append("CNPJ já cadastrado!\n");
         }
 
         if (corporate.getName().isBlank()) {
-            errorsSb.append("Nome da filial não pode ser vazio!\n");
+            errorsSb.append("Nome da corporação não pode ser vazio!\n");
         }
 
         if (corporate.getName().length() > 50) {
-            errorsSb.append("Nome da matriz deve ter no máximo 50 caracteres!\n");
+            errorsSb.append("Nome da corporação deve ter no máximo 50 caracteres!\n");
         }
-
 
         if (Objects.isNull(corporate.getUser())) {
             errorsSb.append("Usuário não pode ser vazio!\n");
@@ -63,20 +52,25 @@ public class CorporateService {
 
         return errorsSb.toString();
     }
+
     public static Boolean save(Corporate corporate) {
         try {
             corporate.setCnpj(corporate.getCnpj().replaceAll("[^0-9]", ""));
 
             final String validations = validateCorporate(corporate, false);
+
             if (!validations.isEmpty()) {
                 JOptionPane.showMessageDialog(null, validations);
+
                 return false;
             } else {
-                return BranchRepository.saveOrUpdate(corporate);
+                return CorporateRepository.saveOrUpdate(corporate);
             }
         } catch (Exception e) {
             e.printStackTrace();
+
             Components.showGenericError(null);
+
             return null;
         }
     }
@@ -91,7 +85,8 @@ public class CorporateService {
                 final String validations = validateCorporate(corporate, true);
 
                 if (!validations.isEmpty()) {
-                    JOptionPane.showMessageDialog(null, validations);
+                    JOptionPane.showMessageDialog(null, "CNPJ já cadastrado!");
+
                     return false;
                 } else {
                     result.setIdCorporate(corporate.getIdCorporate());
@@ -100,10 +95,10 @@ public class CorporateService {
                     result.setUser(corporate.getUser());
                     result.setActive(corporate.getActive());
 
-                    return CorporateRepository.saveOrUpdate(corporate);
+                    return CorporateRepository.saveOrUpdate(result);
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Matriz não encontrada!");
+                JOptionPane.showMessageDialog(null, "Matriz não encontrada.");
 
                 return false;
             }
@@ -116,14 +111,14 @@ public class CorporateService {
         }
     }
 
-    public static Boolean delete(Corporate Corporate) {
+    public static Boolean delete(Corporate corporate) {
         try {
-            final Corporate result = CorporateRepository.findById(Corporate.class, Corporate.getIdCorporate());
+            final Corporate result = CorporateRepository.findById(Corporate.class, corporate.getIdCorporate());
 
             if (Objects.nonNull(result)) {
                 return CorporateRepository.delete(Corporate.class, result.getIdCorporate());
             } else {
-                JOptionPane.showMessageDialog(null, "Filial não encontrada!");
+                JOptionPane.showMessageDialog(null, "Filial não encontrada.");
 
                 return false;
             }
