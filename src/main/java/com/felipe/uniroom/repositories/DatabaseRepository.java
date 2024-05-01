@@ -9,7 +9,6 @@ import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 
 import java.util.List;
-import java.util.Objects;
 
 @Transactional
 public class DatabaseRepository {

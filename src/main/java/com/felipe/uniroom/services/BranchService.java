@@ -38,7 +38,7 @@ public class BranchService {
                 errorsSb.append("CNPJ já cadastrado!\n");
             }
         } else {
-            if (BranchRepository.findByCnpj(branch.getCnpj()) != null) {
+            if (Objects.nonNull(BranchRepository.findByCnpj(branch.getCnpj()))) {
                 errorsSb.append("CNPJ já cadastrado!\n");
             }
         }

@@ -51,7 +51,7 @@ public class CorporateForm extends JFrame {
         cnpjField.setPreferredSize(new Dimension(300, 30));
         cnpjField.setFont(new Font("Sans", Font.PLAIN, 20));
 
-        final JLabel userLabel = Components.getLabel(Constants.USER, null, Font.BOLD, null, null);
+        final JLabel userLabel = Components.getLabel(Constants.USER + ":", null, Font.BOLD, null, null);
         final JComboBox<String> userCombo = new JComboBox<>();
         userCombo.setPreferredSize(new Dimension(300, 30));
         userCombo.setFont(Constants.FONT);
@@ -66,7 +66,7 @@ public class CorporateForm extends JFrame {
         inputPanel.add(userLabel);
         inputPanel.add(userCombo, "wrap");
 
-        JButton saveButton = new JButton(Constants.REGISTER);
+        JButton saveButton = new JButton(Constants.SAVE);
         saveButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
         saveButton.setPreferredSize(Constants.BUTTON_SIZE);
         saveButton.setBackground(Constants.BLUE);

@@ -1,7 +1,6 @@
 package com.felipe.uniroom.repositories;
 
 import com.felipe.uniroom.config.ConnectionManager;
-import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Corporate;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
@@ -23,11 +22,17 @@ public class CorporateRepository extends DatabaseRepository {
         final String query = "SELECT c FROM Corporate c WHERE c.cnpj = :cnpj and c.idCorporate <> :idCorporate";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            return em.createQuery(query, Branch.class)
+            System.out.println(em.createQuery(query, Corporate.class)
+                    .setParameter("cnpj", cnpj)
+                    .setParameter("idCorporate", idCorporate)
+                    .getSingleResult() != null);
+            return em.createQuery(query, Corporate.class)
                     .setParameter("cnpj", cnpj)
                     .setParameter("idCorporate", idCorporate)
                     .getSingleResult() != null;
         } catch (NoResultException e) {
+            e.printStackTrace();
+
             return false;
         }
     }
