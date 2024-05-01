@@ -60,18 +60,19 @@ public class UserService {
             final User result = UserRepository.findById(User.class, user.getIdUser());
 
             if (result != null) {
-                final String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+                result.setName(user.getName());
+                result.setUsername(user.getUsername());
+                result.setRole(user.getRole());
+                result.setSecretPhrase(user.getSecretPhrase());
+                result.setSecretAnswer(user.getSecretAnswer());
+                result.setActive(user.getActive());
 
-                user.setIdUser(result.getIdUser());
-                user.setName(result.getName());
-                user.setUsername(result.getUsername());
-                user.setPassword(hashedPassword);
-                user.setRole(result.getRole());
-                user.setSecretPhrase(result.getSecretPhrase());
-                user.setSecretAnswer(result.getSecretAnswer());
-                user.setActive(result.getActive());
+                String newPassword = user.getPassword();
+                if (newPassword != null && !newPassword.isEmpty()) {
+                    result.setPassword(newPassword);
+                }
 
-                return UserRepository.saveOrUpdate(user);
+                return UserRepository.saveOrUpdate(result);
             }
         } catch (Exception e) {
             e.printStackTrace();

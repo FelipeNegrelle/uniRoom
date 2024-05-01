@@ -4,9 +4,10 @@ import com.felipe.uniroom.entities.*;
 import com.felipe.uniroom.view.BranchView;
 import com.felipe.uniroom.view.CorporateView;
 import com.felipe.uniroom.view.Login;
+import com.felipe.uniroom.view.UserView;
 
 public enum Menus {
-    MENU_USER(new Menu(Constants.USER, Constants.USER_ICON, Login.class)),
+    MENU_USER(new Menu(Constants.USER, Constants.USER_ICON, UserView.class)),
     MENU_CORPORATE(new Menu(Constants.CORPORATE, Constants.CORPORATE_ICON, CorporateView.class)),
     MENU_BRANCH(new Menu(Constants.BRANCH, Constants.BRANCH_ICON, BranchView.class)),
     MENU_INVENTORY(new Menu(Constants.INVENTORY, Constants.INVENTORY_ICON, Inventory.class)),
