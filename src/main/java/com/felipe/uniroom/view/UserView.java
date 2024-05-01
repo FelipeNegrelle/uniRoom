@@ -74,7 +74,7 @@ public class UserView extends JFrame {
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{"Ações", "Código", "Nome", "Username", "Cargo", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "Username", "Cargo", "Ativo"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));

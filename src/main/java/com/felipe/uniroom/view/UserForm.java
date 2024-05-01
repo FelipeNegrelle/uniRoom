@@ -28,7 +28,7 @@ public class UserForm extends JFrame {
         final JPanel inputPanel = new JPanel(new MigLayout("fillx, insets 20", "[grow]", "[]10[]"));
         inputPanel.setBackground(Color.WHITE);
 
-        final JLabel nameLabel = new JLabel(Constants.NAME);
+        final JLabel nameLabel = new JLabel(Constants.NAME+ ":");
         nameLabel.setFont(new Font("Sans", Font.BOLD, 20));
 
         final JTextField nameField = new JTextField(20);
@@ -36,7 +36,7 @@ public class UserForm extends JFrame {
         nameField.setPreferredSize(new Dimension(300, 30));
         nameField.setFont(new Font("Sans", Font.PLAIN, 20));
 
-        final JLabel usernameLabel = new JLabel("Login:");
+        final JLabel usernameLabel = new JLabel(Constants.USER + ":");
         usernameLabel.setFont(new Font("Sans", Font.BOLD, 20));
 
         final JTextField usernameField = new JTextField(20);
@@ -44,7 +44,7 @@ public class UserForm extends JFrame {
         usernameField.setPreferredSize(new Dimension(300, 30));
         usernameField.setFont(new Font("Sans", Font.PLAIN, 20));
 
-        final JLabel passwordLabel = new JLabel(Constants.PASSWORD);
+        final JLabel passwordLabel = new JLabel(Constants.PASSWORD+ ":");
         passwordLabel.setFont(new Font("Sans", Font.BOLD, 20));
         final JPasswordField passwordField = new JPasswordField(20);
         passwordField.setPreferredSize(new Dimension(300, 30));
@@ -58,7 +58,7 @@ public class UserForm extends JFrame {
         roleCombo.setFont(new Font("Sans", Font.PLAIN, 20));
         if (Objects.nonNull(entity)) roleCombo.setSelectedItem(entity.getRole());
 
-        final JLabel secretQuestionLabel = new JLabel(Constants.SECRET_PHRASE);
+        final JLabel secretQuestionLabel = new JLabel(Constants.SECRET_PHRASE + ":");
         secretQuestionLabel.setFont(new Font("Sans", Font.BOLD, 20));
 
         final JComboBox<String> secretQuestionCombo = new JComboBox<>(new String[]{
@@ -75,7 +75,7 @@ public class UserForm extends JFrame {
             secretQuestionCombo.setSelectedItem(currentSecretQuestion);
         }
 
-        final JLabel secretAnswerLabel = new JLabel("Resposta Secreta:");
+        final JLabel secretAnswerLabel = new JLabel(Constants.SECRET_ANSWER + ":");
         secretAnswerLabel.setFont(new Font("Sans", Font.BOLD, 20));
 
         final JTextField secretAnswerField = new JTextField(20);

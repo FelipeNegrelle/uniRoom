@@ -78,7 +78,7 @@ public class BranchView extends JFrame {
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{"", "Código", "Nome", "CNPJ", "Matriz", "Gerente", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "CNPJ", "Matriz", "Gerente", "Ativo"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
