@@ -1,27 +1,90 @@
 package com.felipe.uniroom.services;
 
+import com.felipe.uniroom.entities.Branch;
+import com.felipe.uniroom.repositories.BranchRepository;
 import com.felipe.uniroom.repositories.UserRepository;
+import com.felipe.uniroom.view.Components;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
+import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.mindrot.jbcrypt.BCrypt;
 
 import com.felipe.uniroom.entities.User;
-import com.felipe.uniroom.repositories.DatabaseRepository;
 
 import javax.swing.JDialog;
 import javax.swing.JOptionPane;
+import java.util.Objects;
+import java.util.Set;
 
 public class UserService {
-    public static Boolean register(User user) throws Exception {
-        final String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+    private static final Validator validator = Validation.byDefaultProvider()
+            .configure()
+            .messageInterpolator(new ParameterMessageInterpolator())
+            .buildValidatorFactory()
+            .getValidator();
 
-        if (UserRepository.findByUsername(user.getUsername()) != null) {
-            throw new Exception("Usuário " + user.getUsername() + " já existe, escolha um novo nome.");
+    public static String validateUser(User user, boolean isUpdate) {
+        final StringBuilder errorsSb = new StringBuilder();
+
+        final Set<ConstraintViolation<User>> violations = validator.validate(user);
+
+        if (!violations.isEmpty()) {
+            violations.forEach(violation -> errorsSb.append(violation.getMessage()).append("\n"));
         }
 
-        user.setPassword(hashedPassword);
+        if (user.getUsername().isBlank()) {
+            errorsSb.append("Usuário não pode ser vazio!\n");
+        }
 
-        System.out.println(user);// todo tirar depois
+        if (isUpdate) {
+            User existingUser = UserRepository.findByUsername(user.getUsername());
 
-        return UserRepository.saveOrUpdate(user);
+            if (existingUser != null && !existingUser.getIdUser().equals(user.getIdUser())) {
+                errorsSb.append("Nome de usuário já cadastrado!\n");
+            }
+        } else {
+            if (UserRepository.findByUsername(user.getUsername()) != null) {
+                errorsSb.append("Nome de usuário já cadastrado!\n");
+            }
+        }
+        if (user.getName().isBlank()) {
+            errorsSb.append("Nome não pode ser vazio!\n");
+        }
+
+        if (user.getName().length() > 50) {
+            errorsSb.append("Nome do usuário deve ter no máximo 50 caracteres!\n");
+        }
+
+        if (Objects.isNull(user.getRole())) {
+            errorsSb.append("Cargo não pode ser vazio!\n");
+        }
+
+        if (Objects.isNull(user.getSecretPhrase()) || user.getSecretPhrase().isBlank()) {
+            errorsSb.append("Frase secreta não pode ser vazia!\n");
+        }
+
+        if (Objects.isNull(user.getSecretAnswer()) || user.getSecretAnswer().isBlank()) {
+            errorsSb.append("Resposta secreta não pode ser vazia!\n");
+        }
+
+        return errorsSb.toString();
+    }
+    public static Boolean register(User user) {
+        try {
+
+            final String validations = validateUser(user, false);
+            if (!validations.isEmpty()) {
+                JOptionPane.showMessageDialog(null, validations);
+                return false;
+            } else {
+                return BranchRepository.saveOrUpdate(user);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            Components.showGenericError(null);
+            return null;
+        }
     }
 
     public static Boolean login(User user) {
