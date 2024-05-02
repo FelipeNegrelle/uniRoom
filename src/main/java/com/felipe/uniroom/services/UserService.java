@@ -1,5 +1,6 @@
 package com.felipe.uniroom.services;
 
+import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.repositories.BranchRepository;
 import com.felipe.uniroom.repositories.UserRepository;
@@ -33,8 +34,9 @@ public class UserService {
             violations.forEach(violation -> errorsSb.append(violation.getMessage()).append("\n"));
         }
 
+
         if (user.getUsername().isBlank()) {
-            errorsSb.append("Usuário não pode ser vazio!\n");
+            errorsSb.append("Nome de usuário não pode ser vazio!\n");
         }
 
         if (isUpdate) {
@@ -48,8 +50,9 @@ public class UserService {
                 errorsSb.append("Nome de usuário já cadastrado!\n");
             }
         }
+
         if (user.getName().isBlank()) {
-            errorsSb.append("Nome não pode ser vazio!\n");
+            errorsSb.append("Nome do usuário não pode ser vazio!\n");
         }
 
         if (user.getName().length() > 50) {
@@ -119,27 +122,35 @@ public class UserService {
     }
 
     public static Boolean update(User user) {
-        try {
-            final User result = UserRepository.findById(User.class, user.getIdUser());
+        String errors = validateUser(user, true);
 
-            if (result != null) {
-                result.setName(user.getName());
-                result.setUsername(user.getUsername());
-                result.setRole(user.getRole());
-                result.setSecretPhrase(user.getSecretPhrase());
-                result.setSecretAnswer(user.getSecretAnswer());
-                result.setActive(user.getActive());
+        if (!errors.isEmpty()) {
+            JOptionPane.showMessageDialog(null, errors, Constants.WARN, JOptionPane.INFORMATION_MESSAGE);
+            return false;
+        }
+
+        try {
+            User existingUser = UserRepository.findById(User.class, user.getIdUser());
+
+            if (existingUser != null) {
+                existingUser.setName(user.getName());
+                existingUser.setUsername(user.getUsername());
+                existingUser.setRole(user.getRole());
+                existingUser.setSecretPhrase(user.getSecretPhrase());
+                existingUser.setSecretAnswer(user.getSecretAnswer());
+                existingUser.setActive(user.getActive());
 
                 String newPassword = user.getPassword();
                 if (newPassword != null && !newPassword.isEmpty()) {
-                    result.setPassword(newPassword);
+                    existingUser.setPassword(newPassword);
                 }
 
-                return UserRepository.saveOrUpdate(result);
+                return UserRepository.saveOrUpdate(existingUser);
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+
         return false;
     }
 
