@@ -4,6 +4,9 @@ import com.felipe.uniroom.entities.User;
 import com.felipe.uniroom.view.Components;
 
 import javax.swing.text.MaskFormatter;
+import javax.swing.text.NumberFormatter;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 public class Util {
     public static Role getRoleUser(User user) {
@@ -26,5 +29,14 @@ public class Util {
             e.printStackTrace();
             return "";
         }
+    }
+    public static NumberFormatter getNumberFormatter(int maximumFractionDigits) {
+        NumberFormat format = DecimalFormat.getInstance();
+        format.setMaximumFractionDigits(maximumFractionDigits);
+        format.setGroupingUsed(false);
+        NumberFormatter formatter = new NumberFormatter(format);
+        formatter.setAllowsInvalid(false);
+        formatter.setOverwriteMode(true);
+        return formatter;
     }
 }
