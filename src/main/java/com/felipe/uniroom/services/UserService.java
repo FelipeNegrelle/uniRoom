@@ -81,6 +81,8 @@ public class UserService {
                 JOptionPane.showMessageDialog(null, validations);
                 return false;
             } else {
+                final String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
+                user.setPassword(hashedPassword);
                 return BranchRepository.saveOrUpdate(user);
             }
         } catch (Exception e) {
