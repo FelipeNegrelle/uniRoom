@@ -3,28 +3,23 @@ package com.felipe.uniroom.services;
 import com.felipe.uniroom.entities.RoomType;
 import com.felipe.uniroom.repositories.RoomTypeRepository;
 import com.felipe.uniroom.view.Components;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 
 import javax.swing.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class RoomTypeService {
-    private static final Validator validator = Validation.byDefaultProvider()
-            .configure()
-            .messageInterpolator(new ParameterMessageInterpolator())
-            .buildValidatorFactory()
-            .getValidator();
-
     private static String validateRoomType(RoomType roomType, boolean isUpdate) {
         StringBuilder errors = new StringBuilder();
 
-        if (!isUpdate && Objects.nonNull(RoomTypeRepository.hasDuplicateName(roomType.getName(), roomType.getBranch().getIdBranch()))) {
-            errors.append("Tipo já cadastrado!\n");
+        if (isUpdate) {
+            if (RoomTypeRepository.hasDuplicateName(roomType.getName(), roomType.getIdRoomType(), roomType.getBranch().getIdBranch())) {
+                errors.append("Tipo já cadastrado!\n");
+            }
+        } else {
+            if (Objects.nonNull(RoomTypeRepository.findByName(roomType.getName(), roomType.getBranch().getIdBranch()))) {
+                errors.append("Tipo já cadastrado!\n");
+            }
         }
 
         if (roomType.getName().isBlank()) {
@@ -43,9 +38,6 @@ public class RoomTypeService {
             errors.append("Uma filial deve ser selecionada.\n");
         }
 
-        Set<ConstraintViolation<RoomType>> violations = validator.validate(roomType);
-        violations.forEach(violation -> errors.append(violation.getMessage()).append("\n"));
-
         return errors.toString();
     }
 
@@ -57,7 +49,8 @@ public class RoomTypeService {
                 return false;
             }
             return RoomTypeRepository.saveOrUpdate(roomType);
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
             Components.showGenericError(null);
             return false;
@@ -72,7 +65,8 @@ public class RoomTypeService {
                 return false;
             }
             return RoomTypeRepository.saveOrUpdate(roomType);
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Erro ao atualizar o tipo de quarto: " + e.getMessage());
             return false;
@@ -88,7 +82,8 @@ public class RoomTypeService {
                 JOptionPane.showMessageDialog(null, "Tipo não encontrado!");
                 return false;
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
             Components.showGenericError(null);
             return false;

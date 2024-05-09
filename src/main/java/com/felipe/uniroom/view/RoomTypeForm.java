@@ -40,21 +40,24 @@ public class RoomTypeForm extends JFrame {
         final JTextField nameField = new JTextField(20);
         nameField.setPreferredSize(new Dimension(300, 30));
         nameField.setFont(new Font("Sans", Font.PLAIN, 20));
-        if (Objects.nonNull(entity)) nameField.setText(entity.getName());
+        if (Objects.nonNull(entity))
+            nameField.setText(entity.getName());
 
         final JLabel priceLabel = new JLabel("Preço:");
         priceLabel.setFont(new Font("Sans", Font.BOLD, 20));
         final JFormattedTextField priceField = new JFormattedTextField(Util.getNumberFormatter(2));
         priceField.setPreferredSize(new Dimension(300, 30));
         priceField.setFont(new Font("Sans", Font.PLAIN, 20));
-        if (Objects.nonNull(entity)) priceField.setValue(entity.getPrice());
+        if (Objects.nonNull(entity))
+            priceField.setValue(entity.getPrice());
 
         final JLabel capacityLabel = new JLabel("Capacidade:");
         capacityLabel.setFont(new Font("Sans", Font.BOLD, 20));
         final JFormattedTextField capacityField = new JFormattedTextField(Util.getNumberFormatter(1));
         capacityField.setPreferredSize(new Dimension(300, 30));
         capacityField.setFont(new Font("Sans", Font.PLAIN, 20));
-        if (Objects.nonNull(entity)) priceField.setValue(entity.getCapacity());
+        if (Objects.nonNull(entity))
+            priceField.setValue(entity.getCapacity());
 
         final JLabel branchLabel = new JLabel("Filial:");
         branchLabel.setFont(new Font("Sans", Font.BOLD, 20));
@@ -97,8 +100,6 @@ public class RoomTypeForm extends JFrame {
                 JOptionPane.showMessageDialog(this, "Registro salvo com sucesso!", "Sucesso", JOptionPane.PLAIN_MESSAGE);
                 new RoomTypeView(role);
                 dispose();
-            } else {
-                JOptionPane.showMessageDialog(this, "Falha ao salvar o registro.", "Erro", JOptionPane.ERROR_MESSAGE);
             }
         });
 
