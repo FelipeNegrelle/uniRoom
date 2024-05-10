@@ -30,13 +30,14 @@ public class Util {
             return "";
         }
     }
-    public static NumberFormatter getNumberFormatter(int maximumFractionDigits) {
-        NumberFormat format = DecimalFormat.getInstance();
-        format.setMaximumFractionDigits(maximumFractionDigits);
-        format.setGroupingUsed(false);
-        NumberFormatter formatter = new NumberFormatter(format);
-        formatter.setAllowsInvalid(false);
-        formatter.setOverwriteMode(true);
-        return formatter;
+    public static NumberFormat getNumberFormatter(int decimalPlaces) {
+        String pattern = "#,##0";
+        if (decimalPlaces > 0) {
+            pattern += ".";
+            for (int i = 0; i < decimalPlaces; i++) {
+                pattern += "0";
+            }
+        }
+        return new DecimalFormat(pattern);
     }
 }
