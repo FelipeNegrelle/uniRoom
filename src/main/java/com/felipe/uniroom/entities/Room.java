@@ -14,11 +14,11 @@ public class Room {
     @Column(name = "room_number", nullable = false)
     private Integer roomNumber;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_room_type", nullable = false)
     private RoomType roomType;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_branch", nullable = false)
     private Branch branch;
 
