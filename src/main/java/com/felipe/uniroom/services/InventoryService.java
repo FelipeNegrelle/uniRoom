@@ -1,9 +1,13 @@
 package com.felipe.uniroom.services;
 
 import com.felipe.uniroom.entities.Branch;
+import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.entities.Inventory;
+import com.felipe.uniroom.entities.Room;
 import com.felipe.uniroom.repositories.BranchRepository;
+import com.felipe.uniroom.repositories.CorporateRepository;
 import com.felipe.uniroom.repositories.InventoryRepository;
+import com.felipe.uniroom.repositories.RoomRepository;
 import com.felipe.uniroom.view.Components;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -34,11 +38,11 @@ public class InventoryService {
         }
 
         if (inventory.getDescription().isBlank()) {
-            errorsSb.append("Descrição do inventário não pode ser vazia!\n");
+            errorsSb.append("Nome do inventário não pode ser vazia!\n");
         }
 
         if (inventory.getDescription().length() > 255) {
-            errorsSb.append("Descrição do inventário deve ter no máximo 255 caracteres!\n");
+            errorsSb.append("Nome do inventário deve ter no máximo 255 caracteres!\n");
         }
 
         if (inventory.getRoom() == null) {
@@ -65,6 +69,40 @@ public class InventoryService {
         }
     }
 
+    public static Boolean update(Inventory inventory) {
+        try {
+            final Inventory result = InventoryRepository.findById(Inventory.class, inventory.getIdInventory());
+
+            if (Objects.nonNull(result)) {
+
+                final String validations = validateInventory(inventory, true);
+
+                if (!validations.isEmpty()) {
+                    JOptionPane.showMessageDialog(null, validations);
+
+                    return false;
+                } else {
+                    result.setIdInventory(inventory.getIdInventory());
+                    result.setRoom(inventory.getRoom());
+                    result.setDescription(inventory.getDescription());
+                    result.setActive(inventory.getActive());
+
+                    return InventoryRepository.saveOrUpdate(result);
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Inventario não encontrado.");
+
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Components.showGenericError(null);
+
+            return false;
+        }
+    }
+
     public static Boolean delete(Inventory inventory) {
         try {
             final Inventory result = InventoryRepository.findById(Inventory.class, inventory.getIdInventory());
@@ -85,11 +123,11 @@ public class InventoryService {
         }
     }
 
-    public static List<Inventory> search(String searchText) {
-        if (searchText == null || searchText.trim().isEmpty()) {
-            return InventoryRepository.findAll();  // Return all if no search term provided
-        } else {
-            return InventoryRepository.findByDescriptionLike(searchText.trim());
+    public static List<Inventory> search(String search, String field) {
+        if (Objects.isNull(field) || field.isBlank()) {
+            field = "description";
         }
+
+        return InventoryRepository.search(Inventory.class, search, field);
     }
 }

@@ -70,7 +70,7 @@ public class InventoryView extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 searchItems.clear();
-                searchItems.addAll(InventoryService.search(searchField.getText()));
+                searchItems.addAll(InventoryService.search(searchField.getText(), null));
                 updateInventoryTable();
             }
         });
@@ -78,7 +78,7 @@ public class InventoryView extends JFrame {
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", Constants.ROOM, "Descricao", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", Constants.ROOM, "Nome", "Ativo"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));

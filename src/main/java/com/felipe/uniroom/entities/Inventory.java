@@ -12,7 +12,7 @@ public class Inventory {
     @Column(name = "id_inventory")
     private Integer idInventory;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "id_room", nullable = false)
     private Room room;
 

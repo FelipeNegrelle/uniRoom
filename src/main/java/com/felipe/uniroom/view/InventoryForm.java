@@ -4,7 +4,9 @@ import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Inventory;
 import com.felipe.uniroom.entities.Room;
+import com.felipe.uniroom.repositories.InventoryRepository;
 import com.felipe.uniroom.repositories.RoomRepository;
+import com.felipe.uniroom.services.CorporateService;
 import com.felipe.uniroom.services.InventoryService;
 import net.miginfocom.swing.MigLayout;
 
@@ -33,7 +35,7 @@ public class InventoryForm extends JFrame {
 
         JLabel roomLabel = new JLabel(Constants.ROOM + ":");
         roomLabel.setFont(new Font("Sans", Font.BOLD, 20));
-        JComboBox<Room> roomCombo = new JComboBox<>();
+        JComboBox<RoomItem> roomCombo = new JComboBox<>();
         roomCombo.setPreferredSize(new Dimension(300, 30));
         roomCombo.setFont(new Font("Sans", Font.PLAIN, 20));
         populateRoomCombo(roomCombo);
@@ -45,7 +47,7 @@ public class InventoryForm extends JFrame {
         nameField.setFont(new Font("Sans", Font.PLAIN, 20));
 
         if (Objects.nonNull(entity)) {
-            roomCombo.setSelectedItem(entity.getRoom());
+            roomCombo.setSelectedItem(new RoomItem(entity.getRoom().getIdRoom(), entity.getRoom().getRoomNumber() + " - " + entity.getRoom().getBranch().getName()));
             nameField.setText(entity.getDescription());
         }
 
@@ -62,20 +64,21 @@ public class InventoryForm extends JFrame {
         saveButton.setBackground(Constants.BLUE);
         saveButton.setForeground(Color.WHITE);
 
-        // Final reference to entity for use in lambda
-        final Inventory finalEntity = entity == null ? new Inventory() : entity;
-
         saveButton.addActionListener(e -> {
-            finalEntity.setRoom((Room) roomCombo.getSelectedItem());
-            finalEntity.setDescription(nameField.getText());
-            finalEntity.setActive(true);
+            Inventory inventory = new Inventory();
+            RoomItem selectedItem = (RoomItem) roomCombo.getSelectedItem();
+            Room room = RoomRepository.findById(Room.class, selectedItem.getId());
+            inventory.setIdInventory(Objects.nonNull(entity) ? entity.getIdInventory() : null);
+            inventory.setRoom(room);
+            inventory.setDescription(nameField.getText());
+            inventory.setActive(true);
 
-            if (InventoryService.save(finalEntity)) {
-                JOptionPane.showMessageDialog(this, "Inventário salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
-                dispose();
+            final Boolean result = Objects.nonNull(entity) ? InventoryService.update(inventory) : InventoryService.save(inventory);
+
+            if (Objects.nonNull(result) && result) {
+                JOptionPane.showMessageDialog(this, Constants.SUCCESSFUL_REGISTER, Constants.SUCCESS, JOptionPane.PLAIN_MESSAGE);
                 new InventoryView(role);
-            } else {
-                JOptionPane.showMessageDialog(this, "Erro ao salvar o inventário.", "Erro", JOptionPane.ERROR_MESSAGE);
+                dispose();
             }
         });
 
@@ -100,9 +103,11 @@ public class InventoryForm extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    private void populateRoomCombo(JComboBox<Room> roomCombo) {
+    private void populateRoomCombo(JComboBox<RoomItem> roomCombo) {
         List<Room> rooms = RoomRepository.findAll(Room.class);
-        rooms.forEach(roomCombo::addItem);
+        rooms.forEach(room -> {
+            String displayText = room.getRoomNumber() + " - " + room.getBranch().getName();
+            roomCombo.addItem(new RoomItem(room.getIdRoom(), displayText));
+        });
     }
-
 }
