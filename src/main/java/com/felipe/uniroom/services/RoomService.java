@@ -128,7 +128,7 @@ public class RoomService {
 
     public static List<Room> search(String search, String field) {
         if (Objects.isNull(field) || field.isBlank()) {
-            field = "name";
+            field = "roomNumber";
         }
         return RoomRepository.search(Room.class, search, field);
     }

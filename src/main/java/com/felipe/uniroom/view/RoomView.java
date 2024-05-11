@@ -3,10 +3,7 @@ package com.felipe.uniroom.view;
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Room;
-import com.felipe.uniroom.entities.Room;
 import com.felipe.uniroom.repositories.RoomRepository;
-import com.felipe.uniroom.repositories.RoomRepository;
-import com.felipe.uniroom.services.RoomService;
 import com.felipe.uniroom.services.RoomService;
 import net.miginfocom.swing.MigLayout;
 
