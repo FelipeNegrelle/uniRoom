@@ -91,7 +91,7 @@ public class RoomView extends JFrame{
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
         final Components.IconCellRenderer iconCellRenderer = new Components.IconCellRenderer();
-        final TableColumn activeColumn = table.getColumnModel().getColumn(6);
+        final TableColumn activeColumn = table.getColumnModel().getColumn(7);
         activeColumn.setCellRenderer(iconCellRenderer);
 
         final Components.OptionsCellRenderer optionsCellRenderer = new Components.OptionsCellRenderer();
@@ -122,7 +122,7 @@ public class RoomView extends JFrame{
                     if (RoomService.delete(Room)) {
                         updateRoomTable();
                     } else {
-                        JOptionPane.showMessageDialog(null, "Error deleting room type", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Erro ao deletar quarto", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 });
 

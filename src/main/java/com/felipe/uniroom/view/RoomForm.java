@@ -61,10 +61,20 @@ public class RoomForm extends JFrame {
         roomTypeCombo.setPreferredSize(new Dimension(300, 30));
         roomTypeCombo.setFont(new Font("Sans", Font.PLAIN, 20));
 
+        if (branchCombo.getItemCount() > 0) {
+            branchCombo.setSelectedIndex(0);
+        }
+
         branchCombo.addActionListener(e -> {
-            Branch selectedBranch = branches.get(branchCombo.getSelectedIndex());
-            populateRoomTypeCombo(roomTypeCombo, selectedBranch.getIdBranch(), entity);
+            if (branchCombo.getSelectedIndex() != -1) {
+                Branch selectedBranch = branches.get(branchCombo.getSelectedIndex());
+                populateRoomTypeCombo(roomTypeCombo, selectedBranch.getIdBranch(), entity);
+            }
         });
+
+        if (branchCombo.getSelectedIndex() != -1) {
+            populateRoomTypeCombo(roomTypeCombo, branches.get(branchCombo.getSelectedIndex()).getIdBranch(), entity);
+        }
 
         inputPanel.add(numberLabel);
         inputPanel.add(numberField, "wrap");
