@@ -9,15 +9,16 @@ import java.util.Collections;
 import java.util.List;
 
 public class ItemRepository extends DatabaseRepository{
-    public static List<Item> findByNameAndBranch(String name, Integer idBranch) {
+    public static Item findByNameAndBranch(String name, Integer idBranch) {
         final String query = "SELECT i FROM Item i WHERE i.name = :name AND i.branch.id = :idBranch";
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             return em.createQuery(query, Item.class)
                     .setParameter("name", name)
                     .setParameter("idBranch", idBranch)
-                    .getResultList();
+                    .setMaxResults(1)
+                    .getSingleResult();
         } catch (NoResultException e) {
-            return Collections.emptyList();
+            return null;
         }
     }
 

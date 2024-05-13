@@ -38,7 +38,8 @@ public class ItemService {
                 errorsSb.append("Item já cadastrado!\n");
             }
         } else {
-            if (Objects.nonNull(ItemRepository.findByNameAndBranch(item.getName(), item.getBranch().getIdBranch()))) {
+            Item foundItem = ItemRepository.findByNameAndBranch(item.getName(), item.getBranch().getIdBranch());
+            if (foundItem != null) {
                 errorsSb.append("Item já cadastrado!\n");
             }
         }

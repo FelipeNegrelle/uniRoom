@@ -110,6 +110,7 @@ public class ItemForm extends JFrame {
         cancelButton.setBackground(Color.RED);
         cancelButton.setForeground(Color.WHITE);
         cancelButton.addActionListener(e -> {
+            new ItemView(role);
             dispose();
         });
 
