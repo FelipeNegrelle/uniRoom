@@ -31,6 +31,10 @@ public class InventoryService {
 
         final Set<ConstraintViolation<Inventory>> violations = validator.validate(inventory);
 
+        if (Objects.isNull(inventory.getRoom())) {
+            errorsSb.append("O inventário deve estar associado a um quarto!\n");
+        }
+
         if (!violations.isEmpty()) {
             for (ConstraintViolation<Inventory> violation : violations) {
                 errorsSb.append(violation.getMessage()).append("\n");
@@ -45,9 +49,6 @@ public class InventoryService {
             errorsSb.append("Nome do inventário deve ter no máximo 255 caracteres!\n");
         }
 
-        if (inventory.getRoom() == null) {
-            errorsSb.append("O inventário deve estar associado a um quarto!\n");
-        }
 
         return errorsSb.toString();
     }

@@ -4,9 +4,7 @@ import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Inventory;
 import com.felipe.uniroom.entities.Room;
-import com.felipe.uniroom.repositories.InventoryRepository;
 import com.felipe.uniroom.repositories.RoomRepository;
-import com.felipe.uniroom.services.CorporateService;
 import com.felipe.uniroom.services.InventoryService;
 import net.miginfocom.swing.MigLayout;
 
@@ -38,7 +36,6 @@ public class InventoryForm extends JFrame {
         JComboBox<RoomItem> roomCombo = new JComboBox<>();
         roomCombo.setPreferredSize(new Dimension(300, 30));
         roomCombo.setFont(new Font("Sans", Font.PLAIN, 20));
-        populateRoomCombo(roomCombo);
 
         JLabel descriptionLabel = new JLabel(Constants.NAME + ":");
         descriptionLabel.setFont(new Font("Sans", Font.BOLD, 20));
@@ -67,6 +64,10 @@ public class InventoryForm extends JFrame {
         saveButton.addActionListener(e -> {
             Inventory inventory = new Inventory();
             RoomItem selectedItem = (RoomItem) roomCombo.getSelectedItem();
+            if (selectedItem == null) {
+                JOptionPane.showMessageDialog(this, "Por favor, selecione um quarto válido.", Constants.WARN, JOptionPane.WARNING_MESSAGE);
+                return;
+            }
             Room room = RoomRepository.findById(Room.class, selectedItem.getId());
             inventory.setIdInventory(Objects.nonNull(entity) ? entity.getIdInventory() : null);
             inventory.setRoom(room);
@@ -97,17 +98,27 @@ public class InventoryForm extends JFrame {
 
         add(mainPanel, BorderLayout.CENTER);
 
+        populateRoomCombo(roomCombo, saveButton);
+
         pack();
         setLocationRelativeTo(null);
         setVisible(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    private void populateRoomCombo(JComboBox<RoomItem> roomCombo) {
+
+    private void populateRoomCombo(JComboBox<RoomItem> roomCombo, JButton saveButton) {
         List<Room> rooms = RoomRepository.findAll(Room.class);
-        rooms.forEach(room -> {
-            String displayText = room.getRoomNumber() + " - " + room.getBranch().getName();
-            roomCombo.addItem(new RoomItem(room.getIdRoom(), displayText));
-        });
+        if (rooms.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "Não há quartos registrados.\nNão é possível fazer inventários sem quartos.", Constants.WARN, JOptionPane.PLAIN_MESSAGE);
+            roomCombo.addItem(null);
+            roomCombo.setEnabled(false);
+            saveButton.setEnabled(false);
+        } else {
+            rooms.forEach(room -> {
+                String displayText = room.getRoomNumber() + " - " + room.getBranch().getName();
+                roomCombo.addItem(new RoomItem(room.getIdRoom(), displayText));
+            });
+        }
     }
 }

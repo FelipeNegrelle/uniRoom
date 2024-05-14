@@ -30,25 +30,25 @@ public class RoomService {
         if (isUpdate) {
             List<Room> existingRooms = RoomRepository.findRoomsByNumberBranchAndNotId(room.getRoomNumber(), room.getBranch().getIdBranch(), room.getIdRoom());
             if (!existingRooms.isEmpty()) {
-                errorsSb.append("Quarto com este número já cadastrado nesta filial!\n");
+                errorsSb.append("Quarto com este número já cadastrado nesta filial\n");
             }
         } else {
             List<Room> existingRooms = RoomRepository.findRoomsByNumberAndBranch(room.getRoomNumber(), room.getBranch().getIdBranch());
             if (!existingRooms.isEmpty()) {
-                errorsSb.append("Quarto com este número já cadastrado nesta filial!\n");
+                errorsSb.append("Quarto com este número já cadastrado nesta filial\n");
             }
         }
 
         if (room.getRoomNumber() == null || room.getRoomNumber() <= 0) {
-            errorsSb.append("Número do quarto não pode ser vazio ou zero!\n");
+            errorsSb.append("Número do quarto não pode ser vazio ou zero\n");
         }
 
         if (room.getBranch() == null) {
-            errorsSb.append("Filial não pode ser vazia!\n");
+            errorsSb.append("Filial não pode ser vazia\n");
         }
 
         if (room.getRoomType().equals(null)) {
-            errorsSb.append("Tipo de quarto não pode ser vazio!\n");
+            errorsSb.append("Tipo de quarto não pode ser vazio\n");
         }
 
         return errorsSb.toString();

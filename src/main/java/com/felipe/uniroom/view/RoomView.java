@@ -79,7 +79,7 @@ public class RoomView extends JFrame{
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "N quarto", "Tipo","Preço", "Capacidade", "Filial", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nº quarto", "Tipo","Preço", "Capacidade", "Filial", "Ativo"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
