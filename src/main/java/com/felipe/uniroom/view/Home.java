@@ -14,6 +14,7 @@ public class Home extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 50", "[grow]", "[grow]"));
         getContentPane().setBackground(Constants.BLUE);
+        setIconImage(Constants.LOGO);
 
         final JPanel mainPanel = new JPanel(new MigLayout("fill, insets 20", "[grow]", "[align center]"));
         mainPanel.setBackground(Constants.WHITE);

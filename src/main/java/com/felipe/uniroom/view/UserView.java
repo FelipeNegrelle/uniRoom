@@ -25,6 +25,7 @@ public class UserView extends JFrame {
 
         final JPanel panel = new JPanel(new MigLayout("fill, wrap 1", "[grow]", ""));
         panel.setBackground(Constants.BLUE);
+        setIconImage(Constants.LOGO);
 
         final JLabel titleLabel = new JLabel(Constants.USER);
         titleLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 40));

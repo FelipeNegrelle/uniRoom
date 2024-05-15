@@ -27,7 +27,8 @@ public class ReservationForm extends JFrame {
         super(Constants.RESERVATION);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 50", "[grow]", "[grow]"));
-        getContentPane().setBackground(Constants.BLUE); // Cor de fundo semelhante ao Constants.BLUE
+        getContentPane().setBackground(Constants.BLUE);
+        setIconImage(Constants.LOGO);
 
         JPanel mainPanel = new JPanel(new MigLayout("fill, insets 20", "[grow]", "[align center]"));
         mainPanel.setBackground(Color.WHITE);
