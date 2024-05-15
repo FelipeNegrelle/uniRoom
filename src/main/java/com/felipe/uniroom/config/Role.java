@@ -1,5 +1,7 @@
 package com.felipe.uniroom.config;
 
+import com.felipe.uniroom.entities.Branch;
+import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.entities.Menu;
 
 import java.util.ArrayList;
@@ -7,14 +9,24 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public enum Role {
-    ADMIN('A'), MANAGER('M'), EMPLOYEE('E');
+public class Role {
     private final char role;
     private final List<Menu> menus;
+    private Corporate corporate;
+    private Branch branch;
 
-    Role(char role) {
+    public Role(char role) {
         this.role = role;
         this.menus = getMenusByRole(role);
+        this.corporate = null;
+        this.branch = null;
+    }
+
+    public Role(char role, Corporate corporate, Branch branch) {
+        this.role = role;
+        this.menus = getMenusByRole(role);
+        this.corporate = corporate;
+        this.branch = branch;
     }
 
     public char getRole() {
@@ -23,6 +35,22 @@ public enum Role {
 
     public List<Menu> getMenus() {
         return menus;
+    }
+
+    public Corporate getCorporate() {
+        return corporate;
+    }
+
+    public void setCorporate(Corporate corporate) {
+        this.corporate = corporate;
+    }
+
+    public Branch getBranch() {
+        return branch;
+    }
+
+    public void setBranch(Branch branch) {
+        this.branch = branch;
     }
 
     public static List<Menu> getMenusByRole(char role) {

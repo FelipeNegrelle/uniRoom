@@ -42,8 +42,10 @@ public class Main {
                 System.out.println("corporate is null");
                 CorporateService.save(uniroom);
             }
+
             Runtime.getRuntime().addShutdownHook(new Thread(ConnectionManager::closeEntityManagerFactory));
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
         }
     }

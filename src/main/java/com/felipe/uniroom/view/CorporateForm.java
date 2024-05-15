@@ -127,5 +127,4 @@ public class CorporateForm extends JFrame {
             userCombo.setSelectedItem(entity.getUser().getName());
         }
     }
-
 }

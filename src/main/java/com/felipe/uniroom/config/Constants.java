@@ -1,5 +1,7 @@
 package com.felipe.uniroom.config;
 
+import com.felipe.uniroom.Main;
+
 import java.awt.*;
 
 import javax.swing.Icon;
@@ -47,6 +49,7 @@ public class Constants {
     public static final String NEW = "Novo";
     public static final String SEARCH = "Pesquisa";
     public static final String CNPJ = "Cnpj";
+    public static final String EXIT = "Sair";
 
     //Colors
     public static final Color WHITE = new Color(0xFFFFFF);
@@ -81,4 +84,6 @@ public class Constants {
     public static final Icon DELETE_ICON = new ImageIcon("src/main/resources/images/icons/delete.png");
     public static final Icon BACK_ICON = new ImageIcon("src/main/resources/images/icons/arrow-back.png");
     public static final Icon ADD_ICON = new ImageIcon("src/main/resources/images/icons/add.png");
+    public static final Icon EXIT_ICON = new ImageIcon("src/main/resources/images/icons/exit.png");
+    public static final Image LOGO = Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/images/uniroom.jpeg"));
 }

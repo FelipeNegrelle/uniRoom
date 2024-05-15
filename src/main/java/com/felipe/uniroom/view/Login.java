@@ -1,25 +1,16 @@
 package com.felipe.uniroom.view;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.util.Arrays;
-
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.JTextField;
-
 import com.felipe.uniroom.config.Constants;
-import com.felipe.uniroom.config.Util;
+import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.entities.Branch;
+import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.entities.User;
 import com.felipe.uniroom.repositories.UserRepository;
 import com.felipe.uniroom.services.UserService;
-
 import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class Login extends JFrame {
     public Login() {
@@ -27,6 +18,7 @@ public class Login extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 50", "[grow]", "[grow]"));
         getContentPane().setBackground(Constants.BLUE);
+        setIconImage(Constants.LOGO);
 
         final JPanel mainPanel = new JPanel(new MigLayout("fill, insets 20", "[grow]", "[align center]"));
         mainPanel.setBackground(Constants.WHITE);
@@ -84,12 +76,18 @@ public class Login extends JFrame {
                     dispose();
 
                     if (user != null) {
-                        new Home(Util.getRoleUser(user));
+                        final Corporate userCorporate = UserRepository.getCorporateUser(user);
+                        final Branch userBranch = UserRepository.getBranchUser(user);
+
+                        final Role role = new Role(user.getRole(), userCorporate, userBranch);
+
+                        new Home(role);
                     } else {
                         JOptionPane.showMessageDialog(this, Constants.GENERIC_ERROR);
                     }
                 }
-            } catch (Exception exception) {
+            } catch (
+                    Exception exception) {
                 exception.printStackTrace();
             }
         });
@@ -103,7 +101,8 @@ public class Login extends JFrame {
             try {
                 new Components.ForgetPasswordDialog(this, userField.getText()).setVisible(true);
                 System.out.println("Forget password button clicked");
-            } catch (Exception exception) {
+            } catch (
+                    Exception exception) {
                 exception.printStackTrace();
             }
         });

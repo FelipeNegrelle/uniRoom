@@ -1,12 +1,12 @@
 package com.felipe.uniroom.view;
 
-import java.awt.*;
-import javax.swing.*;
-
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Menu;
 import net.miginfocom.swing.MigLayout;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class Home extends JFrame {
     public Home(Role role) {
@@ -29,7 +29,7 @@ public class Home extends JFrame {
         buttonPanel.setBackground(Constants.WHITE);
 
         for (Menu menu : role.getMenus()) {
-            JButton button = new JButton(menu.getName(), menu.getIcon());
+            final JButton button = new JButton(menu.getName(), menu.getIcon());
             button.setFont(Constants.FONT.deriveFont(Font.BOLD));
             button.setPreferredSize(Constants.BUTTON_SIZE);
             button.setBackground(Constants.YELLOW);
@@ -39,13 +39,26 @@ public class Home extends JFrame {
                     menu.getDestination().getDeclaredConstructor(Role.class).newInstance(role);
 
                     dispose();
-                } catch (Exception ex) {
+                } catch (
+                        Exception ex) {
                     ex.printStackTrace();
                 }
             });
 
             buttonPanel.add(button, "grow");
         }
+
+        final JButton button = new JButton(Constants.EXIT, Constants.EXIT_ICON);
+        button.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        button.setPreferredSize(Constants.BUTTON_SIZE);
+        button.setBackground(Constants.RED);
+        button.setForeground(Constants.WHITE);
+        button.addActionListener(e -> {
+            new Login();
+
+            dispose();
+        });
+        buttonPanel.add(button, "grow");
 
         gridPanel.add(buttonPanel, "grow");
         mainPanel.add(scrollPane, "grow, push, wrap");

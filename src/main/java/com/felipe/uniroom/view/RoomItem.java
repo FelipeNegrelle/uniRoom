@@ -13,6 +13,18 @@ public class RoomItem {
         return id;
     }
 
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getDisplay() {
+        return display;
+    }
+
+    public void setDisplay(String display) {
+        this.display = display;
+    }
+
     @Override
     public String toString() {
         return display;  // Isso será usado para exibir no JComboBox

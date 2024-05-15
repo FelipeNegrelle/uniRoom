@@ -20,7 +20,7 @@ public class RoomType {
     @Column(nullable = false)
     private Float price;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne()
     @JoinColumn(name = "id_branch", nullable = false)
     private Branch branch;
 

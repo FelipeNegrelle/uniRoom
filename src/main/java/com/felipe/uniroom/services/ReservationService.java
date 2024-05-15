@@ -12,13 +12,15 @@ public class ReservationService {
         final StringBuilder errorsSb = new StringBuilder();
 
         if (Objects.isNull(reservation.getRoom())) {
-            errorsSb.append("Quarto da reserva não pode ser vazio.n\n");
+            errorsSb.append("Quarto da reserva não pode ser vazio.\n");
         }
 
-
+        if (Objects.isNull(reservation.getBranch())) {
+            errorsSb.append("Filial da reserva não pode ser vazio.\n");
+        }
 
         if (Objects.isNull(reservation.getUser())) {
-            errorsSb.append("Usuário da reserva não pode ser vazio.n\n");
+            errorsSb.append("Usuário da reserva não pode ser vazio.\n");
         }
 
         if (reservation.getDays() <= 0) {
@@ -39,7 +41,8 @@ public class ReservationService {
             } else {
                 return ReservationRepository.saveOrUpdate(reservation);
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
 
             Components.showGenericError(null);
@@ -74,7 +77,8 @@ public class ReservationService {
 
                 return false;
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
 
             Components.showGenericError(null);
@@ -87,7 +91,7 @@ public class ReservationService {
         try {
             final Reservation result = ReservationRepository.findById(Reservation.class, reservation.getIdReservation());
 
-            if(Objects.nonNull(result)) {
+            if (Objects.nonNull(result)) {
                 result.setStatus("C");
 
                 return ReservationRepository.cancel(result);
@@ -96,7 +100,8 @@ public class ReservationService {
 
                 return false;
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
 
             Components.showGenericError(null);
