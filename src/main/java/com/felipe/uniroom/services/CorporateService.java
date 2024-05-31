@@ -1,5 +1,6 @@
 package com.felipe.uniroom.services;
 
+import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.repositories.CorporateRepository;
 import com.felipe.uniroom.view.Components;
@@ -137,11 +138,11 @@ public class CorporateService {
         }
     }
 
-    public static List<Corporate> search(String search, String field) {
+    public static List<Corporate> search(String search, String field, Role role) {
         if (Objects.isNull(field) || field.isBlank()) {
             field = "name";
         }
 
-        return CorporateRepository.search(Corporate.class, search, field);
+        return CorporateRepository.search(Corporate.class, search, field, role);
     }
 }

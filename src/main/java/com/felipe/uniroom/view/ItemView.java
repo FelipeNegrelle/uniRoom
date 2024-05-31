@@ -71,8 +71,8 @@ public class ItemView extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 searchItems.clear();
-                searchItems.addAll(ItemService.search(searchField.getText(), null));
-                updateItemTable();
+                searchItems.addAll(ItemService.search(searchField.getText(), null, role));
+                updateItemTable(role);
             }
         });
         searchPanel.add(searchField, "align left");
@@ -120,7 +120,7 @@ public class ItemView extends JFrame {
                     final Item item = new Item();
                     item.setIdItem((Integer) model.getValueAt(row, 1));
                     if (ItemService.delete(item)) {
-                        updateItemTable();
+                        updateItemTable(role);
                     } else {
                         JOptionPane.showMessageDialog(null, "Erro ao deletar item.", "Erro", JOptionPane.ERROR_MESSAGE);
                     }
@@ -139,7 +139,7 @@ public class ItemView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateItemTable();
+        updateItemTable(role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -147,7 +147,7 @@ public class ItemView extends JFrame {
         setVisible(true);
     }
 
-    private void updateItemTable() {
+    private void updateItemTable(Role role) {
         model.setRowCount(0);
 
         if (!searchItems.isEmpty()) {
@@ -163,7 +163,7 @@ public class ItemView extends JFrame {
             }
             searchItems.clear();
         } else {
-            final List<Item> itemList = ItemRepository.findAll(Item.class);
+            final List<Item> itemList = ItemRepository.findAll(Item.class, role);
             if (Objects.nonNull(itemList)) {
                 for (Item item : itemList) {
                     model.addRow(new Object[]{

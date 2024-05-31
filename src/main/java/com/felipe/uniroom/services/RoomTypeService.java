@@ -1,5 +1,6 @@
 package com.felipe.uniroom.services;
 
+import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.RoomType;
 import com.felipe.uniroom.repositories.RoomTypeRepository;
 import com.felipe.uniroom.view.Components;
@@ -90,10 +91,10 @@ public class RoomTypeService {
         }
     }
 
-    public static List<RoomType> search(String search, String field) {
+    public static List<RoomType> search(String search, String field, Role role) {
         if (Objects.isNull(field) || field.isBlank()) {
             field = "name";
         }
-        return RoomTypeRepository.search(RoomType.class, search, field);
+        return RoomTypeRepository.search(RoomType.class, search, field, role);
     }
 }

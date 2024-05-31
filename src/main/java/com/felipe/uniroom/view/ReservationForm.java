@@ -64,9 +64,9 @@ public class ReservationForm extends JFrame {
         roomsCombo.setPreferredSize(new Dimension(300, 30));
         roomsCombo.setFont(Constants.FONT);
 
-        populateUserCombo(userCombo, entity);
-        populateBranchCombo(branchesCombo, entity);
-        populateRoomsCombo(roomsCombo, entity);
+        populateUserCombo(userCombo, entity, role);
+        populateBranchCombo(branchesCombo, entity, role);
+        populateRoomsCombo(roomsCombo, entity, role);
 
         inputPanel.add(daysLabel);
         inputPanel.add(daysField, "wrap");
@@ -125,8 +125,8 @@ public class ReservationForm extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    private void populateUserCombo(JComboBox<String> userCombo, Reservation entity) {
-        final List<User> userList = UserRepository.findAll(User.class);
+    private void populateUserCombo(JComboBox<String> userCombo, Reservation entity, Role role) {
+        final List<User> userList = UserRepository.findAll(User.class, role);
 
         if (Objects.nonNull(userList)) {
             userCombo.removeAllItems();
@@ -142,8 +142,8 @@ public class ReservationForm extends JFrame {
         }
     }
 
-    private void populateBranchCombo(JComboBox<String> branchCombo, Reservation entity) {
-        final List<Branch> branchList = BranchRepository.findAll(Branch.class);
+    private void populateBranchCombo(JComboBox<String> branchCombo, Reservation entity, Role role) {
+        final List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
 
         if (Objects.nonNull(branchList)) {
             branchCombo.removeAllItems();
@@ -159,8 +159,8 @@ public class ReservationForm extends JFrame {
         }
     }
 
-    private void populateRoomsCombo(JComboBox<String> roomsCombo, Reservation entity) {
-        final List<Room> roomList = RoomRepository.findAll(Room.class);
+    private void populateRoomsCombo(JComboBox<String> roomsCombo, Reservation entity, Role role) {
+        final List<Room> roomList = RoomRepository.findAll(Room.class, role);
 
         if (Objects.nonNull(roomList)) {
             roomsCombo.removeAllItems();

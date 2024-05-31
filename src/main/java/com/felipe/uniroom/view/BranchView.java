@@ -15,6 +15,7 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,6 +27,10 @@ public class BranchView extends JFrame {
         super(Constants.BRANCH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
+
+        System.out.println(role.getRole());
+        System.out.println(Arrays.toString(role.getCorporates().toArray()));
+        System.out.println(Arrays.toString(role.getBranches().toArray()));
 
         final JPanel panel = new JPanel(new MigLayout("fill, wrap 1", "[grow]", ""));
         panel.setBackground(Constants.BLUE);
@@ -70,8 +75,8 @@ public class BranchView extends JFrame {
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                searchItens.addAll(BranchService.search(searchField.getText(), null));
-                updateBranchTable();
+                searchItens.addAll(BranchService.search(searchField.getText(), null, role));
+                updateBranchTable(role);
             }
         });
         searchPanel.add(searchField, "align left");
@@ -122,7 +127,7 @@ public class BranchView extends JFrame {
                     branch.setIdBranch((int) model.getValueAt(row, 1));
 
                     if (BranchService.delete(branch)) {
-                        updateBranchTable();
+                        updateBranchTable(role);
                     } else {
                         Components.showGenericError(this);
                     }
@@ -141,7 +146,7 @@ public class BranchView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateBranchTable();
+        updateBranchTable(role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -149,7 +154,7 @@ public class BranchView extends JFrame {
         setVisible(true);
     }
 
-    private static void updateBranchTable() {
+    private static void updateBranchTable(Role role) {
         model.setRowCount(0);
 
         if (!searchItens.isEmpty()) {
@@ -166,7 +171,7 @@ public class BranchView extends JFrame {
             }
             searchItens.clear();
         } else {
-            final List<Branch> branchList = BranchRepository.findAll(Branch.class);
+            final List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
             if (Objects.nonNull(branchList)) {
                 for (Branch branch : branchList) {
                     model.addRow(new Object[]{

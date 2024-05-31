@@ -1,5 +1,6 @@
 package com.felipe.uniroom.services;
 
+import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Item;
 import com.felipe.uniroom.repositories.InventoryRepository;
 import com.felipe.uniroom.repositories.ItemRepository;
@@ -108,11 +109,11 @@ public class ItemService {
         }
     }
 
-    public static List<Item> search(String search, String field) {
+    public static List<Item> search(String search, String field, Role role) {
         if (Objects.isNull(field) || field.isBlank()) {
             field = "name";
         }
 
-        return InventoryRepository.search(Item.class, search, field);
+        return InventoryRepository.search(Item.class, search, field, role);
     }
 }

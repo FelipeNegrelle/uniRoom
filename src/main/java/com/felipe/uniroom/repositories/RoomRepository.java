@@ -11,11 +11,11 @@ import java.util.List;
 
 public class RoomRepository extends DatabaseRepository{
 
-    public static List<RoomType> findByBranchId(Integer idBranch) {
-        final String query = "SELECT rt FROM RoomType rt WHERE rt.branch.id = :idBranch";
+    public static List<RoomType> findByBranchId(List<Integer> idBranches) {
+        final String query = "SELECT rt FROM RoomType rt WHERE rt.branch.id in :idBranches";
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             return em.createQuery(query, RoomType.class)
-                    .setParameter("idBranch", idBranch)
+                    .setParameter("idBranches", idBranches)
                     .getResultList();
         } catch (NoResultException e) {
             return Collections.emptyList();

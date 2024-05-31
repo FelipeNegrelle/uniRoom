@@ -71,8 +71,8 @@ public class RoomTypeView extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 searchItems.clear();
-                searchItems.addAll(RoomTypeService.search(searchField.getText(), null));
-                updateRoomTypeTable();
+                searchItems.addAll(RoomTypeService.search(searchField.getText(), null, role));
+                updateRoomTypeTable(role);
             }
         });
         searchPanel.add(searchField, "align left");
@@ -120,7 +120,7 @@ public class RoomTypeView extends JFrame {
                     final RoomType roomType = new RoomType();
                     roomType.setIdRoomType((Integer) model.getValueAt(row, 1));
                     if (RoomTypeService.delete(roomType)) {
-                        updateRoomTypeTable();
+                        updateRoomTypeTable(role);
                     } else {
                         JOptionPane.showMessageDialog(null, "Error deleting room type", "Error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -139,7 +139,7 @@ public class RoomTypeView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateRoomTypeTable();
+        updateRoomTypeTable(role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -147,7 +147,7 @@ public class RoomTypeView extends JFrame {
         setVisible(true);
     }
 
-    private static void updateRoomTypeTable() {
+    private static void updateRoomTypeTable(Role role) {
         model.setRowCount(0);
 
         if (!searchItems.isEmpty()) {
@@ -164,7 +164,7 @@ public class RoomTypeView extends JFrame {
             }
             searchItems.clear();
         } else {
-            final List<RoomType> roomTypeList = RoomTypeRepository.findAll(RoomType.class);
+            final List<RoomType> roomTypeList = RoomTypeRepository.findAll(RoomType.class, role);
             if (Objects.nonNull(roomTypeList)) {
                 for (RoomType roomType : roomTypeList) {
                     model.addRow(new Object[]{

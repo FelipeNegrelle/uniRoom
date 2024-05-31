@@ -12,7 +12,8 @@ public enum Menus {
     MENU_ITEM(new Menu(Constants.ITEM, Constants.ITEM_ICON, ItemView.class)),
     MENU_RESERVATION(new Menu(Constants.RESERVATION, Constants.RESERVATION_ICON, ReservationView.class)),
     MENU_ROOM(new Menu(Constants.ROOM, Constants.ROOM_ICON, RoomView.class)),
-    MENU_ROOM_TYPE(new Menu(Constants.ROOM_TYPE, Constants.ROOM_TYPE_ICON, RoomTypeView.class));
+    MENU_ROOM_TYPE(new Menu(Constants.ROOM_TYPE, Constants.ROOM_TYPE_ICON, RoomTypeView.class)),
+    MENU_GUEST(new Menu(Constants.GUEST, Constants.USER_ICON, GuestView.class));
 
     private final Menu menu;
 

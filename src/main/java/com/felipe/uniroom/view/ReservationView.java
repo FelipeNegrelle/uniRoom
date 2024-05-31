@@ -99,7 +99,7 @@ public class ReservationView extends JFrame {
                     reservation.setIdReservation((int) model.getValueAt(row, 1));
 
                     if (ReservationService.cancel(reservation)) {
-                        updateReservationTable();
+                        updateReservationTable(role);
                     } else {
                         Components.showGenericError(this);
                     }
@@ -118,7 +118,7 @@ public class ReservationView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateReservationTable();
+        updateReservationTable(role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -126,7 +126,7 @@ public class ReservationView extends JFrame {
         setVisible(true);
     }
 
-    private static void updateReservationTable() {
+    private static void updateReservationTable(Role role) {
         model.setRowCount(0);
 
         if (!searchItens.isEmpty()) {
@@ -143,7 +143,7 @@ public class ReservationView extends JFrame {
             }
             searchItens.clear();
         } else {
-            final List<Reservation> reservationList = ReservationRepository.findAll(Reservation.class);
+            final List<Reservation> reservationList = ReservationRepository.findAll(Reservation.class, role);
             if (Objects.nonNull(reservationList)) {
                 for (Reservation reservation : reservationList) {
                     model.addRow(new Object[]{

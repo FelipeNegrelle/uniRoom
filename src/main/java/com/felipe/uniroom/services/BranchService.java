@@ -1,5 +1,6 @@
 package com.felipe.uniroom.services;
 
+import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.repositories.BranchRepository;
 import com.felipe.uniroom.view.Components;
@@ -30,7 +31,7 @@ public class BranchService {
         final Set<ConstraintViolation<Branch>> violations = validator.validate(branch);
 
         if (!violations.isEmpty()) {
-            violations.forEach(violation -> errorsSb.append(violation.getMessage().equals("número do registro de contribuinte corporativo brasileiro (CNPJ) inválido") ? "CNPJ Inválido" : violation.getMessage()).append("\n"));
+            violations.forEach(violation -> errorsSb.append(violation.getMessage().equals("número do registro de contribuinte corporativo brasileiro (CNPJ) inválido") ? "CNPJ Inválido!" : violation.getMessage()).append("\n"));
         }
 
         if (isUpdate) {
@@ -136,11 +137,11 @@ public class BranchService {
         }
     }
 
-    public static List<Branch> search(String search, String field) {
+    public static List<Branch> search(String search, String field, Role role) {
         if (Objects.isNull(field) || field.isBlank()) {
             field = "name";
         }
 
-        return BranchRepository.search(Branch.class, search, field);
+        return BranchRepository.search(Branch.class, search, field, role);
     }
 }

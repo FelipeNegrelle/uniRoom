@@ -59,14 +59,14 @@ public class BranchForm extends JFrame {
         corporateCombo.setPreferredSize(new Dimension(300, 30));
         corporateCombo.setFont(Constants.FONT);
 
-        populateCorporateCombo(corporateCombo, entity);
+        populateCorporateCombo(corporateCombo, entity, role);
 
         final JLabel userLabel = Components.getLabel(Constants.USER, null, Font.BOLD, null, null);
         final JComboBox<String> userCombo = new JComboBox<>();
         userCombo.setPreferredSize(new Dimension(300, 30));
         userCombo.setFont(Constants.FONT);
 
-        populateUserCombo(userCombo, entity);
+        populateUserCombo(userCombo, entity, role);
 
         inputPanel.add(nameLabel);
         inputPanel.add(nameField, "wrap");
@@ -126,8 +126,8 @@ public class BranchForm extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    private void populateCorporateCombo(JComboBox<String> corporateCombo, Branch entity) {
-        final List<Corporate> corporateList = CorporateRepository.findAll(Corporate.class);
+    private void populateCorporateCombo(JComboBox<String> corporateCombo, Branch entity, Role role) {
+        final List<Corporate> corporateList = CorporateRepository.findAll(Corporate.class, role);
 
         if (Objects.isNull(corporateList) || corporateList.isEmpty()) {
             corporateCombo.addItem("Nenhuma matriz cadastrada");
@@ -145,8 +145,8 @@ public class BranchForm extends JFrame {
         }
     }
 
-    private void populateUserCombo(JComboBox<String> userCombo, Branch entity) {
-        final List<User> userList = UserRepository.findAll(User.class);
+    private void populateUserCombo(JComboBox<String> userCombo, Branch entity, Role role) {
+        final List<User> userList = UserRepository.findAll(User.class, role);
 
         if (Objects.isNull(userList) || userList.isEmpty()) {
             userCombo.addItem("Nenhum usuário cadastrado");

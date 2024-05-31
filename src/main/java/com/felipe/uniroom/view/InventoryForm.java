@@ -2,18 +2,24 @@ package com.felipe.uniroom.view;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Inventory;
+import com.felipe.uniroom.entities.Item;
 import com.felipe.uniroom.entities.Room;
+import com.felipe.uniroom.repositories.BranchRepository;
 import com.felipe.uniroom.repositories.RoomRepository;
 import com.felipe.uniroom.services.InventoryService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class InventoryForm extends JFrame {
+    final List<Branch> branches = new ArrayList<>();
+
     public InventoryForm(Role role, Inventory entity) {
         super(Constants.INVENTORY);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -38,6 +44,12 @@ public class InventoryForm extends JFrame {
         roomCombo.setPreferredSize(new Dimension(300, 30));
         roomCombo.setFont(new Font("Sans", Font.PLAIN, 20));
 
+        JLabel branchLabel = new JLabel(Constants.BRANCH + ":");
+        branchLabel.setFont(new Font("Sans", Font.BOLD, 20));
+        JComboBox<String> branchCombo = new JComboBox<>();
+        branchCombo.setPreferredSize(new Dimension(300, 30));
+        branchCombo.setFont(new Font("Sans", Font.PLAIN, 20));
+
         JLabel descriptionLabel = new JLabel(Constants.NAME + ":");
         descriptionLabel.setFont(new Font("Sans", Font.BOLD, 20));
         final JTextField nameField = new JTextField(20);
@@ -51,6 +63,8 @@ public class InventoryForm extends JFrame {
 
         inputPanel.add(roomLabel);
         inputPanel.add(roomCombo, "wrap");
+        inputPanel.add(branchLabel);
+        inputPanel.add(branchCombo, "wrap");
         inputPanel.add(descriptionLabel);
         inputPanel.add(nameField, "wrap");
 
@@ -72,6 +86,7 @@ public class InventoryForm extends JFrame {
             Room room = RoomRepository.findById(Room.class, selectedItem.getId());
             inventory.setIdInventory(Objects.nonNull(entity) ? entity.getIdInventory() : null);
             inventory.setRoom(room);
+            inventory.setBranch(branches.get(branchCombo.getSelectedIndex()));
             inventory.setDescription(nameField.getText());
             inventory.setActive(true);
 
@@ -99,7 +114,8 @@ public class InventoryForm extends JFrame {
 
         add(mainPanel, BorderLayout.CENTER);
 
-        populateRoomCombo(roomCombo, saveButton);
+        populateRoomCombo(roomCombo, saveButton, role);
+        populateBranchCombo(branchCombo, entity, role);
 
         pack();
         setLocationRelativeTo(null);
@@ -108,8 +124,8 @@ public class InventoryForm extends JFrame {
     }
 
 
-    private void populateRoomCombo(JComboBox<RoomItem> roomCombo, JButton saveButton) {
-        List<Room> rooms = RoomRepository.findAll(Room.class);
+    private void populateRoomCombo(JComboBox<RoomItem> roomCombo, JButton saveButton, Role role) {
+        List<Room> rooms = RoomRepository.findAll(Room.class, role);
         if (rooms.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Não há quartos registrados.\nNão é possível fazer inventários sem quartos.", Constants.WARN, JOptionPane.PLAIN_MESSAGE);
             roomCombo.addItem(null);
@@ -120,6 +136,24 @@ public class InventoryForm extends JFrame {
                 String displayText = room.getRoomNumber() + " - " + room.getBranch().getName();
                 roomCombo.addItem(new RoomItem(room.getIdRoom(), displayText));
             });
+        }
+    }
+
+    private void populateBranchCombo(JComboBox<String> branchCombo, Inventory entity, Role role) {
+        final List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
+
+        if (Objects.nonNull(branchList) && !branchList.isEmpty()) {
+            branchCombo.removeAllItems();
+            branches.clear();
+
+            for (Branch branch : branchList) {
+                branchCombo.addItem(branch.getName());
+                branches.add(branch);
+            }
+        }
+
+        if (Objects.nonNull(entity)) {
+            branchCombo.setSelectedItem(entity.getBranch().getName());
         }
     }
 }

@@ -76,10 +76,10 @@ public class Login extends JFrame {
                     dispose();
 
                     if (user != null) {
-                        final Corporate userCorporate = UserRepository.getCorporateUser(user);
-                        final Branch userBranch = UserRepository.getBranchUser(user);
+                        final java.util.List<Corporate> userCorporate = UserRepository.getCorporateUser(user);
+                        final java.util.List<Branch> userBranch = UserRepository.getBranchUser(user);
 
-                        final Role role = new Role(user.getRole(), userCorporate, userBranch);
+                        final Role role = new Role(user.getRole(), user, userCorporate, userBranch);
 
                         new Home(role);
                     } else {

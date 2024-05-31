@@ -12,15 +12,30 @@ public class Home extends JFrame {
     public Home(Role role) {
         super(Constants.UNIROOM);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        setLayout(new MigLayout("fill, insets 50", "[grow]", "[grow]"));
+        setLayout(new MigLayout("insets 50", "[grow]", "[grow]"));
         getContentPane().setBackground(Constants.BLUE);
         setIconImage(Constants.LOGO);
 
-        final JPanel mainPanel = new JPanel(new MigLayout("fill, insets 20", "[grow]", "[align center]"));
+        final JPanel mainPanel = new JPanel(new MigLayout("fill, insets 20", "[grow]50[grow]", "[]"));
         mainPanel.setBackground(Constants.WHITE);
 
         final JLabel titlePage = Components.getLabel(Constants.UNIROOM, null, Font.BOLD, 60, Constants.WHITE);
-        add(titlePage, "align center, wrap");
+        add(titlePage, "align center, wrap, span");
+
+        final JLabel userLabel = Components.getLabel("Bem-vindo, " + role.getUser().getName(), null, Font.BOLD, 20, Constants.BLACK);
+        mainPanel.add(userLabel, "split, span, align center");
+
+        final JButton exit = new JButton("", Constants.EXIT_ICON);
+        exit.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        exit.setPreferredSize(new Dimension(10, 10));
+        exit.setBackground(Constants.RED);
+        exit.setForeground(Constants.WHITE);
+        exit.addActionListener(e -> {
+            new Login();
+
+            dispose();
+        });
+        mainPanel.add(exit, "align center, wrap");
 
         final JPanel gridPanel = new JPanel(new MigLayout("fill, insets 0", "[grow]", "[align top]"));
         JScrollPane scrollPane = new JScrollPane(gridPanel);
@@ -49,22 +64,10 @@ public class Home extends JFrame {
             buttonPanel.add(button, "grow");
         }
 
-        final JButton button = new JButton(Constants.EXIT, Constants.EXIT_ICON);
-        button.setFont(Constants.FONT.deriveFont(Font.BOLD));
-        button.setPreferredSize(Constants.BUTTON_SIZE);
-        button.setBackground(Constants.RED);
-        button.setForeground(Constants.WHITE);
-        button.addActionListener(e -> {
-            new Login();
-
-            dispose();
-        });
-        buttonPanel.add(button, "grow");
-
         gridPanel.add(buttonPanel, "grow");
         mainPanel.add(scrollPane, "grow, push, wrap");
 
-        add(mainPanel, BorderLayout.CENTER);
+        add(mainPanel, "align center");
 
         pack();
         setLocationRelativeTo(null);

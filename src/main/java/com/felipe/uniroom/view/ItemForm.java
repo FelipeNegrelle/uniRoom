@@ -58,7 +58,7 @@ public class ItemForm extends JFrame {
         final JComboBox<String> branchCombo = new JComboBox<>();
         branchCombo.setPreferredSize(new Dimension(300, 30));
         branchCombo.setFont(new Font("Sans", Font.PLAIN, 20));
-        populateBranchCombo(branchCombo, entity);
+        populateBranchCombo(branchCombo, entity, role);
 
         inputPanel.add(nameLabel);
         inputPanel.add(nameField, "wrap");
@@ -126,8 +126,8 @@ public class ItemForm extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    private void populateBranchCombo(JComboBox<String> branchCombo, Item entity) {
-        List<Branch> branchList = BranchRepository.findAll(Branch.class);
+    private void populateBranchCombo(JComboBox<String> branchCombo, Item entity, Role role) {
+        List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
         for (Branch branch : branchList) {
             branchCombo.addItem(branch.getName());
             branches.add(branch);

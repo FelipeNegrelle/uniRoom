@@ -145,16 +145,18 @@ public class UserView extends JFrame {
     }
 
     private static String getRoleTranslation(char roleCode) {
-        switch (roleCode) {
-            case 'A':
-                return "Administrador";
-            case 'M':
-                return "Gerente";
-            case 'E':
-                return "Funcionário";
-            default:
-                return "Desconhecido";
-        }
+        return switch (roleCode) {
+            case 'A' ->
+                    "Administrador";
+            case 'C' ->
+                    "Gerente de Matriz";
+            case 'B' ->
+                    "Gerente de Filial";
+            case 'E' ->
+                    "Funcionário";
+            default ->
+                    "Desconhecido";
+        };
     }
 
     private static void updateUserTable(String searchText) {

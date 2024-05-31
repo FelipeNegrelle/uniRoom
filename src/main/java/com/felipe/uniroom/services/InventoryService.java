@@ -1,5 +1,6 @@
 package com.felipe.uniroom.services;
 
+import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.entities.Inventory;
@@ -33,6 +34,10 @@ public class InventoryService {
 
         if (Objects.isNull(inventory.getRoom())) {
             errorsSb.append("O inventário deve estar associado a um quarto!\n");
+        }
+
+        if(Objects.isNull(inventory.getBranch())) {
+            errorsSb.append("O inventário deve estar associado a uma filial!\n");
         }
 
         if (!violations.isEmpty()) {
@@ -85,6 +90,7 @@ public class InventoryService {
                 } else {
                     result.setIdInventory(inventory.getIdInventory());
                     result.setRoom(inventory.getRoom());
+                    result.setBranch(inventory.getBranch());
                     result.setDescription(inventory.getDescription());
                     result.setActive(inventory.getActive());
 
@@ -124,11 +130,11 @@ public class InventoryService {
         }
     }
 
-    public static List<Inventory> search(String search, String field) {
+    public static List<Inventory> search(String search, String field, Role role) {
         if (Objects.isNull(field) || field.isBlank()) {
             field = "description";
         }
 
-        return InventoryRepository.search(Inventory.class, search, field);
+        return InventoryRepository.search(Inventory.class, search, field, role);
     }
 }

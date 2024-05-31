@@ -71,15 +71,15 @@ public class InventoryView extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 searchItems.clear();
-                searchItems.addAll(InventoryService.search(searchField.getText(), null));
-                updateInventoryTable();
+                searchItems.addAll(InventoryService.search(searchField.getText(), null, role));
+                updateInventoryTable(role);
             }
         });
         searchPanel.add(searchField, "align left");
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", Constants.ROOM, "Nome", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", Constants.ROOM, "Filial","Descrição", "Ativo"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -91,7 +91,7 @@ public class InventoryView extends JFrame {
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
         final Components.IconCellRenderer iconCellRenderer = new Components.IconCellRenderer();
-        final TableColumn activeColumn = table.getColumnModel().getColumn(4);
+        final TableColumn activeColumn = table.getColumnModel().getColumn(5);
         activeColumn.setCellRenderer(iconCellRenderer);
 
         final Components.OptionsCellRenderer optionsCellRenderer = new Components.OptionsCellRenderer();
@@ -120,9 +120,9 @@ public class InventoryView extends JFrame {
                     final Inventory inventory = new Inventory();
                     inventory.setIdInventory((Integer) model.getValueAt(row, 1));
                     if (InventoryService.delete(inventory)) {
-                        updateInventoryTable();
+                        updateInventoryTable(role);
                     } else {
-                        JOptionPane.showMessageDialog(null, "Error deleting inventory item", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Erro ao deletar item", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 });
 
@@ -139,7 +139,7 @@ public class InventoryView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateInventoryTable();
+        updateInventoryTable(role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -147,7 +147,7 @@ public class InventoryView extends JFrame {
         setVisible(true);
     }
 
-    private static void updateInventoryTable() {
+    private static void updateInventoryTable(Role role) {
         model.setRowCount(0);
 
         if (!searchItems.isEmpty()) {
@@ -156,25 +156,27 @@ public class InventoryView extends JFrame {
                         null,
                         inventory.getIdInventory(),
                         inventory.getRoom().getRoomNumber(),
+                        inventory.getBranch().getName(),
                         inventory.getDescription(),
                         inventory.getActive()
                 });
             }
             searchItems.clear();
         } else {
-            final List<Inventory> inventoryList = InventoryRepository.findAll(Inventory.class);
+            final List<Inventory> inventoryList = InventoryRepository.findAll(Inventory.class, role);
             if (Objects.nonNull(inventoryList)) {
                 for (Inventory inventory : inventoryList) {
                     model.addRow(new Object[]{
                             null,
                             inventory.getIdInventory(),
                             inventory.getRoom().getRoomNumber(),
+                            inventory.getBranch().getName(),
                             inventory.getDescription(),
                             inventory.getActive()
                     });
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to load inventory data");
+                JOptionPane.showMessageDialog(null, "Falha ao carregar dados do inventário.");
             }
         }
     }

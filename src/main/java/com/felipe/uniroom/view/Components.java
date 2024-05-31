@@ -299,6 +299,19 @@ public class Components {
             return null;
         }
     }
+    public static MaskFormatter getCpfFormatter() {
+        MaskFormatter cpfMask;
+        try {
+            cpfMask = new MaskFormatter("###.###.###-##");
+            cpfMask.setPlaceholderCharacter('_');
+
+            return cpfMask;
+        } catch (ParseException e) {
+            e.printStackTrace();
+
+            return null;
+        }
+    }
 
     public static void showGenericError(JFrame parent) {
         JOptionPane.showMessageDialog(parent, Constants.GENERIC_ERROR, Constants.ERROR, JOptionPane.ERROR_MESSAGE);

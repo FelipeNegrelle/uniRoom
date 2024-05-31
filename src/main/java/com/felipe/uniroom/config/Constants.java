@@ -49,6 +49,7 @@ public class Constants {
     public static final String NEW = "Novo";
     public static final String SEARCH = "Pesquisa";
     public static final String CNPJ = "Cnpj";
+    public static final String CPF = "Cpf";
     public static final String EXIT = "Sair";
 
     //Colors

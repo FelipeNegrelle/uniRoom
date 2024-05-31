@@ -1,29 +1,15 @@
 package com.felipe.uniroom.services;
 
-import com.felipe.uniroom.entities.Corporate;
+import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Room;
-import com.felipe.uniroom.entities.RoomType;
-import com.felipe.uniroom.repositories.CorporateRepository;
 import com.felipe.uniroom.repositories.RoomRepository;
-import com.felipe.uniroom.repositories.RoomTypeRepository;
 import com.felipe.uniroom.view.Components;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 
 import javax.swing.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class RoomService {
-    private static final Validator validator = Validation.byDefaultProvider()
-            .configure()
-            .messageInterpolator(new ParameterMessageInterpolator())
-            .buildValidatorFactory()
-            .getValidator();
-
     private static String validateRoom(Room room, boolean isUpdate) {
         final StringBuilder errorsSb = new StringBuilder();
 
@@ -43,11 +29,15 @@ public class RoomService {
             errorsSb.append("Número do quarto não pode ser vazio ou zero\n");
         }
 
+        if (room.getRoomNumber() > 9999) {
+            errorsSb.append("Número do quarto não pode ser maior que 9999\n");
+        }
+
         if (room.getBranch() == null) {
             errorsSb.append("Filial não pode ser vazia\n");
         }
 
-        if (room.getRoomType().equals(null)) {
+        if (room.getRoomType() == null) {
             errorsSb.append("Tipo de quarto não pode ser vazio\n");
         }
 
@@ -66,7 +56,8 @@ public class RoomService {
             } else {
                 return RoomRepository.saveOrUpdate(room);
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
 
             Components.showGenericError(null);
@@ -101,7 +92,8 @@ public class RoomService {
 
                 return false;
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
 
             Components.showGenericError(null);
@@ -109,6 +101,7 @@ public class RoomService {
             return false;
         }
     }
+
     public static Boolean delete(Room room) {
         try {
             Room result = RoomRepository.findById(Room.class, room.getIdRoom());
@@ -126,10 +119,10 @@ public class RoomService {
         }
     }
 
-    public static List<Room> search(String search, String field) {
+    public static List<Room> search(String search, String field, Role role) {
         if (Objects.isNull(field) || field.isBlank()) {
             field = "roomNumber";
         }
-        return RoomRepository.search(Room.class, search, field);
+        return RoomRepository.search(Room.class, search, field, role);
     }
 }

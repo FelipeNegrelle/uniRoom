@@ -19,6 +19,20 @@ public class Util {
         }
     }
 
+    public static String formatCpf(String cpf) {
+        try {
+            final MaskFormatter mask = new MaskFormatter("###.###.###-##");
+
+            mask.setValueContainsLiteralCharacters(false);
+
+            return mask.valueToString(cpf);
+        } catch (
+                Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
+
     public static NumberFormat getNumberFormatter(int decimalPlaces) {
         StringBuilder pattern = new StringBuilder("#,##0");
         if (decimalPlaces > 0) {

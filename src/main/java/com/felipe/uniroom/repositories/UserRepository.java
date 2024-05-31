@@ -37,26 +37,26 @@ public class UserRepository extends DatabaseRepository {
         }
     }
 
-    public static Corporate getCorporateUser(User user) {
+    public static List<Corporate> getCorporateUser(User user) {
         final String query = "SELECT c FROM Corporate c WHERE c.user.idUser = :idUser";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             return em.createQuery(query, Corporate.class)
                     .setParameter("idUser", user.getIdUser())
-                    .getSingleResult();
+                    .getResultList();
         } catch (
                 NoResultException e) {
             return null;
         }
     }
 
-    public static Branch getBranchUser(User user) {
+    public static List<Branch> getBranchUser(User user) {
         final String query = "SELECT b FROM Branch b WHERE b.user.idUser = :idUser";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             return em.createQuery(query, Branch.class)
                     .setParameter("idUser", user.getIdUser())
-                    .getSingleResult();
+                    .getResultList();
         } catch (
                 NoResultException e) {
             return null;

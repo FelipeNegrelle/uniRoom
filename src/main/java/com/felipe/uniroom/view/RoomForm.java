@@ -18,8 +18,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class RoomForm extends JFrame {
-    private List<RoomType> roomTypes = new ArrayList<>();
-    private List<Branch> branches = new ArrayList<>();
+    private final List<RoomType> roomTypes = new ArrayList<>();
+    private final List<Branch> branches = new ArrayList<>();
 
     public RoomForm(Role role, Room entity) {
         super(Constants.ROOM);
@@ -42,7 +42,8 @@ public class RoomForm extends JFrame {
         final JLabel numberLabel = new JLabel("Número do Quarto:");
         numberLabel.setFont(new Font("Sans", Font.BOLD, 20));
         final JFormattedTextField numberField = new JFormattedTextField(Util.getNumberFormatter(0));
-        if (Objects.nonNull(entity)) numberField.setValue(entity.getRoomNumber());
+        if (Objects.nonNull(entity))
+            numberField.setValue(entity.getRoomNumber());
         numberField.setPreferredSize(new Dimension(300, 30));
         numberField.setFont(new Font("Sans", Font.PLAIN, 20));
         numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
@@ -53,7 +54,6 @@ public class RoomForm extends JFrame {
         final JComboBox<String> branchCombo = new JComboBox<>();
         branchCombo.setPreferredSize(new Dimension(300, 30));
         branchCombo.setFont(new Font("Sans", Font.PLAIN, 20));
-        populateBranchCombo(branchCombo, entity);
 
         final JLabel roomTypeLabel = new JLabel("Tipo de Quarto:");
         roomTypeLabel.setFont(new Font("Sans", Font.BOLD, 20));
@@ -62,6 +62,9 @@ public class RoomForm extends JFrame {
         roomTypeCombo.setPreferredSize(new Dimension(300, 30));
         roomTypeCombo.setFont(new Font("Sans", Font.PLAIN, 20));
 
+        populateBranchCombo(branchCombo, entity, role);
+        populateRoomTypeCombo(roomTypeCombo, role.getBranches(), entity);
+
         if (branchCombo.getItemCount() > 0) {
             branchCombo.setSelectedIndex(0);
         }
@@ -69,12 +72,12 @@ public class RoomForm extends JFrame {
         branchCombo.addActionListener(e -> {
             if (branchCombo.getSelectedIndex() != -1) {
                 Branch selectedBranch = branches.get(branchCombo.getSelectedIndex());
-                populateRoomTypeCombo(roomTypeCombo, selectedBranch.getIdBranch(), entity);
+                populateRoomTypeCombo(roomTypeCombo, role.getBranches(), entity);
             }
         });
 
         if (branchCombo.getSelectedIndex() != -1) {
-            populateRoomTypeCombo(roomTypeCombo, branches.get(branchCombo.getSelectedIndex()).getIdBranch(), entity);
+            populateRoomTypeCombo(roomTypeCombo, role.getBranches(), entity);
         }
 
         inputPanel.add(numberLabel);
@@ -134,29 +137,41 @@ public class RoomForm extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    private void populateBranchCombo(JComboBox<String> branchCombo, Room entity) {
-        List<Branch> branchList = BranchRepository.findAll(Branch.class);
-        branchCombo.removeAllItems();
-        branches.clear();
-        for (Branch branch : branchList) {
-            branchCombo.addItem(branch.getName());
-            branches.add(branch);
-        }
-        if (Objects.nonNull(entity) && entity.getBranch() != null) {
-            branchCombo.setSelectedItem(entity.getBranch().getName());
+    private void populateBranchCombo(JComboBox<String> branchCombo, Room entity, Role role) {
+        final List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
+
+        if (Objects.nonNull(branchList) && !branchList.isEmpty()) {
+            branchCombo.removeAllItems();
+            branches.clear();
+            for (Branch branch : branchList) {
+                branchCombo.addItem(branch.getName());
+                branches.add(branch);
+            }
+            if (Objects.nonNull(entity) && entity.getBranch() != null) {
+                branchCombo.setSelectedItem(entity.getBranch().getName());
+            }
         }
     }
 
-    private void populateRoomTypeCombo(JComboBox<String> roomTypeCombo, Integer branchId, Room entity) {
-        List<RoomType> roomTypeList = RoomRepository.findByBranchId(branchId);
-        roomTypeCombo.removeAllItems();
-        roomTypes.clear();
-        for (RoomType roomType : roomTypeList) {
-            roomTypeCombo.addItem(roomType.getName());
-            roomTypes.add(roomType);
+    private void populateRoomTypeCombo(JComboBox<String> roomTypeCombo, List<Branch> branches, Room entity) {
+        final List<Integer> branchIds = new ArrayList<>();
+        
+        for (Branch b : branches) {
+            branchIds.add(b.getIdBranch());
         }
-        if (Objects.nonNull(entity) && entity.getBranch() != null) {
-            roomTypeCombo.setSelectedItem(entity.getRoomType().getName());
+
+        final List<RoomType> roomTypeList = RoomRepository.findByBranchId(branchIds);
+
+        if (Objects.nonNull(roomTypeList)) {
+            roomTypeCombo.removeAllItems();
+            roomTypes.clear();
+            for (RoomType roomType : roomTypeList) {
+                roomTypeCombo.addItem(roomType.getName());
+                roomTypes.add(roomType);
+            }
+            if (Objects.nonNull(entity) && entity.getBranch() != null) {
+                roomTypeCombo.setSelectedItem(entity.getRoomType().getName());
+            }
         }
     }
 }

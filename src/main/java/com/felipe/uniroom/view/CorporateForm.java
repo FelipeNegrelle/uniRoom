@@ -57,7 +57,7 @@ public class CorporateForm extends JFrame {
         userCombo.setPreferredSize(new Dimension(300, 30));
         userCombo.setFont(Constants.FONT);
 
-        populateUserCombo(userCombo, entity);
+        populateUserCombo(userCombo, entity, role);
 
         inputPanel.add(nameLabel);
         inputPanel.add(nameField, "wrap");
@@ -110,8 +110,8 @@ public class CorporateForm extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    private void populateUserCombo(JComboBox<String> userCombo, Corporate entity) {
-        final List<User> userList = UserRepository.findAll(User.class);
+    private void populateUserCombo(JComboBox<String> userCombo, Corporate entity, Role role) {
+        final List<User> userList = UserRepository.findAll(User.class, role);
 
         if (Objects.isNull(userList) || userList.isEmpty()) {
             userCombo.addItem("Nenhum usuário cadastrado");

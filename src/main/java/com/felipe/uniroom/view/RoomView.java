@@ -17,12 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class RoomView extends JFrame{
+public class RoomView extends JFrame {
 
     private static DefaultTableModel model;
     private static final List<Room> searchItems = new ArrayList<>();
 
-    public RoomView(Role role){
+    public RoomView(Role role) {
         super(Constants.ROOM);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
@@ -72,15 +72,15 @@ public class RoomView extends JFrame{
             @Override
             public void keyReleased(KeyEvent e) {
                 searchItems.clear();
-                searchItems.addAll(RoomService.search(searchField.getText(), null));
-                updateRoomTable();
+                searchItems.addAll(RoomService.search(searchField.getText(), null, role));
+                updateRoomTable(role);
             }
         });
         searchPanel.add(searchField, "align left");
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nº quarto", "Tipo","Preço", "Capacidade", "Filial", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nº quarto", "Tipo", "Preço", "Capacidade", "Filial", "Ativo"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -121,7 +121,7 @@ public class RoomView extends JFrame{
                     final Room Room = new Room();
                     Room.setIdRoom((Integer) model.getValueAt(row, 1));
                     if (RoomService.delete(Room)) {
-                        updateRoomTable();
+                        updateRoomTable(role);
                     } else {
                         JOptionPane.showMessageDialog(null, "Erro ao deletar quarto", "Error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -140,7 +140,7 @@ public class RoomView extends JFrame{
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateRoomTable();
+        updateRoomTable(role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -148,7 +148,7 @@ public class RoomView extends JFrame{
         setVisible(true);
     }
 
-    private static void updateRoomTable() {
+    private static void updateRoomTable(Role role) {
         model.setRowCount(0);
 
         if (!searchItems.isEmpty()) {
@@ -158,7 +158,7 @@ public class RoomView extends JFrame{
                         room.getIdRoom(),
                         room.getRoomNumber(),
                         room.getRoomType().getName(),
-                        "R$ " +room.getRoomType().getPrice(),
+                        "R$ " + room.getRoomType().getPrice(),
                         room.getRoomType().getCapacity(),
                         room.getBranch().getName(),
                         room.getActive()
@@ -166,7 +166,7 @@ public class RoomView extends JFrame{
             }
             searchItems.clear();
         } else {
-            final List<Room> RoomList = RoomRepository.findAll(Room.class);
+            final List<Room> RoomList = RoomRepository.findAll(Room.class, role);
             if (Objects.nonNull(RoomList)) {
                 for (Room room : RoomList) {
                     model.addRow(new Object[]{
@@ -174,7 +174,7 @@ public class RoomView extends JFrame{
                             room.getIdRoom(),
                             room.getRoomNumber(),
                             room.getRoomType().getName(),
-                            "R$ " +room.getRoomType().getPrice(),
+                            "R$ " + room.getRoomType().getPrice(),
                             room.getRoomType().getCapacity(),
                             room.getBranch().getName(),
                             room.getActive()

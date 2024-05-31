@@ -24,7 +24,7 @@ public class Main {
             admin.setRole('A');
             admin.setSecretPhrase("Why is my cock hard?");
             admin.setSecretAnswer("because yes");
-            admin.setPassword("@123Mudar");
+            admin.setPassword("senha");
             admin.setActive(true);
 
             final Corporate uniroom = new Corporate();

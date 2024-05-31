@@ -12,11 +12,15 @@ public class Inventory {
     @Column(name = "id_inventory")
     private Integer idInventory;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @OneToOne
     @JoinColumn(name = "id_room", nullable = false)
     private Room room;
 
-    @Column(length = 255)
+    @OneToOne
+    @JoinColumn(name = "id_branch", nullable = false)
+    private Branch branch;
+
+    @Column()
     private String description;
 
     @Column(nullable = false)
@@ -28,6 +32,14 @@ public class Inventory {
 
     public void setIdInventory(Integer idInventory) {
         this.idInventory = idInventory;
+    }
+
+    public Branch getBranch() {
+        return branch;
+    }
+
+    public void setBranch(Branch branch) {
+        this.branch = branch;
     }
 
     public Room getRoom() {
@@ -57,16 +69,19 @@ public class Inventory {
     public Inventory() {
     }
 
-    public Inventory(Room room, String description, Boolean active) {
+    public Inventory(Room room, Branch branch, String description, Boolean active) {
         this.room = room;
+        this.branch = branch;
         this.description = description;
         this.active = active;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Inventory inventory = (Inventory) o;
         return Objects.equals(idInventory, inventory.idInventory);
     }
@@ -78,7 +93,7 @@ public class Inventory {
 
     @Override
     public String toString() {
-        return "Inventory{" + "idInventory=" + idInventory + ", description='" + description + '\'' + ", active=" + active + '}';
+        return "Inventory{" + "idInventory=" + idInventory + ", room=" + room + ", branch=" + branch + ", description='" + description + '\'' + ", active=" + active + '}';
     }
 
 }
