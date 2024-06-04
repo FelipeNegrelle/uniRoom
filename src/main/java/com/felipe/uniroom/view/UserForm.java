@@ -2,6 +2,7 @@ package com.felipe.uniroom.view;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.User;
 import com.felipe.uniroom.services.UserService;
 import net.miginfocom.swing.MigLayout;
@@ -29,11 +30,12 @@ public class UserForm extends JFrame {
         final JPanel inputPanel = new JPanel(new MigLayout("fillx, insets 20", "[grow]", "[]10[]"));
         inputPanel.setBackground(Color.WHITE);
 
-        final JLabel nameLabel = new JLabel(Constants.NAME+ ":");
+        final JLabel nameLabel = new JLabel(Constants.NAME + ":");
         nameLabel.setFont(new Font("Sans", Font.BOLD, 20));
 
         final JTextField nameField = new JTextField(20);
-        if (Objects.nonNull(entity)) nameField.setText(entity.getName());
+        if (Objects.nonNull(entity))
+            nameField.setText(entity.getName());
         nameField.setPreferredSize(new Dimension(300, 30));
         nameField.setFont(new Font("Sans", Font.PLAIN, 20));
 
@@ -41,11 +43,12 @@ public class UserForm extends JFrame {
         usernameLabel.setFont(new Font("Sans", Font.BOLD, 20));
 
         final JTextField usernameField = new JTextField(20);
-        if (Objects.nonNull(entity)) usernameField.setText(entity.getUsername());
+        if (Objects.nonNull(entity))
+            usernameField.setText(entity.getUsername());
         usernameField.setPreferredSize(new Dimension(300, 30));
         usernameField.setFont(new Font("Sans", Font.PLAIN, 20));
 
-        final JLabel passwordLabel = new JLabel(Constants.PASSWORD+ ":");
+        final JLabel passwordLabel = new JLabel(Constants.PASSWORD + ":");
         passwordLabel.setFont(new Font("Sans", Font.BOLD, 20));
         final JPasswordField passwordField = new JPasswordField(20);
         passwordField.setPreferredSize(new Dimension(300, 30));
@@ -54,10 +57,11 @@ public class UserForm extends JFrame {
         final JLabel roleLabel = new JLabel("Cargo:");
         roleLabel.setFont(new Font("Sans", Font.BOLD, 20));
 
-        final JComboBox<Character> roleCombo = new JComboBox<>(new Character[]{'A', 'M', 'E'});
+        final JComboBox<String> roleCombo = new JComboBox<>(Util.getRoleCombo(role.getRole()));
         roleCombo.setPreferredSize(new Dimension(300, 30));
         roleCombo.setFont(new Font("Sans", Font.PLAIN, 20));
-        if (Objects.nonNull(entity)) roleCombo.setSelectedItem(entity.getRole());
+        if (Objects.nonNull(entity))
+            roleCombo.setSelectedItem(entity.getRole());
 
         final JLabel secretQuestionLabel = new JLabel(Constants.SECRET_PHRASE + ":");
         secretQuestionLabel.setFont(new Font("Sans", Font.BOLD, 20));
@@ -82,7 +86,8 @@ public class UserForm extends JFrame {
         final JTextField secretAnswerField = new JTextField(20);
         secretAnswerField.setPreferredSize(new Dimension(300, 30));
         secretAnswerField.setFont(new Font("Sans", Font.PLAIN, 20));
-        if (Objects.nonNull(entity)) secretAnswerField.setText(entity.getSecretAnswer());
+        if (Objects.nonNull(entity))
+            secretAnswerField.setText(entity.getSecretAnswer());
 
         inputPanel.add(nameLabel);
         inputPanel.add(nameField, "wrap");
@@ -117,7 +122,7 @@ public class UserForm extends JFrame {
             user.setName(nameField.getText());
             user.setUsername(usernameField.getText());
             user.setPassword(new String(passwordField.getPassword()));
-            user.setRole((Character) roleCombo.getSelectedItem());
+            user.setRole(Util.convertRoleName(roleCombo.getSelectedItem().toString()));
             user.setSecretPhrase((String) secretQuestionCombo.getSelectedItem());
             user.setSecretAnswer(secretAnswerField.getText());
             user.setActive(true);
@@ -129,7 +134,8 @@ public class UserForm extends JFrame {
                     new UserView(role);
                     dispose();
                 }
-            } catch (Exception ex) {
+            } catch (
+                    Exception ex) {
                 JOptionPane.showMessageDialog(this, ex.getMessage(), Constants.WARN, JOptionPane.PLAIN_MESSAGE);
                 ex.printStackTrace();
             }

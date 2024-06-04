@@ -45,7 +45,7 @@ public class GuestForm extends JFrame {
         nameField.setPreferredSize(new Dimension(300, 30));
         nameField.setFont(new Font("Sans", Font.PLAIN, 20));
 
-        final JLabel cpfLabel = Components.getLabel(Constants.CPF, null, Font.BOLD, null, null);
+        final JLabel cpfLabel = Components.getLabel(Constants.CPF + ": ", null, Font.BOLD, null, null);
 
         final JFormattedTextField cpfField = new JFormattedTextField(Components.getCpfFormatter());
         if (Objects.nonNull(entity)) {
@@ -54,7 +54,11 @@ public class GuestForm extends JFrame {
         cpfField.setPreferredSize(new Dimension(300, 30));
         cpfField.setFont(Constants.FONT);
 
-        final JLabel roomLabel = Components.getLabel(Constants.ROOM, null, Font.BOLD, null, null);
+        final JLabel hostedLabel = Components.getLabel(Constants.HOSTED + ": ", null, Font.BOLD, null, null);
+        final JCheckBox hostedCheck = new JCheckBox();
+        hostedCheck.setSelected(Objects.nonNull(entity) && entity.getHosted());
+
+        final JLabel roomLabel = Components.getLabel(Constants.ROOM + ": ", null, Font.BOLD, null, null);
         final JComboBox<String> roomCombo = new JComboBox<>();
         roomCombo.setPreferredSize(new Dimension(300, 30));
         roomCombo.setFont(Constants.FONT);
@@ -66,6 +70,9 @@ public class GuestForm extends JFrame {
 
         inputPanel.add(cpfLabel);
         inputPanel.add(cpfField, "wrap");
+
+        inputPanel.add(hostedLabel);
+        inputPanel.add(hostedCheck, "wrap");
 
         inputPanel.add(roomLabel);
         inputPanel.add(roomCombo, "wrap");

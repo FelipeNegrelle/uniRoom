@@ -11,7 +11,6 @@ import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,7 +38,7 @@ public class DatabaseRepository {
                             }
                         }
 
-                        if(hasBranch) {
+                        if (hasBranch) {
                             queryString.append(" WHERE e.branch.corporate IN :corporates");
                             params.put("corporates", role.getCorporates());
                         } else {
@@ -52,13 +51,21 @@ public class DatabaseRepository {
                     }
                     break;
                 case 'B':
-                case 'E':
                     if (!entity.getSimpleName().equals("Branch")) {
                         queryString.append(" WHERE e.branch IN :branches");
                         params.put("branches", role.getBranches());
                     } else {
                         queryString.append(" WHERE e.idBranch IN :idBranches");
                         params.put("idBranches", role.getBranches().stream().map(Branch::getIdBranch).toList());
+                    }
+                    break;
+                case 'E':
+                    if (!entity.getSimpleName().equals("Branch")) {
+                        queryString.append(" WHERE e.branch = :branch");
+                        params.put("branch", role.getBranches().getFirst());
+                    } else {
+                        queryString.append(" WHERE e.idBranch = :idBranch");
+                        params.put("idBranch", role.getBranches().getFirst());
                     }
                     break;
             }
@@ -192,7 +199,6 @@ public class DatabaseRepository {
                         predicate = cb.and(predicate, root.get("branch").in(role.getBranches()));
                     }
                     break;
-
             }
 
             cq.where(predicate);

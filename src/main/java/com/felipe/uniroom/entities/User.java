@@ -12,6 +12,10 @@ public class User {
     @Column(name = "id_user")
     private Integer idUser;
 
+    @OneToOne
+    @JoinColumn(name = "id_branch")
+    private Branch branch;
+
     @Column(length = 50, nullable = false)
     private String name;
 
@@ -36,8 +40,9 @@ public class User {
     public User() {
     }
 
-    public User(Integer idUser, String name, String username, String password, Character role, String secretPhrase, String secretAnswer, Boolean active) {
+    public User(Integer idUser, Branch branch, String name, String username, String password, Character role, String secretPhrase, String secretAnswer, Boolean active) {
         this.idUser = idUser;
+        this.branch = branch;
         this.name = name;
         this.username = username;
         this.password = password;
@@ -53,6 +58,14 @@ public class User {
 
     public void setIdUser(Integer idUser) {
         this.idUser = idUser;
+    }
+
+    public Branch getBranch() {
+        return branch;
+    }
+
+    public void setBranch(Branch branch) {
+        this.branch = branch;
     }
 
     public String getName() {
@@ -113,18 +126,27 @@ public class User {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         User user = (User) o;
 
-        if (!Objects.equals(idUser, user.idUser)) return false;
-        if (!Objects.equals(name, user.name)) return false;
-        if (!Objects.equals(username, user.username)) return false;
-        if (!Objects.equals(password, user.password)) return false;
-        if (!Objects.equals(role, user.role)) return false;
-        if (!Objects.equals(secretPhrase, user.secretPhrase)) return false;
-        if (!Objects.equals(secretAnswer, user.secretAnswer)) return false;
+        if (!Objects.equals(idUser, user.idUser))
+            return false;
+        if (!Objects.equals(name, user.name))
+            return false;
+        if (!Objects.equals(username, user.username))
+            return false;
+        if (!Objects.equals(password, user.password))
+            return false;
+        if (!Objects.equals(role, user.role))
+            return false;
+        if (!Objects.equals(secretPhrase, user.secretPhrase))
+            return false;
+        if (!Objects.equals(secretAnswer, user.secretAnswer))
+            return false;
         return Objects.equals(active, user.active);
     }
 

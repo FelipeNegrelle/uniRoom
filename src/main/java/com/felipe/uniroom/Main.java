@@ -35,7 +35,7 @@ public class Main {
 
             if (Objects.isNull(UserRepository.findByUsername(admin.getUsername()))) {
                 System.out.println("user is null");
-                UserService.save(admin);
+                UserService.register(admin);
             }
 
             if (Objects.isNull(CorporateRepository.findByCnpj(uniroom.getCnpj()))) {

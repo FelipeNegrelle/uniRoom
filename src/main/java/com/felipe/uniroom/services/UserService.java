@@ -1,8 +1,8 @@
 package com.felipe.uniroom.services;
 
 import com.felipe.uniroom.config.Constants;
-import com.felipe.uniroom.entities.Branch;
-import com.felipe.uniroom.repositories.BranchRepository;
+import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.entities.User;
 import com.felipe.uniroom.repositories.UserRepository;
 import com.felipe.uniroom.view.Components;
 import jakarta.validation.ConstraintViolation;
@@ -11,10 +11,8 @@ import jakarta.validation.Validator;
 import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 import org.mindrot.jbcrypt.BCrypt;
 
-import com.felipe.uniroom.entities.User;
-
-import javax.swing.JDialog;
-import javax.swing.JOptionPane;
+import javax.swing.*;
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Set;
 
@@ -73,6 +71,7 @@ public class UserService {
 
         return errorsSb.toString();
     }
+
     public static Boolean register(User user) {
         try {
 
@@ -83,9 +82,11 @@ public class UserService {
             } else {
                 final String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
                 user.setPassword(hashedPassword);
-                return BranchRepository.saveOrUpdate(user);
+                user.setSecretAnswer(user.getSecretAnswer().trim().toLowerCase().replace(" ", ""));
+                return UserRepository.saveOrUpdate(user);
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
             Components.showGenericError(null);
             return null;
@@ -97,14 +98,10 @@ public class UserService {
             final User result = UserRepository.findByUsername(user.getUsername());
 
             if (result != null) {
-                final String teste = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
-                System.out.println(teste);
-
-                System.out.println(result.getPassword());
-                System.out.println(teste == result.getPassword());
                 return BCrypt.checkpw(user.getPassword(), result.getPassword());
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
         }
         return false;
@@ -117,7 +114,8 @@ public class UserService {
             user.setPassword(hashedPassword);
 
             return UserRepository.saveOrUpdate(user);
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
         }
         return false;
@@ -144,12 +142,15 @@ public class UserService {
 
                 String newPassword = user.getPassword();
                 if (newPassword != null && !newPassword.isEmpty()) {
+                    newPassword = BCrypt.hashpw(newPassword, BCrypt.gensalt());
+
                     existingUser.setPassword(newPassword);
                 }
 
                 return UserRepository.saveOrUpdate(existingUser);
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
         }
 
@@ -163,27 +164,47 @@ public class UserService {
             if (result != null) {
                 return user.getSecretAnswer().equals(result.getSecretAnswer());
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
         return false;
     }
 
-    public static Boolean forgotPassword(User user) {
-        final String hashedPassword = BCrypt.hashpw(user.getPassword(), BCrypt.gensalt());
-
+    public static User forgotPassword(User user, String secretAnswer, String newPassword, String repeatedPassword) {
         try {
-            final User result = UserRepository.findByUsername(user.getUsername());
-
-            if (result != null) {
-                user.setIdUser(result.getIdUser());
-                user.setPassword(hashedPassword);
-
-                return UserRepository.saveOrUpdate(user);
+            if (!secretAnswer.isBlank() && secretAnswer.trim().toLowerCase().replace(" ", "").equals(user.getSecretAnswer())) {
+                if (newPassword.equals(repeatedPassword)) {
+                    user.setPassword(newPassword);
+                    if (update(user)) {
+                        return user;
+                    }
+                } else {
+                    return null;
+                }
+            } else {
+                return null;
             }
-        } catch (Exception e) {
-            System.out.println("Error: " + e.getMessage());
+        } catch (
+                Exception e) {
+            Components.showGenericError(null);
         }
-        return false;
+        return null;
+    }
+
+    public static Role getUserRole(User user) {
+        try {
+            if (user != null) {
+                if (user.getRole().equals('E')) {
+                    return new Role(user.getRole(), user, null, Collections.singletonList(user.getBranch()));
+                } else {
+                    return new Role(user.getRole(), user, UserRepository.getCorporateUser(user), UserRepository.getBranchUser(user));
+                }
+            }
+        } catch (
+                Exception e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }

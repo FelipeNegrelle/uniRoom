@@ -8,10 +8,10 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
-import java.util.List;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.text.ParseException;
+import java.util.List;
 import java.util.Objects;
 
 public class Components {
@@ -293,12 +293,14 @@ public class Components {
             cnpjMask.setPlaceholderCharacter('_');
 
             return cnpjMask;
-        } catch (ParseException e) {
+        } catch (
+                ParseException e) {
             e.printStackTrace();
 
             return null;
         }
     }
+
     public static MaskFormatter getCpfFormatter() {
         MaskFormatter cpfMask;
         try {
@@ -306,7 +308,8 @@ public class Components {
             cpfMask.setPlaceholderCharacter('_');
 
             return cpfMask;
-        } catch (ParseException e) {
+        } catch (
+                ParseException e) {
             e.printStackTrace();
 
             return null;

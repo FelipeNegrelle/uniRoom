@@ -11,6 +11,7 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 
 public class Login extends JFrame {
     public Login() {
@@ -76,14 +77,24 @@ public class Login extends JFrame {
                     dispose();
 
                     if (user != null) {
-                        final java.util.List<Corporate> userCorporate = UserRepository.getCorporateUser(user);
-                        final java.util.List<Branch> userBranch = UserRepository.getBranchUser(user);
+                        if (user.getActive()) {
+                            Role role;
 
-                        final Role role = new Role(user.getRole(), user, userCorporate, userBranch);
+                            if (user.getRole().equals('E')) {
+                                role = new Role(user.getRole(), user, Collections.emptyList(), Collections.singletonList(user.getBranch()));
+                            } else {
+                                final java.util.List<Corporate> userCorporate = UserRepository.getCorporateUser(user);
+                                final java.util.List<Branch> userBranch = UserRepository.getBranchUser(user);
 
-                        new Home(role);
+                                role = new Role(user.getRole(), user, userCorporate, userBranch);
+                            }
+
+                            new Home(role);
+                        } else {
+                            JOptionPane.showMessageDialog(this, "Usuário inativo.");
+                        }
                     } else {
-                        JOptionPane.showMessageDialog(this, Constants.GENERIC_ERROR);
+                        JOptionPane.showMessageDialog(this, "Usuário não encontrado.");
                     }
                 }
             } catch (
@@ -99,8 +110,8 @@ public class Login extends JFrame {
         forgetPasswordButton.setForeground(Constants.WHITE);
         forgetPasswordButton.addActionListener(e -> {
             try {
-                new Components.ForgetPasswordDialog(this, userField.getText()).setVisible(true);
-                System.out.println("Forget password button clicked");
+                new RecoverPasswordForm();
+                dispose();
             } catch (
                     Exception exception) {
                 exception.printStackTrace();

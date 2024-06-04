@@ -56,4 +56,32 @@ public class Util {
                     "Situação Desconhecida";
         };
     }
+
+    public static Character convertRoleName(String roleName) {
+        return switch (roleName) {
+            case "Administrador" ->
+                    'A';
+            case "Gerente de Matriz" ->
+                    'C';
+            case "Gerente de Filial" ->
+                    'B';
+            case "Funcionário" ->
+                    'E';
+            default ->
+                    '?';
+        };
+    }
+
+    public static String[] getRoleCombo(Character role) {
+        return switch (role) {
+            case 'A' ->
+                    new String[]{"Administrador", "Gerente de Matriz", "Gerente de Filial", "Funcionário"};
+            case 'C' ->
+                    new String[]{"Gerente de Filial", "Funcionário"};
+            case 'B' ->
+                    new String[]{"Funcionário"};
+            default ->
+                    new String[]{};
+        };
+    }
 }

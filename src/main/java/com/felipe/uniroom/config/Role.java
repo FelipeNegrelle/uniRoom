@@ -74,6 +74,7 @@ public class Role {
                 return menusAdmin;
             case 'C':
                 final List<Menu> menusCorporate = new ArrayList<>();
+                menusCorporate.add(Menus.MENU_USER.getMenu());
                 menusCorporate.add(Menus.MENU_CORPORATE.getMenu());
                 menusCorporate.add(Menus.MENU_BRANCH.getMenu());
                 menusCorporate.add(Menus.MENU_INVENTORY.getMenu());
@@ -86,6 +87,7 @@ public class Role {
                 return menusCorporate;
             case 'B':
                 final List<Menu> menusBranch = new ArrayList<>();
+                menusBranch.add(Menus.MENU_USER.getMenu());
                 menusBranch.add(Menus.MENU_BRANCH.getMenu());
                 menusBranch.add(Menus.MENU_INVENTORY.getMenu());
                 menusBranch.add(Menus.MENU_ITEM.getMenu());

@@ -21,6 +21,7 @@ public class Constants {
     public static final String LOGIN = "Login";
     public static final String USER = "Usuário";
     public static final String PASSWORD = "Senha";
+    public static final String CONFIRM_PASSWORD = "Confimar Senha";
     public static final String ERROR = "Erro";
     public static final String EDIT = "Editar";
     public static final String SAVE = "Salvar";
@@ -51,6 +52,8 @@ public class Constants {
     public static final String CNPJ = "Cnpj";
     public static final String CPF = "Cpf";
     public static final String EXIT = "Sair";
+    public static final String HOSTED = "Hospedado";
+    public static final String RECOVER_PASSWORD = "Recuperar Senha";
 
     //Colors
     public static final Color WHITE = new Color(0xFFFFFF);
