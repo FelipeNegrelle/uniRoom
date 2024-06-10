@@ -1,12 +1,12 @@
-package com.felipe.uniroom.view;
+package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Branch;
-import com.felipe.uniroom.entities.RoomType;
+import com.felipe.uniroom.entities.Item;
 import com.felipe.uniroom.repositories.BranchRepository;
-import com.felipe.uniroom.services.RoomTypeService;
+import com.felipe.uniroom.services.ItemService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -16,11 +16,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class RoomTypeForm extends JFrame {
+public class ItemForm extends JFrame {
     List<Branch> branches = new ArrayList<>();
 
-    public RoomTypeForm(Role role, RoomType entity) {
-        super(Constants.ROOM_TYPE);
+    public ItemForm(Role role, Item entity) {
+        super(Constants.ITEM);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 50", "[grow]", "[grow]"));
         getContentPane().setBackground(Constants.BLUE);
@@ -29,7 +29,7 @@ public class RoomTypeForm extends JFrame {
         final JPanel mainPanel = new JPanel(new MigLayout("fill, insets 20", "[grow]", "[align center]"));
         mainPanel.setBackground(Color.WHITE);
 
-        final JLabel titlePage = new JLabel(Constants.ROOM_TYPE);
+        final JLabel titlePage = new JLabel(Constants.ITEM);
         titlePage.setFont(new Font("Sans", Font.BOLD, 60));
         titlePage.setForeground(Constants.WHITE);
         add(titlePage, "align center, wrap");
@@ -53,13 +53,6 @@ public class RoomTypeForm extends JFrame {
         if (Objects.nonNull(entity))
             priceField.setValue(entity.getPrice());
 
-        final JLabel capacityLabel = new JLabel("Capacidade:");
-        capacityLabel.setFont(new Font("Sans", Font.BOLD, 20));
-        final JFormattedTextField capacityField = new JFormattedTextField(Util.getNumberFormatter(0));
-        capacityField.setPreferredSize(new Dimension(300, 30));
-        capacityField.setFont(new Font("Sans", Font.PLAIN, 20));
-        if (Objects.nonNull(entity)) capacityField.setText(String.valueOf(entity.getCapacity()));
-
         final JLabel branchLabel = new JLabel("Filial:");
         branchLabel.setFont(new Font("Sans", Font.BOLD, 20));
         final JComboBox<String> branchCombo = new JComboBox<>();
@@ -73,9 +66,6 @@ public class RoomTypeForm extends JFrame {
         inputPanel.add(priceLabel);
         inputPanel.add(priceField, "wrap");
 
-        inputPanel.add(capacityLabel);
-        inputPanel.add(capacityField, "wrap");
-
         inputPanel.add(branchLabel);
         inputPanel.add(branchCombo, "wrap");
 
@@ -88,45 +78,32 @@ public class RoomTypeForm extends JFrame {
         saveButton.setForeground(Color.WHITE);
         saveButton.addActionListener(e -> {
             try {
-                RoomType roomType = new RoomType();
-                roomType.setIdRoomType(Objects.nonNull(entity) ? entity.getIdRoomType() : null);
-                roomType.setName(nameField.getText().trim());
-
+                Item item = new Item();
+                item.setIdItem(Objects.nonNull(entity) ? entity.getIdItem() : null);
+                item.setName(nameField.getText().trim());
+                item.setActive(true);
                 String priceStr = priceField.getText().trim();
                 if (!priceStr.isEmpty()) {
                     NumberFormat format = Util.getNumberFormatter(2);
                     Number number = format.parse(priceStr);
-                    roomType.setPrice(number.floatValue());
+                    item.setPrice(number.floatValue());
                 } else {
-                    roomType.setPrice(null);
+                    item.setPrice(null);
                 }
 
-                String capacityStr = capacityField.getText().trim();
-                if (!capacityStr.isEmpty()) {
-                    roomType.setCapacity(Byte.parseByte(capacityStr));
-                } else {
-                    roomType.setCapacity(null);
-                }
+                item.setBranch(branches.get(branchCombo.getSelectedIndex()));
 
-                roomType.setBranch(branches.get(branchCombo.getSelectedIndex()));
-                roomType.setActive(true);
-
-                boolean result = Objects.nonNull(entity) ? RoomTypeService.update(roomType) : RoomTypeService.save(roomType);
+                boolean result = Objects.nonNull(entity) ? ItemService.update(item) : ItemService.save(item);
 
                 if (result) {
-                    JOptionPane.showMessageDialog(this, Constants.SUCCESSFUL_REGISTER, "Sucesso", JOptionPane.PLAIN_MESSAGE);
-                    new RoomTypeView(role);
+                    JOptionPane.showMessageDialog(this, "Item salvo com sucesso!", "Sucesso", JOptionPane.INFORMATION_MESSAGE);
+                    new ItemView(role);
                     dispose();
                 }
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Por favor, insira valores numéricos válidos para preço e capacidade.", "Erro de Formato", JOptionPane.ERROR_MESSAGE);
-                System.out.println(ex);
             } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Erro ao salvar o tipo de quarto: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
-                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Erro ao salvar o item: " + ex.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             }
         });
-
 
         final JButton cancelButton = new JButton("Cancelar");
         cancelButton.setFont(new Font("Sans", Font.BOLD, 20));
@@ -134,7 +111,7 @@ public class RoomTypeForm extends JFrame {
         cancelButton.setBackground(Color.RED);
         cancelButton.setForeground(Color.WHITE);
         cancelButton.addActionListener(e -> {
-            new RoomTypeView(role);
+            new ItemView(role);
             dispose();
         });
 
@@ -149,16 +126,15 @@ public class RoomTypeForm extends JFrame {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
-    private void populateBranchCombo(JComboBox<String> branchCombo, RoomType entity, Role role) {
+    private void populateBranchCombo(JComboBox<String> branchCombo, Item entity, Role role) {
         List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
         for (Branch branch : branchList) {
             branchCombo.addItem(branch.getName());
             branches.add(branch);
         }
 
-        if (Objects.nonNull(entity)) {
+        if (Objects.nonNull(entity) && entity.getBranch() != null) {
             branchCombo.setSelectedItem(entity.getBranch().getName());
         }
     }
 }
-

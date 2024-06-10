@@ -1,10 +1,9 @@
-package com.felipe.uniroom.view;
+package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Inventory;
-import com.felipe.uniroom.entities.Item;
 import com.felipe.uniroom.entities.Room;
 import com.felipe.uniroom.repositories.BranchRepository;
 import com.felipe.uniroom.repositories.RoomRepository;

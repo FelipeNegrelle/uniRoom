@@ -1,4 +1,4 @@
-package com.felipe.uniroom.view;
+package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import net.miginfocom.swing.MigLayout;

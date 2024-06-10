@@ -3,7 +3,7 @@ package com.felipe.uniroom.services;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Guest;
 import com.felipe.uniroom.repositories.GuestRepository;
-import com.felipe.uniroom.view.Components;
+import com.felipe.uniroom.views.Components;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -23,10 +23,6 @@ public class GuestService {
 
     private static String validateGuest(Guest guest, boolean isUpdate) {
         final StringBuilder errorsSb = new StringBuilder();
-
-//        if (guest.getCpf().equals("00000000000")) {
-//            errorsSb.append("CPF inválido!\n");
-//        }
 
         final Set<ConstraintViolation<Guest>> violations = validator.validate(guest);
 
@@ -52,9 +48,19 @@ public class GuestService {
             errorsSb.append("Nome do hóspede deve ter no máximo 50 caracteres!\n");
         }
 
-        if (Objects.isNull(guest.getRoom())) {
-            errorsSb.append("Quarto não pode ser vazio!\n");
+        if(isUpdate) {
+            if(GuestRepository.hasDuplicateName(guest.getName(), guest.getIdGuest())) {
+                errorsSb.append("Nome já cadastrado!\n");
+            }
+        } else {
+            if (Objects.nonNull(GuestRepository.findByName(guest.getName()))) {
+                errorsSb.append("Nome já cadastrado!\n");
+            }
         }
+
+//        if (Objects.isNull(guest.getRoom())) {
+//            errorsSb.append("Quarto não pode ser vazio!\n");
+//        }
 
         return errorsSb.toString();
     }

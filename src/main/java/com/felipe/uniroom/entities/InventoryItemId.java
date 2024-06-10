@@ -1,11 +1,11 @@
 package com.felipe.uniroom.entities;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+
 import java.io.Serial;
 import java.io.Serializable;
 import java.util.Objects;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Embeddable;
 
 @Embeddable
 public class InventoryItemId implements Serializable {
@@ -35,12 +35,15 @@ public class InventoryItemId implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         InventoryItemId that = (InventoryItemId) o;
 
-        if (!Objects.equals(idInvetory, that.idInvetory)) return false;
+        if (!Objects.equals(idInvetory, that.idInvetory))
+            return false;
         return Objects.equals(idItem, that.idItem);
     }
 
@@ -49,5 +52,10 @@ public class InventoryItemId implements Serializable {
         int result = idInvetory != null ? idInvetory.hashCode() : 0;
         result = 31 * result + (idItem != null ? idItem.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "InventoryItemId{" + "idInvetory=" + idInvetory + ", idItem=" + idItem + '}';
     }
 }

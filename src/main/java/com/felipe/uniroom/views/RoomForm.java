@@ -1,4 +1,4 @@
-package com.felipe.uniroom.view;
+package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;

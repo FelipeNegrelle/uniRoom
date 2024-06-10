@@ -1,14 +1,6 @@
 package com.felipe.uniroom.entities;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import org.hibernate.validator.constraints.br.CNPJ;
 
 import java.util.Objects;
@@ -92,26 +84,17 @@ public class Corporate {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Corporate corporate = (Corporate) o;
-
-        if (!Objects.equals(idCorporate, corporate.idCorporate)) return false;
-        if (!Objects.equals(name, corporate.name)) return false;
-        if (!Objects.equals(cnpj, corporate.cnpj)) return false;
-        if (!Objects.equals(user, corporate.user)) return false;
-        return Objects.equals(active, corporate.active);
+        return Objects.equals(idCorporate, corporate.idCorporate) && Objects.equals(name, corporate.name) && Objects.equals(cnpj, corporate.cnpj) && Objects.equals(user, corporate.user) && Objects.equals(active, corporate.active);
     }
 
     @Override
     public int hashCode() {
-        int result = idCorporate != null ? idCorporate.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (cnpj != null ? cnpj.hashCode() : 0);
-        result = 31 * result + (user != null ? user.hashCode() : 0);
-        result = 31 * result + (active != null ? active.hashCode() : 0);
-        return result;
+        return Objects.hash(idCorporate, name, cnpj, user, active);
     }
 
     @Override

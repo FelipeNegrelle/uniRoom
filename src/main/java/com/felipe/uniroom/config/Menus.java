@@ -1,8 +1,7 @@
 package com.felipe.uniroom.config;
 
 import com.felipe.uniroom.entities.Menu;
-import com.felipe.uniroom.entities.Reservation;
-import com.felipe.uniroom.view.*;
+import com.felipe.uniroom.views.*;
 
 public enum Menus {
     MENU_USER(new Menu(Constants.USER, Constants.USER_ICON, UserView.class)),

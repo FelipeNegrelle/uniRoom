@@ -1,49 +1,24 @@
 package com.felipe.uniroom.services;
 
 import com.felipe.uniroom.config.Role;
-import com.felipe.uniroom.entities.Branch;
-import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.entities.Inventory;
-import com.felipe.uniroom.entities.Room;
-import com.felipe.uniroom.repositories.BranchRepository;
-import com.felipe.uniroom.repositories.CorporateRepository;
 import com.felipe.uniroom.repositories.InventoryRepository;
-import com.felipe.uniroom.repositories.RoomRepository;
-import com.felipe.uniroom.view.Components;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
+import com.felipe.uniroom.views.Components;
 
 import javax.swing.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class InventoryService {
-    private static final Validator validator = Validation.byDefaultProvider()
-            .configure()
-            .messageInterpolator(new ParameterMessageInterpolator())
-            .buildValidatorFactory()
-            .getValidator();
-
     private static String validateInventory(Inventory inventory, boolean isUpdate) {
         final StringBuilder errorsSb = new StringBuilder();
-
-        final Set<ConstraintViolation<Inventory>> violations = validator.validate(inventory);
 
         if (Objects.isNull(inventory.getRoom())) {
             errorsSb.append("O inventário deve estar associado a um quarto!\n");
         }
 
-        if(Objects.isNull(inventory.getBranch())) {
+        if (Objects.isNull(inventory.getBranch())) {
             errorsSb.append("O inventário deve estar associado a uma filial!\n");
-        }
-
-        if (!violations.isEmpty()) {
-            for (ConstraintViolation<Inventory> violation : violations) {
-                errorsSb.append(violation.getMessage()).append("\n");
-            }
         }
 
         if (inventory.getDescription().isBlank()) {
@@ -68,7 +43,8 @@ public class InventoryService {
             } else {
                 return InventoryRepository.saveOrUpdate(inventory);
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Erro ao salvar o inventário: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -101,7 +77,8 @@ public class InventoryService {
 
                 return false;
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
 
             Components.showGenericError(null);
@@ -121,7 +98,8 @@ public class InventoryService {
 
                 return false;
             }
-        } catch (Exception e) {
+        } catch (
+                Exception e) {
             e.printStackTrace();
 
             Components.showGenericError(null);

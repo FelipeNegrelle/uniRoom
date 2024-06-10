@@ -4,7 +4,7 @@ import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.User;
 import com.felipe.uniroom.repositories.UserRepository;
-import com.felipe.uniroom.view.Components;
+import com.felipe.uniroom.views.Components;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -136,6 +136,8 @@ public class UserService {
                 existingUser.setName(user.getName());
                 existingUser.setUsername(user.getUsername());
                 existingUser.setRole(user.getRole());
+                existingUser.setBranch(user.getBranch());
+                existingUser.setCorporate(user.getCorporate());
                 existingUser.setSecretPhrase(user.getSecretPhrase());
                 existingUser.setSecretAnswer(user.getSecretAnswer());
                 existingUser.setActive(user.getActive());

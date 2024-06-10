@@ -1,10 +1,10 @@
-package com.felipe.uniroom.view;
+package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
-import com.felipe.uniroom.entities.Room;
-import com.felipe.uniroom.repositories.RoomRepository;
-import com.felipe.uniroom.services.RoomService;
+import com.felipe.uniroom.entities.Inventory;
+import com.felipe.uniroom.repositories.InventoryRepository;
+import com.felipe.uniroom.services.InventoryService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -17,13 +17,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class RoomView extends JFrame {
-
+public class InventoryView extends JFrame {
     private static DefaultTableModel model;
-    private static final List<Room> searchItems = new ArrayList<>();
+    private static final List<Inventory> searchItems = new ArrayList<>();
 
-    public RoomView(Role role) {
-        super(Constants.ROOM);
+    public InventoryView(Role role) {
+        super(Constants.INVENTORY);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
 
@@ -31,7 +30,7 @@ public class RoomView extends JFrame {
         panel.setBackground(Constants.BLUE);
         setIconImage(Constants.LOGO);
 
-        final JLabel titleLabel = new JLabel(Constants.ROOM);
+        final JLabel titleLabel = new JLabel(Constants.INVENTORY);
         titleLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 40));
         titleLabel.setForeground(Color.WHITE);
         panel.add(titleLabel, "align center");
@@ -49,15 +48,15 @@ public class RoomView extends JFrame {
         });
         searchPanel.add(backButton, "align left");
 
-        final JButton newRoom = new JButton(Constants.NEW);
-        newRoom.setBackground(Constants.WHITE);
-        newRoom.setForeground(Constants.BLACK);
-        newRoom.setFont(Constants.FONT.deriveFont(Font.BOLD));
-        newRoom.addActionListener(e -> {
-            new RoomForm(role, null);
+        final JButton newInventory = new JButton(Constants.NEW);
+        newInventory.setBackground(Constants.WHITE);
+        newInventory.setForeground(Constants.BLACK);
+        newInventory.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        newInventory.addActionListener(e -> {
+            new InventoryForm(role, null);
             dispose();
         });
-        searchPanel.add(newRoom, "align left");
+        searchPanel.add(newInventory, "align left");
 
         final JLabel searchLabel = new JLabel(Constants.SEARCH);
         searchLabel.setFont(Constants.FONT.deriveFont(Font.BOLD));
@@ -72,15 +71,15 @@ public class RoomView extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 searchItems.clear();
-                searchItems.addAll(RoomService.search(searchField.getText(), null, role));
-                updateRoomTable(role);
+                searchItems.addAll(InventoryService.search(searchField.getText(), null, role));
+                updateInventoryTable(role);
             }
         });
         searchPanel.add(searchField, "align left");
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nº quarto", "Tipo", "Preço", "Capacidade", "Filial", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", Constants.ROOM, "Filial","Descrição", "Ativo"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -92,7 +91,7 @@ public class RoomView extends JFrame {
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
         final Components.IconCellRenderer iconCellRenderer = new Components.IconCellRenderer();
-        final TableColumn activeColumn = table.getColumnModel().getColumn(7);
+        final TableColumn activeColumn = table.getColumnModel().getColumn(5);
         activeColumn.setCellRenderer(iconCellRenderer);
 
         final Components.OptionsCellRenderer optionsCellRenderer = new Components.OptionsCellRenderer();
@@ -105,12 +104,21 @@ public class RoomView extends JFrame {
             if (column == 0) {
                 final JPopupMenu popupMenu = new JPopupMenu();
 
+                final JMenuItem itemsItem = new JMenuItem(Constants.ITEMS);
+                itemsItem.setIcon(Constants.ITEM_ICON);
+                itemsItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
+                itemsItem.addActionListener(e -> {
+                    final Inventory inventory = InventoryRepository.findById(Inventory.class, (Integer) model.getValueAt(row, 1));
+                    new InventoryItemView(role, inventory);
+                    dispose();
+                });
+
                 final JMenuItem editItem = new JMenuItem(Constants.EDIT);
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Room Room = RoomRepository.findById(Room.class, (Integer) model.getValueAt(row, 1));
-                    new RoomForm(role, Room);
+                    final Inventory inventory = InventoryRepository.findById(Inventory.class, (Integer) model.getValueAt(row, 1));
+                    new InventoryForm(role, inventory);
                     dispose();
                 });
 
@@ -118,12 +126,12 @@ public class RoomView extends JFrame {
                 deleteItem.setIcon(Constants.DELETE_ICON);
                 deleteItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 deleteItem.addActionListener(e -> {
-                    final Room Room = new Room();
-                    Room.setIdRoom((Integer) model.getValueAt(row, 1));
-                    if (RoomService.delete(Room)) {
-                        updateRoomTable(role);
+                    final Inventory inventory = new Inventory();
+                    inventory.setIdInventory((Integer) model.getValueAt(row, 1));
+                    if (InventoryService.delete(inventory)) {
+                        updateInventoryTable(role);
                     } else {
-                        JOptionPane.showMessageDialog(null, "Erro ao deletar quarto", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Erro ao deletar item", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 });
 
@@ -140,7 +148,7 @@ public class RoomView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateRoomTable(role);
+        updateInventoryTable(role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -148,40 +156,36 @@ public class RoomView extends JFrame {
         setVisible(true);
     }
 
-    private static void updateRoomTable(Role role) {
+    private static void updateInventoryTable(Role role) {
         model.setRowCount(0);
 
         if (!searchItems.isEmpty()) {
-            for (Room room : searchItems) {
+            for (Inventory inventory : searchItems) {
                 model.addRow(new Object[]{
                         null,
-                        room.getIdRoom(),
-                        room.getRoomNumber(),
-                        room.getRoomType().getName(),
-                        "R$ " + room.getRoomType().getPrice(),
-                        room.getRoomType().getCapacity(),
-                        room.getBranch().getName(),
-                        room.getActive()
+                        inventory.getIdInventory(),
+                        inventory.getRoom().getRoomNumber(),
+                        inventory.getBranch().getName(),
+                        inventory.getDescription(),
+                        inventory.getActive()
                 });
             }
             searchItems.clear();
         } else {
-            final List<Room> RoomList = RoomRepository.findAll(Room.class, role);
-            if (Objects.nonNull(RoomList)) {
-                for (Room room : RoomList) {
+            final List<Inventory> inventoryList = InventoryRepository.findAll(Inventory.class, role);
+            if (Objects.nonNull(inventoryList)) {
+                for (Inventory inventory : inventoryList) {
                     model.addRow(new Object[]{
                             null,
-                            room.getIdRoom(),
-                            room.getRoomNumber(),
-                            room.getRoomType().getName(),
-                            "R$ " + room.getRoomType().getPrice(),
-                            room.getRoomType().getCapacity(),
-                            room.getBranch().getName(),
-                            room.getActive()
+                            inventory.getIdInventory(),
+                            inventory.getRoom().getRoomNumber(),
+                            inventory.getBranch().getName(),
+                            inventory.getDescription(),
+                            inventory.getActive()
                     });
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to load room type data");
+                JOptionPane.showMessageDialog(null, "Falha ao carregar dados do inventário.");
             }
         }
     }

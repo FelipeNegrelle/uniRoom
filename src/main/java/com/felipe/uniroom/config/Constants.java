@@ -12,12 +12,12 @@ public class Constants {
     public static final String UNIROOM = "UniRoom";
     public static final String REGISTER = "Registrar";
     public static final String ACTIONS = "Ações";
-    public static final String SUCCESSFUL_REGISTER = "Registrado com sucesso!";
-    public static final String FAILED_REGISTER = "Registrar falhou. Tente novamente.";
-    public static final String SUCCESSFUL_LOGIN = "Entrou com sucesso!";
+    public static final String SUCCESSFUL_REGISTER = "Registrado com sucesso";
+    public static final String FAILED_REGISTER = "Registrar falhou. Tente novamente";
+    public static final String SUCCESSFUL_LOGIN = "Entrou com sucesso";
     public static final String SUCCESS = "Sucesso";
-    public static final String FAILED_LOGIN = "Login falhou. Tente novamente.";
-    public static final String GENERIC_ERROR = "Um erro ocorreu. Tente novamente.";
+    public static final String FAILED_LOGIN = "Login falhou, tente novamente";
+    public static final String GENERIC_ERROR = "Um erro ocorreu, tente novamente";
     public static final String LOGIN = "Login";
     public static final String USER = "Usuário";
     public static final String PASSWORD = "Senha";
@@ -41,19 +41,21 @@ public class Constants {
     public static final String BRANCH = "Filial";
     public static final String INVENTORY = "Inventário";
     public static final String ITEM = "Item";
+    public static final String ITEMS = "Itens";
     public static final String RESERVATION = "Reserva";
     public static final String ROOM = "Quarto";
     public static final String ROOM_TYPE = "Tipo de quarto";
-    public static final String EDIT_WARN = "Selecione um item para editar.";
-    public static final String DELETE_WARN = "Selecione um item para excluir.";
-    public static final String WARN = "Aviso.";
+    public static final String EDIT_WARN = "Selecione um item para editar";
+    public static final String DELETE_WARN = "Selecione um item para excluir";
+    public static final String WARN = "Aviso";
     public static final String NEW = "Novo";
     public static final String SEARCH = "Pesquisa";
-    public static final String CNPJ = "Cnpj";
-    public static final String CPF = "Cpf";
+    public static final String CNPJ = "CNPJ";
+    public static final String CPF = "CPF";
     public static final String EXIT = "Sair";
     public static final String HOSTED = "Hospedado";
     public static final String RECOVER_PASSWORD = "Recuperar Senha";
+    public static final String QUANTITY = "Quantidade";
 
     //Colors
     public static final Color WHITE = new Color(0xFFFFFF);

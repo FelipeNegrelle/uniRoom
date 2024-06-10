@@ -11,13 +11,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class Role {
-    private final char role;
+    private final Character role;
     private final List<Menu> menus;
     private User user;
     private List<Corporate> corporates;
     private List<Branch> branches;
 
-    public Role(char role) {
+    public Role(Character role) {
         this.role = role;
         this.menus = getMenusByRole(role);
         this.user = null;
@@ -25,7 +25,7 @@ public class Role {
         this.branches = null;
     }
 
-    public Role(char role, User user, List<Corporate> corporates, List<Branch> branches) {
+    public Role(Character role, User user, List<Corporate> corporates, List<Branch> branches) {
         this.role = role;
         this.menus = getMenusByRole(role);
         this.user = user;
@@ -33,7 +33,7 @@ public class Role {
         this.branches = branches;
     }
 
-    public char getRole() {
+    public Character getRole() {
         return role;
     }
 
@@ -65,7 +65,7 @@ public class Role {
         this.branches = branches;
     }
 
-    public static List<Menu> getMenusByRole(char role) {
+    public static List<Menu> getMenusByRole(Character role) {
         switch (role) {
             case 'A':
                 final List<Menu> menusAdmin = new ArrayList<>();

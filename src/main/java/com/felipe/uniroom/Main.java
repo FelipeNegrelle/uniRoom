@@ -16,7 +16,7 @@ public class Main {
     public static void main(String[] args) {
         try {
             UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
-            SwingUtilities.invokeLater(com.felipe.uniroom.view.Login::new);
+            SwingUtilities.invokeLater(com.felipe.uniroom.views.Login::new);
 
             final User admin = new User();
             admin.setName("Administrator");

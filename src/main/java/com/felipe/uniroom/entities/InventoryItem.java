@@ -7,17 +7,17 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "inventory_item")
-public class InvetoryItem implements Serializable {
+public class InventoryItem implements Serializable {
     @EmbeddedId
     private InventoryItemId id;
 
     @Column(nullable = false)
     private Integer quantity;
 
-    public InvetoryItem() {
+    public InventoryItem() {
     }
 
-    public InvetoryItem(InventoryItemId id, Integer quantity) {
+    public InventoryItem(InventoryItemId id, Integer quantity) {
         this.id = id;
         this.quantity = quantity;
     }
@@ -41,10 +41,10 @@ public class InvetoryItem implements Serializable {
     @Override
     public boolean equals(Object o) {
         if (o == this) return true;
-        if (!(o instanceof InvetoryItem)) {
+        if (!(o instanceof InventoryItem)) {
             return false;
         }
-        InvetoryItem invetoryItem = (InvetoryItem) o;
+        InventoryItem invetoryItem = (InventoryItem) o;
         return Objects.equals(id, invetoryItem.id) && Objects.equals(quantity, invetoryItem.quantity);
     }
 

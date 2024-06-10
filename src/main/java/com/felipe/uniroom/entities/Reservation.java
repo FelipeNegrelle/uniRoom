@@ -2,6 +2,7 @@ package com.felipe.uniroom.entities;
 
 import jakarta.persistence.*;
 
+import java.util.Date;
 import java.util.Objects;
 
 @Entity
@@ -12,7 +13,7 @@ public class Reservation {
     @Column(name = "id_reservation")
     private Integer idReservation;
 
-    @OneToOne()
+    @ManyToOne()
     @JoinColumn(name = "id_room", nullable = false)
     private Room room;
 
@@ -29,6 +30,14 @@ public class Reservation {
     @ManyToOne()
     @JoinColumn(name = "id_branch", nullable = false)
     private Branch branch;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "date_time_check_in", nullable = false)
+    private Date dateTimeCheckIn = new Date();
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "date_time_check_out")
+    private Date dateTimeCheckOut;
 
     public Integer getIdReservation() {
         return idReservation;
@@ -78,21 +87,42 @@ public class Reservation {
         this.branch = branch;
     }
 
+    public Date getDateTimeCheckIn() {
+        return dateTimeCheckIn;
+    }
+
+    public void setDateTimeCheckIn(Date dateTimeCheckIn) {
+        this.dateTimeCheckIn = dateTimeCheckIn;
+    }
+
+    public Date getDateTimeCheckOut() {
+        return dateTimeCheckOut;
+    }
+
+    public void setDateTimeCheckOut(Date dateTimeCheckOut) {
+        this.dateTimeCheckOut = dateTimeCheckOut;
+    }
+
     public Reservation() {
     }
 
-    public Reservation(Room room, Short days, User user, String status, Branch branch) {
+    public Reservation(Integer idReservation, Room room, Short days, User user, String status, Branch branch, Date dateTimeCheckIn, Date dateTimeCheckOut) {
+        this.idReservation = idReservation;
         this.room = room;
         this.days = days;
         this.user = user;
         this.status = status;
         this.branch = branch;
+        this.dateTimeCheckIn = dateTimeCheckIn;
+        this.dateTimeCheckOut = dateTimeCheckOut;
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Reservation that)) return false;
+        if (this == o)
+            return true;
+        if (!(o instanceof Reservation that))
+            return false;
         return Objects.equals(idReservation, that.idReservation);
     }
 
@@ -103,6 +133,6 @@ public class Reservation {
 
     @Override
     public String toString() {
-        return "Reservation{" + "idReservation=" + idReservation + ", room=" + room + ", days=" + days + ", user=" + user + ", status='" + status + '\'' + ", branch=" + branch + '}';
+        return "Reservation{" + "idReservation=" + idReservation + ", room=" + room + ", days=" + days + ", user=" + user + ", status='" + status + '\'' + ", branch=" + branch + ", dateTimeCheckIn=" + dateTimeCheckIn + ", dateTimeCheckOut=" + dateTimeCheckOut + '}';
     }
 }

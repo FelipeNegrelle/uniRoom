@@ -1,11 +1,10 @@
-package com.felipe.uniroom.view;
+package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
-import com.felipe.uniroom.config.Util;
-import com.felipe.uniroom.entities.Branch;
-import com.felipe.uniroom.repositories.BranchRepository;
-import com.felipe.uniroom.services.BranchService;
+import com.felipe.uniroom.entities.Item;
+import com.felipe.uniroom.repositories.ItemRepository;
+import com.felipe.uniroom.services.ItemService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -15,27 +14,23 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
-public class BranchView extends JFrame {
+public class ItemView extends JFrame {
     private static DefaultTableModel model;
-    private static final List<Branch> searchItens = new ArrayList<>();
+    private static final List<Item> searchItems = new ArrayList<>();
 
-    public BranchView(Role role) {
-        super(Constants.BRANCH);
+    public ItemView(Role role) {
+        super(Constants.ITEM);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
-
-        System.out.println(role.getRole());
-        System.out.println(Arrays.toString(role.getCorporates().toArray()));
-        System.out.println(Arrays.toString(role.getBranches().toArray()));
 
         final JPanel panel = new JPanel(new MigLayout("fill, wrap 1", "[grow]", ""));
         panel.setBackground(Constants.BLUE);
         setIconImage(Constants.LOGO);
-        final JLabel titleLabel = new JLabel(Constants.BRANCH);
+
+        final JLabel titleLabel = new JLabel(Constants.ITEM);
         titleLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 40));
         titleLabel.setForeground(Color.WHITE);
         panel.add(titleLabel, "align center");
@@ -51,17 +46,17 @@ public class BranchView extends JFrame {
             new Home(role);
             dispose();
         });
-        searchPanel.add(backButton, "align left ");
+        searchPanel.add(backButton, "align left");
 
-        final JButton newBranch = new JButton(Constants.NEW);
-        newBranch.setBackground(Constants.WHITE);
-        newBranch.setForeground(Constants.BLACK);
-        newBranch.setFont(Constants.FONT.deriveFont(Font.BOLD));
-        newBranch.addActionListener(e -> {
-            new BranchForm(role, null);
+        final JButton newItem = new JButton(Constants.NEW);
+        newItem.setBackground(Constants.WHITE);
+        newItem.setForeground(Constants.BLACK);
+        newItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        newItem.addActionListener(e -> {
+            new ItemForm(role, null);
             dispose();
         });
-        searchPanel.add(newBranch, "align left");
+        searchPanel.add(newItem, "align left");
 
         final JLabel searchLabel = new JLabel(Constants.SEARCH);
         searchLabel.setFont(Constants.FONT.deriveFont(Font.BOLD));
@@ -75,15 +70,16 @@ public class BranchView extends JFrame {
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                searchItens.addAll(BranchService.search(searchField.getText(), null, role));
-                updateBranchTable(role);
+                searchItems.clear();
+                searchItems.addAll(ItemService.search(searchField.getText(), null, role));
+                updateItemTable(role);
             }
         });
         searchPanel.add(searchField, "align left");
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "CNPJ", "Matriz", "Gerente", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "Preço", "Filial", "Ativo"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -95,7 +91,7 @@ public class BranchView extends JFrame {
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
         final Components.IconCellRenderer iconCellRenderer = new Components.IconCellRenderer();
-        final TableColumn activeColumn = table.getColumnModel().getColumn(6);
+        final TableColumn activeColumn = table.getColumnModel().getColumn(5);
         activeColumn.setCellRenderer(iconCellRenderer);
 
         final Components.OptionsCellRenderer optionsCellRenderer = new Components.OptionsCellRenderer();
@@ -112,9 +108,8 @@ public class BranchView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Branch branch = BranchRepository.findById(Branch.class, (int) model.getValueAt(row, 1));
-
-                    new BranchForm(role, branch);
+                    final Item item = ItemRepository.findById(Item.class, (Integer) model.getValueAt(row, 1));
+                    new ItemForm(role, item);
                     dispose();
                 });
 
@@ -122,14 +117,12 @@ public class BranchView extends JFrame {
                 deleteItem.setIcon(Constants.DELETE_ICON);
                 deleteItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 deleteItem.addActionListener(e -> {
-                    final Branch branch = new Branch();
-
-                    branch.setIdBranch((int) model.getValueAt(row, 1));
-
-                    if (BranchService.delete(branch)) {
-                        updateBranchTable(role);
+                    final Item item = new Item();
+                    item.setIdItem((Integer) model.getValueAt(row, 1));
+                    if (ItemService.delete(item)) {
+                        updateItemTable(role);
                     } else {
-                        Components.showGenericError(this);
+                        JOptionPane.showMessageDialog(null, "Erro ao deletar item.", "Erro", JOptionPane.ERROR_MESSAGE);
                     }
                 });
 
@@ -146,7 +139,7 @@ public class BranchView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateBranchTable(role);
+        updateItemTable(role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -154,38 +147,36 @@ public class BranchView extends JFrame {
         setVisible(true);
     }
 
-    private static void updateBranchTable(Role role) {
+    private void updateItemTable(Role role) {
         model.setRowCount(0);
 
-        if (!searchItens.isEmpty()) {
-            for (Branch branch : searchItens) {
+        if (!searchItems.isEmpty()) {
+            for (Item item : searchItems) {
                 model.addRow(new Object[]{
                         null,
-                        branch.getIdBranch(),
-                        branch.getName(),
-                        Util.formatCnpj(branch.getCnpj()),
-                        branch.getCorporate().getName(),
-                        branch.getUser().getName(),
-                        branch.getActive(),
+                        item.getIdItem(),
+                        item.getName(),
+                        "R$" + item.getPrice(),
+                        item.getBranch().getName(),
+                        item.getActive()
                 });
             }
-            searchItens.clear();
+            searchItems.clear();
         } else {
-            final List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
-            if (Objects.nonNull(branchList)) {
-                for (Branch branch : branchList) {
+            final List<Item> itemList = ItemRepository.findAll(Item.class, role);
+            if (Objects.nonNull(itemList)) {
+                for (Item item : itemList) {
                     model.addRow(new Object[]{
                             null,
-                            branch.getIdBranch(),
-                            branch.getName(),
-                            Util.formatCnpj(branch.getCnpj()),
-                            branch.getCorporate().getName(),
-                            branch.getUser().getName(),
-                            branch.getActive(),
+                            item.getIdItem(),
+                            item.getName(),
+                            "R$" + item.getPrice(),
+                            item.getBranch().getName(),
+                            item.getActive(),
                     });
                 }
             } else {
-                JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);
+                JOptionPane.showMessageDialog(null, "Failed to load item data");
             }
         }
     }

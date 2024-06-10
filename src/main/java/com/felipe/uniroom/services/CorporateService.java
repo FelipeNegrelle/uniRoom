@@ -3,7 +3,7 @@ package com.felipe.uniroom.services;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.repositories.CorporateRepository;
-import com.felipe.uniroom.view.Components;
+import com.felipe.uniroom.views.Components;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;

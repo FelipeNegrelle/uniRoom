@@ -1,6 +1,7 @@
 package com.felipe.uniroom.entities;
 
 import jakarta.persistence.*;
+
 import java.util.Objects;
 
 @Entity
@@ -26,14 +27,6 @@ public class Room {
     private Boolean active;
 
     public Room() {
-    }
-
-    public Room(Integer idRoom, Integer roomNumber, RoomType roomType, Branch branch, Boolean active) {
-        this.idRoom = idRoom;
-        this.roomNumber = roomNumber;
-        this.roomType = roomType;
-        this.branch = branch;
-        this.active = active;
     }
 
     public Integer getIdRoom() {
@@ -78,11 +71,10 @@ public class Room {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this)
+        if (this == o)
             return true;
-        if (!(o instanceof Room)) {
+        if (o == null || getClass() != o.getClass())
             return false;
-        }
         Room room = (Room) o;
         return Objects.equals(idRoom, room.idRoom) && Objects.equals(roomNumber, room.roomNumber) && Objects.equals(roomType, room.roomType) && Objects.equals(branch, room.branch) && Objects.equals(active, room.active);
     }
@@ -94,12 +86,6 @@ public class Room {
 
     @Override
     public String toString() {
-        return "Room{" +
-                "idRoom=" + idRoom +
-                ", roomNumber=" + roomNumber +
-                ", roomType=" + roomType +
-                ", branch=" + branch +
-                ", active=" + active +
-                '}';
+        return "Room{" + "idRoom=" + idRoom + ", roomNumber=" + roomNumber + ", roomType=" + roomType + ", branch=" + branch + ", active=" + active + '}';
     }
 }

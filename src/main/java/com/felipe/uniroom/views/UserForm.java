@@ -1,17 +1,26 @@
-package com.felipe.uniroom.view;
+package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
+import com.felipe.uniroom.entities.Branch;
+import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.entities.User;
+import com.felipe.uniroom.repositories.BranchRepository;
+import com.felipe.uniroom.repositories.CorporateRepository;
 import com.felipe.uniroom.services.UserService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class UserForm extends JFrame {
+    final List<Corporate> corporates = new ArrayList<>();
+    final List<Branch> branches = new ArrayList<>();
+
     public UserForm(Role role, User entity) {
         super(Constants.USER);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -89,6 +98,23 @@ public class UserForm extends JFrame {
         if (Objects.nonNull(entity))
             secretAnswerField.setText(entity.getSecretAnswer());
 
+        final JLabel corporateLabel = new JLabel(Constants.CORPORATE + ":");
+        corporateLabel.setFont(new Font("Sans", Font.BOLD, 20));
+
+        final JComboBox<String> corporateCombo = new JComboBox<>();
+        corporateCombo.setPreferredSize(new Dimension(300, 30));
+        corporateCombo.setFont(new Font("Sans", Font.PLAIN, 20));
+
+        final JLabel branchLabel = new JLabel(Constants.BRANCH + ": ");
+        branchLabel.setFont(new Font("Sans", Font.BOLD, 20));
+
+        final JComboBox<String> branchCombo = new JComboBox<>();
+        branchCombo.setPreferredSize(new Dimension(300, 30));
+        branchCombo.setFont(new Font("Sans", Font.PLAIN, 20));
+
+        populateBranchCombo(branchCombo, entity, role);
+        populateCorporateCombo(corporateCombo, entity, role);
+
         inputPanel.add(nameLabel);
         inputPanel.add(nameField, "wrap");
 
@@ -98,16 +124,22 @@ public class UserForm extends JFrame {
         if (entity == null) {
             inputPanel.add(passwordLabel);
             inputPanel.add(passwordField, "wrap");
+
+            inputPanel.add(secretQuestionLabel);
+            inputPanel.add(secretQuestionCombo, "wrap");
+
+            inputPanel.add(secretAnswerLabel);
+            inputPanel.add(secretAnswerField, "wrap");
         }
 
         inputPanel.add(roleLabel);
         inputPanel.add(roleCombo, "wrap");
 
-        inputPanel.add(secretQuestionLabel);
-        inputPanel.add(secretQuestionCombo, "wrap");
+        inputPanel.add(corporateLabel);
+        inputPanel.add(corporateCombo, "wrap");
 
-        inputPanel.add(secretAnswerLabel);
-        inputPanel.add(secretAnswerField, "wrap");
+        inputPanel.add(branchLabel);
+        inputPanel.add(branchCombo, "wrap");
 
         mainPanel.add(inputPanel, "wrap, grow");
 
@@ -123,6 +155,8 @@ public class UserForm extends JFrame {
             user.setUsername(usernameField.getText());
             user.setPassword(new String(passwordField.getPassword()));
             user.setRole(Util.convertRoleName(roleCombo.getSelectedItem().toString()));
+            user.setBranch(branches.get(branchCombo.getSelectedIndex()));
+            user.setCorporate(corporates.get(corporateCombo.getSelectedIndex()));
             user.setSecretPhrase((String) secretQuestionCombo.getSelectedItem());
             user.setSecretAnswer(secretAnswerField.getText());
             user.setActive(true);
@@ -159,5 +193,51 @@ public class UserForm extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
+    }
+
+    private void populateCorporateCombo(JComboBox<String> corporateCombo, User entity, Role role) {
+        final List<Corporate> corporateList = CorporateRepository.findAll(Corporate.class, role);
+
+        if (Objects.nonNull(corporateList) && !corporateList.isEmpty()) {
+            corporateCombo.removeAllItems();
+            corporates.clear();
+
+            corporateCombo.addItem("- ");
+            corporates.add(null);
+            for (Corporate corporate : corporateList) {
+                corporateCombo.addItem(corporate.getName());
+                corporates.add(corporate);
+            }
+        }
+
+        if (Objects.nonNull(entity)) {
+            final Corporate corporate = entity.getCorporate();
+            if (Objects.nonNull(corporate)) {
+                corporateCombo.setSelectedItem(corporate.getName());
+            }
+        }
+    }
+
+    private void populateBranchCombo(JComboBox<String> branchCombo, User entity, Role role) {
+        final List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
+
+        if (Objects.nonNull(branchList) && !branchList.isEmpty()) {
+            branchCombo.removeAllItems();
+            branches.clear();
+
+            branchCombo.addItem("-");
+            branches.add(null);
+            for (Branch branch : branchList) {
+                branchCombo.addItem(branch.getName());
+                branches.add(branch);
+            }
+        }
+
+        if (Objects.nonNull(entity)) {
+            final Branch branch = entity.getBranch();
+            if (Objects.nonNull(branch)) {
+                branchCombo.setSelectedItem(branch.getName());
+            }
+        }
     }
 }

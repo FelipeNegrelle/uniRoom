@@ -13,15 +13,15 @@ public class Guest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idGuest;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false, length = 50, unique = true)
     private String name;
 
     @CPF
-    @Column(columnDefinition = "char(11)", nullable = false)
+    @Column(columnDefinition = "char(11)", nullable = false, unique = true)
     private String cpf;
 
-    @OneToOne
-    @JoinColumn(name = "id_room", nullable = false)
+    @ManyToOne
+    @JoinColumn(name = "id_room")
     private Room room;
 
     @OneToOne

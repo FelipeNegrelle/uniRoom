@@ -1,10 +1,12 @@
-package com.felipe.uniroom.view;
+package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
+import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Guest;
 import com.felipe.uniroom.entities.Room;
+import com.felipe.uniroom.repositories.BranchRepository;
 import com.felipe.uniroom.repositories.RoomRepository;
 import com.felipe.uniroom.services.GuestService;
 import net.miginfocom.swing.MigLayout;
@@ -16,7 +18,8 @@ import java.util.List;
 import java.util.Objects;
 
 public class GuestForm extends JFrame {
-    List<Room> rooms = new ArrayList<>();
+    final List<Room> rooms = new ArrayList<>();
+    final List<Branch> branches = new ArrayList<>();
 
     public GuestForm(Role role, Guest entity) {
         super(Constants.GUEST);
@@ -56,14 +59,21 @@ public class GuestForm extends JFrame {
 
         final JLabel hostedLabel = Components.getLabel(Constants.HOSTED + ": ", null, Font.BOLD, null, null);
         final JCheckBox hostedCheck = new JCheckBox();
+        hostedCheck.setPreferredSize(new Dimension(50, 50));
         hostedCheck.setSelected(Objects.nonNull(entity) && entity.getHosted());
+
+        final JLabel branchLabel = Components.getLabel(Constants.BRANCH + ": ", null, Font.BOLD, null, null);
+        final JComboBox<String> branchCombo = new JComboBox<>();
+        branchCombo.setPreferredSize(new Dimension(300, 30));
+        branchCombo.setFont(Constants.FONT);
 
         final JLabel roomLabel = Components.getLabel(Constants.ROOM + ": ", null, Font.BOLD, null, null);
         final JComboBox<String> roomCombo = new JComboBox<>();
         roomCombo.setPreferredSize(new Dimension(300, 30));
         roomCombo.setFont(Constants.FONT);
 
-        populateRoomCombo(roomCombo, entity, role);
+//        populateRoomCombo(roomCombo, entity, role);
+        populateBranchCombo(branchCombo, entity, role);
 
         inputPanel.add(nameLabel);
         inputPanel.add(nameField, "wrap");
@@ -71,11 +81,15 @@ public class GuestForm extends JFrame {
         inputPanel.add(cpfLabel);
         inputPanel.add(cpfField, "wrap");
 
-        inputPanel.add(hostedLabel);
-        inputPanel.add(hostedCheck, "wrap");
+//        inputPanel.add(hostedLabel);
+//        inputPanel.add(hostedCheck, "wrap");
 
-        inputPanel.add(roomLabel);
-        inputPanel.add(roomCombo, "wrap");
+//        inputPanel.add(roomLabel);
+//        inputPanel.add(roomCombo, "wrap");
+        if(!role.getRole().equals('E')) {
+            inputPanel.add(branchLabel);
+            inputPanel.add(branchCombo, "wrap");
+        }
 
         mainPanel.add(inputPanel, "wrap, grow");
 
@@ -89,7 +103,9 @@ public class GuestForm extends JFrame {
             guest.setIdGuest(Objects.nonNull(entity) ? entity.getIdGuest() : null);
             guest.setName(nameField.getText());
             guest.setCpf(cpfField.getText());
-            guest.setRoom(rooms.get(roomCombo.getSelectedIndex()));
+//            guest.setRoom(rooms.get(roomCombo.getSelectedIndex()));
+            guest.setRoom(null);
+            guest.setBranch(role.getRole().equals('E') ? role.getBranches().getFirst() : branches.get(branchCombo.getSelectedIndex()));
             guest.setHosted(Objects.nonNull(entity) ? guest.getHosted() : false);
 
             final Boolean result = Objects.nonNull(entity) ? GuestService.update(guest) : GuestService.save(guest);
@@ -125,9 +141,7 @@ public class GuestForm extends JFrame {
     private void populateRoomCombo(JComboBox<String> roomCombo, Guest entity, Role role) {
         final List<Room> roomList = RoomRepository.findAll(Room.class, role);
 
-        if (Objects.isNull(roomList) || roomList.isEmpty()) {
-            roomCombo.addItem("Nenhum quarto cadastrado.");
-        } else {
+        if (Objects.nonNull(roomList) && !roomList.isEmpty()) {
             roomCombo.removeAllItems();
             rooms.clear();
 
@@ -139,6 +153,24 @@ public class GuestForm extends JFrame {
 
         if (Objects.nonNull(entity)) {
             roomCombo.setSelectedItem(entity.getRoom().getRoomNumber());
+        }
+    }
+
+    private void populateBranchCombo(JComboBox<String> branchCombo, Guest entity, Role role) {
+        final List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
+
+        if (Objects.nonNull(branchList) && !branchList.isEmpty()) {
+            branchCombo.removeAllItems();
+            branches.clear();
+
+            for (Branch branch : branchList) {
+                branchCombo.addItem(branch.getName());
+                branches.add(branch);
+            }
+        }
+
+        if (Objects.nonNull(entity)) {
+            branchCombo.setSelectedItem(entity.getBranch().getName());
         }
     }
 }

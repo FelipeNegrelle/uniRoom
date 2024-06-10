@@ -1,10 +1,11 @@
-package com.felipe.uniroom.view;
+package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
-import com.felipe.uniroom.entities.Item;
-import com.felipe.uniroom.repositories.ItemRepository;
-import com.felipe.uniroom.services.ItemService;
+import com.felipe.uniroom.config.Util;
+import com.felipe.uniroom.entities.Guest;
+import com.felipe.uniroom.repositories.GuestRepository;
+import com.felipe.uniroom.services.GuestService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -17,20 +18,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class ItemView extends JFrame {
+public class GuestView extends JFrame {
     private static DefaultTableModel model;
-    private static final List<Item> searchItems = new ArrayList<>();
+    private static final List<Guest> searchItens = new ArrayList<>();
 
-    public ItemView(Role role) {
-        super(Constants.ITEM);
+    public GuestView(Role role) {
+        super(Constants.GUEST);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
 
         final JPanel panel = new JPanel(new MigLayout("fill, wrap 1", "[grow]", ""));
         panel.setBackground(Constants.BLUE);
         setIconImage(Constants.LOGO);
-
-        final JLabel titleLabel = new JLabel(Constants.ITEM);
+        final JLabel titleLabel = new JLabel(Constants.GUEST);
         titleLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 40));
         titleLabel.setForeground(Color.WHITE);
         panel.add(titleLabel, "align center");
@@ -46,17 +46,17 @@ public class ItemView extends JFrame {
             new Home(role);
             dispose();
         });
-        searchPanel.add(backButton, "align left");
+        searchPanel.add(backButton, "align left ");
 
-        final JButton newItem = new JButton(Constants.NEW);
-        newItem.setBackground(Constants.WHITE);
-        newItem.setForeground(Constants.BLACK);
-        newItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
-        newItem.addActionListener(e -> {
-            new ItemForm(role, null);
+        final JButton newGuest = new JButton(Constants.NEW);
+        newGuest.setBackground(Constants.WHITE);
+        newGuest.setForeground(Constants.BLACK);
+        newGuest.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        newGuest.addActionListener(e -> {
+            new GuestForm(role, null);
             dispose();
         });
-        searchPanel.add(newItem, "align left");
+        searchPanel.add(newGuest, "align left");
 
         final JLabel searchLabel = new JLabel(Constants.SEARCH);
         searchLabel.setFont(Constants.FONT.deriveFont(Font.BOLD));
@@ -70,16 +70,15 @@ public class ItemView extends JFrame {
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                searchItems.clear();
-                searchItems.addAll(ItemService.search(searchField.getText(), null, role));
-                updateItemTable(role);
+                searchItens.addAll(GuestService.search(searchField.getText(), null, role));
+                updateGuestTable(role);
             }
         });
         searchPanel.add(searchField, "align left");
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "Preço", "Filial", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "CPF", "Quarto", "Hospedado"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -108,8 +107,9 @@ public class ItemView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Item item = ItemRepository.findById(Item.class, (Integer) model.getValueAt(row, 1));
-                    new ItemForm(role, item);
+                    final Guest guest = GuestRepository.findById(Guest.class, (int) model.getValueAt(row, 1));
+
+                    new GuestForm(role, guest);
                     dispose();
                 });
 
@@ -117,12 +117,14 @@ public class ItemView extends JFrame {
                 deleteItem.setIcon(Constants.DELETE_ICON);
                 deleteItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 deleteItem.addActionListener(e -> {
-                    final Item item = new Item();
-                    item.setIdItem((Integer) model.getValueAt(row, 1));
-                    if (ItemService.delete(item)) {
-                        updateItemTable(role);
+                    final Guest guest = new Guest();
+
+                    guest.setIdGuest((int) model.getValueAt(row, 1));
+
+                    if (GuestService.delete(guest)) {
+                        updateGuestTable(role);
                     } else {
-                        JOptionPane.showMessageDialog(null, "Erro ao deletar item.", "Erro", JOptionPane.ERROR_MESSAGE);
+                        Components.showGenericError(this);
                     }
                 });
 
@@ -139,7 +141,7 @@ public class ItemView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateItemTable(role);
+        updateGuestTable(role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -147,36 +149,36 @@ public class ItemView extends JFrame {
         setVisible(true);
     }
 
-    private void updateItemTable(Role role) {
+    private static void updateGuestTable(Role role) {
         model.setRowCount(0);
 
-        if (!searchItems.isEmpty()) {
-            for (Item item : searchItems) {
+        if (!searchItens.isEmpty()) {
+            for (Guest guest : searchItens) {
                 model.addRow(new Object[]{
                         null,
-                        item.getIdItem(),
-                        item.getName(),
-                        "R$" + item.getPrice(),
-                        item.getBranch().getName(),
-                        item.getActive()
+                        guest.getIdGuest(),
+                        guest.getName(),
+                        Util.formatCpf(guest.getCpf()),
+                        Objects.isNull(guest.getRoom()) ? "-" : guest.getRoom().getRoomNumber(),
+                        guest.getHosted(),
                 });
             }
-            searchItems.clear();
+            searchItens.clear();
         } else {
-            final List<Item> itemList = ItemRepository.findAll(Item.class, role);
-            if (Objects.nonNull(itemList)) {
-                for (Item item : itemList) {
+            final List<Guest> branchList = GuestRepository.findAll(Guest.class, role);
+            if (Objects.nonNull(branchList)) {
+                for (Guest guest : branchList) {
                     model.addRow(new Object[]{
                             null,
-                            item.getIdItem(),
-                            item.getName(),
-                            "R$" + item.getPrice(),
-                            item.getBranch().getName(),
-                            item.getActive(),
+                            guest.getIdGuest(),
+                            guest.getName(),
+                            Util.formatCpf(guest.getCpf()),
+                            Objects.isNull(guest.getRoom()) ? "-" : guest.getRoom().getRoomNumber(),
+                            guest.getHosted(),
                     });
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to load item data");
+                JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);
             }
         }
     }

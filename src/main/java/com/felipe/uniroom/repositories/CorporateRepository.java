@@ -13,7 +13,8 @@ public class CorporateRepository extends DatabaseRepository {
             return em.createQuery(query, Corporate.class)
                     .setParameter("cnpj", cnpj)
                     .getSingleResult();
-        } catch (NoResultException e) {
+        } catch (
+                NoResultException e) {
             return null;
         }
     }
@@ -22,15 +23,12 @@ public class CorporateRepository extends DatabaseRepository {
         final String query = "SELECT c FROM Corporate c WHERE c.cnpj = :cnpj and c.idCorporate <> :idCorporate";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            System.out.println(em.createQuery(query, Corporate.class)
-                    .setParameter("cnpj", cnpj)
-                    .setParameter("idCorporate", idCorporate)
-                    .getSingleResult() != null);
             return em.createQuery(query, Corporate.class)
                     .setParameter("cnpj", cnpj)
                     .setParameter("idCorporate", idCorporate)
                     .getSingleResult() != null;
-        } catch (NoResultException e) {
+        } catch (
+                NoResultException e) {
             e.printStackTrace();
 
             return false;

@@ -3,7 +3,7 @@ package com.felipe.uniroom.services;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Room;
 import com.felipe.uniroom.repositories.RoomRepository;
-import com.felipe.uniroom.view.Components;
+import com.felipe.uniroom.views.Components;
 
 import javax.swing.*;
 import java.util.List;

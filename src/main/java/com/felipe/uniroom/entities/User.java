@@ -13,6 +13,10 @@ public class User {
     private Integer idUser;
 
     @OneToOne
+    @JoinColumn(name = "id_corporate")
+    private Corporate corporate;
+
+    @OneToOne
     @JoinColumn(name = "id_branch")
     private Branch branch;
 
@@ -40,8 +44,9 @@ public class User {
     public User() {
     }
 
-    public User(Integer idUser, Branch branch, String name, String username, String password, Character role, String secretPhrase, String secretAnswer, Boolean active) {
+    public User(Integer idUser, Corporate corporate, Branch branch, String name, String username, String password, Character role, String secretPhrase, String secretAnswer, Boolean active) {
         this.idUser = idUser;
+        this.corporate = corporate;
         this.branch = branch;
         this.name = name;
         this.username = username;
@@ -58,6 +63,14 @@ public class User {
 
     public void setIdUser(Integer idUser) {
         this.idUser = idUser;
+    }
+
+    public Corporate getCorporate() {
+        return corporate;
+    }
+
+    public void setCorporate(Corporate corporate) {
+        this.corporate = corporate;
     }
 
     public Branch getBranch() {
@@ -152,14 +165,6 @@ public class User {
 
     @Override
     public int hashCode() {
-        int result = idUser != null ? idUser.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (username != null ? username.hashCode() : 0);
-        result = 31 * result + (password != null ? password.hashCode() : 0);
-        result = 31 * result + (role != null ? role.hashCode() : 0);
-        result = 31 * result + (secretPhrase != null ? secretPhrase.hashCode() : 0);
-        result = 31 * result + (secretAnswer != null ? secretAnswer.hashCode() : 0);
-        result = 31 * result + (active != null ? active.hashCode() : 0);
-        return result;
+        return Objects.hash(idUser, corporate, branch, name, username, password, role, secretPhrase, secretAnswer, active);
     }
 }

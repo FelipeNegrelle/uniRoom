@@ -1,4 +1,4 @@
-package com.felipe.uniroom.view;
+package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
@@ -12,6 +12,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -59,7 +61,7 @@ public class ReservationView extends JFrame {
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Quarto", "Dias", "Funcionário", "Filial", "Situação"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Quarto", "Dias", "Funcionário", "Filial", "Check-In", "Check-out", "Situação"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -67,6 +69,7 @@ public class ReservationView extends JFrame {
         table.setAutoCreateRowSorter(true);
         table.setRowHeight(30);
         table.setDefaultEditor(Object.class, null);
+        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         table.getTableHeader().setReorderingAllowed(false);
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
@@ -98,8 +101,13 @@ public class ReservationView extends JFrame {
 
                     reservation.setIdReservation((int) model.getValueAt(row, 1));
 
-                    if (ReservationService.cancel(reservation)) {
-                        updateReservationTable(role);
+                    if (ReservationService.cancel(reservation, ReservationRepository.getGuests(reservation))) {
+                        try {
+                            updateReservationTable(role);
+                        } catch (
+                                ParseException ex) {
+                            throw new RuntimeException(ex);
+                        }
                     } else {
                         Components.showGenericError(this);
                     }
@@ -118,7 +126,12 @@ public class ReservationView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateReservationTable(role);
+        try {
+            updateReservationTable(role);
+        } catch (
+                ParseException ex) {
+            throw new RuntimeException(ex);
+        }
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -126,7 +139,7 @@ public class ReservationView extends JFrame {
         setVisible(true);
     }
 
-    private static void updateReservationTable(Role role) {
+    private static void updateReservationTable(Role role) throws ParseException {
         model.setRowCount(0);
 
         if (!searchItens.isEmpty()) {
@@ -138,6 +151,8 @@ public class ReservationView extends JFrame {
                         reservation.getDays(),
                         reservation.getUser().getName(),
                         reservation.getBranch().getName(),
+                        new SimpleDateFormat("dd/MM/yyyy HH:mm").format(reservation.getDateTimeCheckIn()),
+                        Objects.nonNull(reservation.getDateTimeCheckOut()) ? new SimpleDateFormat("dd/MM/yyyy HH:mm").format(reservation.getDateTimeCheckOut()) : "-",
                         Util.convertStatusReservation(reservation.getStatus())
                 });
             }
@@ -153,6 +168,8 @@ public class ReservationView extends JFrame {
                             reservation.getDays(),
                             reservation.getUser().getName(),
                             reservation.getBranch().getName(),
+                            new SimpleDateFormat("dd/MM/yyyy HH:mm").format(reservation.getDateTimeCheckIn()),
+                            Objects.nonNull(reservation.getDateTimeCheckOut()) ? new SimpleDateFormat("dd/MM/yyyy HH:mm").format(reservation.getDateTimeCheckOut()) : "-",
                             Util.convertStatusReservation(reservation.getStatus())
                     });
                 }

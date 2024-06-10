@@ -77,9 +77,9 @@ public class Util {
             case 'A' ->
                     new String[]{"Administrador", "Gerente de Matriz", "Gerente de Filial", "Funcionário"};
             case 'C' ->
-                    new String[]{"Gerente de Filial", "Funcionário"};
+                    new String[]{"Gerente de Matriz", "Gerente de Filial", "Funcionário"};
             case 'B' ->
-                    new String[]{"Funcionário"};
+                    new String[]{"Gerente de Filial", "Funcionário"};
             default ->
                     new String[]{};
         };

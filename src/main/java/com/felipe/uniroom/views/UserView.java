@@ -1,11 +1,9 @@
-package com.felipe.uniroom.view;
+package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
-import com.felipe.uniroom.config.Util;
-import com.felipe.uniroom.entities.Guest;
-import com.felipe.uniroom.repositories.GuestRepository;
-import com.felipe.uniroom.services.GuestService;
+import com.felipe.uniroom.entities.User;
+import com.felipe.uniroom.repositories.UserRepository;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -14,23 +12,22 @@ import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class GuestView extends JFrame {
+public class UserView extends JFrame {
     private static DefaultTableModel model;
-    private static final List<Guest> searchItens = new ArrayList<>();
 
-    public GuestView(Role role) {
-        super(Constants.GUEST);
+    public UserView(Role role) {
+        super(Constants.USER);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
 
         final JPanel panel = new JPanel(new MigLayout("fill, wrap 1", "[grow]", ""));
         panel.setBackground(Constants.BLUE);
         setIconImage(Constants.LOGO);
-        final JLabel titleLabel = new JLabel(Constants.GUEST);
+
+        final JLabel titleLabel = new JLabel(Constants.USER);
         titleLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 40));
         titleLabel.setForeground(Color.WHITE);
         panel.add(titleLabel, "align center");
@@ -48,15 +45,15 @@ public class GuestView extends JFrame {
         });
         searchPanel.add(backButton, "align left ");
 
-        final JButton newGuest = new JButton(Constants.NEW);
-        newGuest.setBackground(Constants.WHITE);
-        newGuest.setForeground(Constants.BLACK);
-        newGuest.setFont(Constants.FONT.deriveFont(Font.BOLD));
-        newGuest.addActionListener(e -> {
-            new GuestForm(role, null);
+        final JButton newUser = new JButton(Constants.NEW);
+        newUser.setBackground(Constants.WHITE);
+        newUser.setForeground(Constants.BLACK);
+        newUser.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        newUser.addActionListener(e -> {
+            new UserForm(role, null);
             dispose();
         });
-        searchPanel.add(newGuest, "align left");
+        searchPanel.add(newUser, "align left");
 
         final JLabel searchLabel = new JLabel(Constants.SEARCH);
         searchLabel.setFont(Constants.FONT.deriveFont(Font.BOLD));
@@ -67,18 +64,18 @@ public class GuestView extends JFrame {
         final JTextField searchField = new JTextField(20);
         searchField.setFont(Constants.FONT.deriveFont(Font.BOLD));
         searchField.setPreferredSize(new Dimension(200, 40));
+        searchPanel.add(searchField, "align left");
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                searchItens.addAll(GuestService.search(searchField.getText(), null, role));
-                updateGuestTable(role);
+                String searchText = searchField.getText().trim().toLowerCase();
+                updateUserTable(searchText);
             }
         });
-        searchPanel.add(searchField, "align left");
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "CPF", "Quarto", "Hospedado"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "Username", "Cargo", "Matriz", "Filial", "Ativo"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -89,12 +86,12 @@ public class GuestView extends JFrame {
         table.getTableHeader().setReorderingAllowed(false);
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
-        final Components.IconCellRenderer iconCellRenderer = new Components.IconCellRenderer();
-        final TableColumn activeColumn = table.getColumnModel().getColumn(5);
-        activeColumn.setCellRenderer(iconCellRenderer);
 
-        final Components.OptionsCellRenderer optionsCellRenderer = new Components.OptionsCellRenderer();
-        table.getColumnModel().getColumn(0).setCellRenderer(optionsCellRenderer);
+        final TableColumn optionsColumn = table.getColumnModel().getColumn(0);
+        optionsColumn.setCellRenderer(new Components.OptionsCellRenderer());
+
+        final TableColumn activeColumn = table.getColumnModel().getColumn(7);
+        activeColumn.setCellRenderer(new Components.IconCellRenderer());
 
         final Components.MouseAction mouseAction = (tableEvt, evt) -> {
             final int row = tableEvt.rowAtPoint(evt.getPoint());
@@ -107,9 +104,9 @@ public class GuestView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Guest guest = GuestRepository.findById(Guest.class, (int) model.getValueAt(row, 1));
+                    final User user = UserRepository.findById(User.class, (int) model.getValueAt(row, 1));
 
-                    new GuestForm(role, guest);
+                    new UserForm(role, user);
                     dispose();
                 });
 
@@ -117,12 +114,10 @@ public class GuestView extends JFrame {
                 deleteItem.setIcon(Constants.DELETE_ICON);
                 deleteItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 deleteItem.addActionListener(e -> {
-                    final Guest guest = new Guest();
+                    final User user = UserRepository.findById(User.class, (int) model.getValueAt(row, 1));
 
-                    guest.setIdGuest((int) model.getValueAt(row, 1));
-
-                    if (GuestService.delete(guest)) {
-                        updateGuestTable(role);
+                    if (UserRepository.delete(User.class, user.getIdUser())) {
+                        updateUserTable(searchField.getText());
                     } else {
                         Components.showGenericError(this);
                     }
@@ -141,7 +136,7 @@ public class GuestView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateGuestTable(role);
+        updateUserTable("");
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -149,37 +144,40 @@ public class GuestView extends JFrame {
         setVisible(true);
     }
 
-    private static void updateGuestTable(Role role) {
+    private static String getRoleTranslation(char roleCode) {
+        return switch (roleCode) {
+            case 'A' ->
+                    "Administrador";
+            case 'C' ->
+                    "Gerente de Matriz";
+            case 'B' ->
+                    "Gerente de Filial";
+            case 'E' ->
+                    "Funcionário";
+            default ->
+                    "Desconhecido";
+        };
+    }
+
+    private static void updateUserTable(String searchText) {
         model.setRowCount(0);
 
-        if (!searchItens.isEmpty()) {
-            for (Guest guest : searchItens) {
+        final List<User> userList = UserRepository.searchByUsernameOrName(searchText);
+        if (Objects.nonNull(userList)) {
+            for (User user : userList) {
                 model.addRow(new Object[]{
-                        null,
-                        guest.getIdGuest(),
-                        guest.getName(),
-                        Util.formatCpf(guest.getCpf()),
-                        guest.getRoom().getRoomNumber(),
-                        guest.getHosted(),
+                        "...", // Adiciona os três pontinhos como uma opção de edição e exclusão
+                        user.getIdUser(),
+                        user.getName(),
+                        user.getUsername(),
+                        getRoleTranslation(user.getRole()),
+                        Objects.isNull(user.getCorporate()) ? "-" : user.getCorporate().getName(),
+                        Objects.isNull(user.getBranch()) ? "-" : user.getBranch().getName(),
+                        user.getActive()
                 });
             }
-            searchItens.clear();
         } else {
-            final List<Guest> branchList = GuestRepository.findAll(Guest.class, role);
-            if (Objects.nonNull(branchList)) {
-                for (Guest guest : branchList) {
-                    model.addRow(new Object[]{
-                            null,
-                            guest.getIdGuest(),
-                            guest.getName(),
-                            Util.formatCpf(guest.getCpf()),
-                            guest.getRoom().getRoomNumber(),
-                            guest.getHosted(),
-                    });
-                }
-            } else {
-                JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);
-            }
+            JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);
         }
     }
 }

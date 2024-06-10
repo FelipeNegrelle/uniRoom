@@ -1,4 +1,4 @@
-package com.felipe.uniroom.view;
+package com.felipe.uniroom.views;
 
 public class RoomItem {
     private Integer id;

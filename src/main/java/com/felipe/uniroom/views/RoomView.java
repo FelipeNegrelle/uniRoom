@@ -1,12 +1,10 @@
-package com.felipe.uniroom.view;
+package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
-import com.felipe.uniroom.config.Util;
-import com.felipe.uniroom.entities.Corporate;
-import com.felipe.uniroom.repositories.CorporateRepository;
-import com.felipe.uniroom.services.BranchService;
-import com.felipe.uniroom.services.CorporateService;
+import com.felipe.uniroom.entities.Room;
+import com.felipe.uniroom.repositories.RoomRepository;
+import com.felipe.uniroom.services.RoomService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -19,12 +17,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CorporateView extends JFrame {
-    private static DefaultTableModel model;
-    private static final List<Corporate> searchItens = new ArrayList<>();
+public class RoomView extends JFrame {
 
-    public CorporateView(Role role) {
-        super(Constants.CORPORATE);
+    private static DefaultTableModel model;
+    private static final List<Room> searchItems = new ArrayList<>();
+
+    public RoomView(Role role) {
+        super(Constants.ROOM);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
 
@@ -32,7 +31,7 @@ public class CorporateView extends JFrame {
         panel.setBackground(Constants.BLUE);
         setIconImage(Constants.LOGO);
 
-        final JLabel titleLabel = new JLabel(Constants.CORPORATE);
+        final JLabel titleLabel = new JLabel(Constants.ROOM);
         titleLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 40));
         titleLabel.setForeground(Color.WHITE);
         panel.add(titleLabel, "align center");
@@ -48,17 +47,17 @@ public class CorporateView extends JFrame {
             new Home(role);
             dispose();
         });
-        searchPanel.add(backButton, "align left ");
+        searchPanel.add(backButton, "align left");
 
-        final JButton newCorporate = new JButton(Constants.NEW);
-        newCorporate.setBackground(Constants.WHITE);
-        newCorporate.setForeground(Constants.BLACK);
-        newCorporate.setFont(Constants.FONT.deriveFont(Font.BOLD));
-        newCorporate.addActionListener(e -> {
-            new CorporateForm(role, null);
+        final JButton newRoom = new JButton(Constants.NEW);
+        newRoom.setBackground(Constants.WHITE);
+        newRoom.setForeground(Constants.BLACK);
+        newRoom.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        newRoom.addActionListener(e -> {
+            new RoomForm(role, null);
             dispose();
         });
-        searchPanel.add(newCorporate, "align left");
+        searchPanel.add(newRoom, "align left");
 
         final JLabel searchLabel = new JLabel(Constants.SEARCH);
         searchLabel.setFont(Constants.FONT.deriveFont(Font.BOLD));
@@ -72,15 +71,16 @@ public class CorporateView extends JFrame {
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                searchItens.addAll(CorporateService.search(searchField.getText(), null, role));
-                updateCorporateTable(role);
+                searchItems.clear();
+                searchItems.addAll(RoomService.search(searchField.getText(), null, role));
+                updateRoomTable(role);
             }
         });
         searchPanel.add(searchField, "align left");
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "CNPJ", "Gerente", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nº quarto", "Tipo", "Preço", "Capacidade", "Filial", "Ativo"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -91,11 +91,12 @@ public class CorporateView extends JFrame {
         table.getTableHeader().setReorderingAllowed(false);
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
-        final TableColumn optionsColumn = table.getColumnModel().getColumn(0);
-        optionsColumn.setCellRenderer(new Components.OptionsCellRenderer());
+        final Components.IconCellRenderer iconCellRenderer = new Components.IconCellRenderer();
+        final TableColumn activeColumn = table.getColumnModel().getColumn(7);
+        activeColumn.setCellRenderer(iconCellRenderer);
 
-        final TableColumn activeColumn = table.getColumnModel().getColumn(5);
-        activeColumn.setCellRenderer(new Components.IconCellRenderer());
+        final Components.OptionsCellRenderer optionsCellRenderer = new Components.OptionsCellRenderer();
+        table.getColumnModel().getColumn(0).setCellRenderer(optionsCellRenderer);
 
         final Components.MouseAction mouseAction = (tableEvt, evt) -> {
             final int row = tableEvt.rowAtPoint(evt.getPoint());
@@ -108,9 +109,8 @@ public class CorporateView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Corporate corporate = CorporateRepository.findById(Corporate.class, (int) model.getValueAt(row, 1));
-
-                    new CorporateForm(role, corporate);
+                    final Room Room = RoomRepository.findById(Room.class, (Integer) model.getValueAt(row, 1));
+                    new RoomForm(role, Room);
                     dispose();
                 });
 
@@ -118,14 +118,12 @@ public class CorporateView extends JFrame {
                 deleteItem.setIcon(Constants.DELETE_ICON);
                 deleteItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 deleteItem.addActionListener(e -> {
-                    final Corporate corporate = new Corporate();
-
-                    corporate.setIdCorporate((int) model.getValueAt(row, 1));
-
-                    if (CorporateService.delete(corporate)) {
-                        updateCorporateTable(role);
+                    final Room Room = new Room();
+                    Room.setIdRoom((Integer) model.getValueAt(row, 1));
+                    if (RoomService.delete(Room)) {
+                        updateRoomTable(role);
                     } else {
-                        Components.showGenericError(this);
+                        JOptionPane.showMessageDialog(null, "Erro ao deletar quarto", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 });
 
@@ -142,7 +140,7 @@ public class CorporateView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateCorporateTable(role);
+        updateRoomTable(role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -150,36 +148,40 @@ public class CorporateView extends JFrame {
         setVisible(true);
     }
 
-    private static void updateCorporateTable(Role role) {
+    private static void updateRoomTable(Role role) {
         model.setRowCount(0);
 
-        if (!searchItens.isEmpty()) {
-            for (Corporate corporate : searchItens) {
+        if (!searchItems.isEmpty()) {
+            for (Room room : searchItems) {
                 model.addRow(new Object[]{
                         null,
-                        corporate.getIdCorporate(),
-                        corporate.getName(),
-                        Util.formatCnpj(corporate.getCnpj()),
-                        corporate.getUser().getName(),
-                        corporate.getActive(),
+                        room.getIdRoom(),
+                        room.getRoomNumber(),
+                        room.getRoomType().getName(),
+                        "R$ " + room.getRoomType().getPrice(),
+                        room.getRoomType().getCapacity(),
+                        room.getBranch().getName(),
+                        room.getActive()
                 });
             }
-            searchItens.clear();
+            searchItems.clear();
         } else {
-            final List<Corporate> corporateList = CorporateRepository.findAll(Corporate.class, role);
-            if (Objects.nonNull(corporateList)) {
-                for (Corporate branch : corporateList) {
+            final List<Room> RoomList = RoomRepository.findAll(Room.class, role);
+            if (Objects.nonNull(RoomList)) {
+                for (Room room : RoomList) {
                     model.addRow(new Object[]{
                             null,
-                            branch.getIdCorporate(),
-                            branch.getName(),
-                            Util.formatCnpj(branch.getCnpj()),
-                            branch.getUser().getName(),
-                            branch.getActive(),
+                            room.getIdRoom(),
+                            room.getRoomNumber(),
+                            room.getRoomType().getName(),
+                            "R$ " + room.getRoomType().getPrice(),
+                            room.getRoomType().getCapacity(),
+                            room.getBranch().getName(),
+                            room.getActive()
                     });
                 }
             } else {
-                JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);
+                JOptionPane.showMessageDialog(null, "Failed to load room type data");
             }
         }
     }
