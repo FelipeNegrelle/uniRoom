@@ -7,6 +7,10 @@ import com.felipe.uniroom.repositories.ReservationRepository;
 import com.felipe.uniroom.views.Components;
 
 import javax.swing.*;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,12 +30,22 @@ public class ReservationService {
             errorsSb.append("Usuário da reserva não pode ser vazio.\n");
         }
 
-        if (reservation.getDays() <= 0) {
-            errorsSb.append("O período da reserva não pode ser menor ou igual a zero.\n");
-        }
 
         if (Objects.isNull(guests) || guests.isEmpty()) {
             errorsSb.append("A reserva deve ter pelo menos um hóspede.\n");
+        }
+
+        if(reservation.getDateTimeCheckOut().toInstant().isBefore(reservation.getDateTimeCheckIn().toInstant())){
+            errorsSb.append("Data de saída deve ser após a data de entrada!\n");
+        }
+
+        LocalDate checkInDate = reservation.getDateTimeCheckIn().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate checkOutDate = reservation.getDateTimeCheckOut().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        final LocalDateTime now = LocalDateTime.now();
+        LocalDate currentDate = now.toLocalDate();
+
+        if (checkInDate.isBefore(currentDate) || checkOutDate.isBefore(currentDate)) {
+            errorsSb.append("Datas de entrada e saída devem ser iguais ou posteriores à data atual!\n");
         }
 
         return errorsSb.toString();

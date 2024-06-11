@@ -150,7 +150,6 @@ public class BranchView extends JFrame {
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-        pack();
         setVisible(true);
     }
 

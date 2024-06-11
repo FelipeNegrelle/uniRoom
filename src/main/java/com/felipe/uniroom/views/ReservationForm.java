@@ -10,14 +10,21 @@ import com.felipe.uniroom.entities.Room;
 import com.felipe.uniroom.repositories.BranchRepository;
 import com.felipe.uniroom.repositories.GuestRepository;
 import com.felipe.uniroom.repositories.ReservationRepository;
-import com.felipe.uniroom.repositories.RoomRepository;
 import com.felipe.uniroom.services.ReservationService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.text.MaskFormatter;
 import java.awt.*;
+import java.text.ParseException;
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -47,13 +54,23 @@ public class ReservationForm extends JFrame {
         JPanel inputPanel = new JPanel(new MigLayout("fillx, insets 20", "[grow]", "[]10[]"));
         inputPanel.setBackground(Color.WHITE);
 
-        JLabel daysLabel = new JLabel("Dias de estadia:");
-        daysLabel.setFont(new Font("Sans", Font.BOLD, 20));
-        JTextField daysField = new JTextField(20);
-        if (Objects.nonNull(entity))
-            daysField.setText(entity.getDays().toString());
-        daysField.setPreferredSize(new Dimension(300, 30));
-        daysField.setFont(new Font("Sans", Font.PLAIN, 20));
+        JLabel checkInLabel = new JLabel("Data de entrada:");
+        checkInLabel.setFont(new Font("Sans", Font.BOLD, 20));
+        JFormattedTextField checkInField = createFormattedDateField();
+        checkInField.setPreferredSize(new Dimension(400, 30));
+        checkInField.setFont(Constants.FONT);
+        if (Objects.nonNull(entity) && Objects.nonNull(entity.getDateTimeCheckIn())) {
+            checkInField.setText(formatDateTime(convertToLocalDateTimeViaInstant(entity.getDateTimeCheckIn())));
+        }
+
+        JLabel checkOutLabel = new JLabel("Data de saída:");
+        checkOutLabel.setFont(new Font("Sans", Font.BOLD, 20));
+        JFormattedTextField checkOutField = createFormattedDateField();
+        checkOutField.setPreferredSize(new Dimension(400, 30));
+        checkOutField.setFont(Constants.FONT);
+        if (Objects.nonNull(entity) && Objects.nonNull(entity.getDateTimeCheckOut())) {
+            checkOutField.setText(formatDateTime(convertToLocalDateTimeViaInstant(entity.getDateTimeCheckOut())));
+        }
 
         final JLabel guestsLabel = Components.getLabel(Constants.GUEST + ":", null, Font.BOLD, null, null);
         final JComboBox<String> guestsCombo = new JComboBox<>();
@@ -110,8 +127,11 @@ public class ReservationForm extends JFrame {
             loadReservationGuests(entity);
         }
 
-        inputPanel.add(daysLabel);
-        inputPanel.add(daysField, "wrap");
+        inputPanel.add(checkInLabel);
+        inputPanel.add(checkInField, "wrap");
+        inputPanel.add(checkOutLabel);
+        inputPanel.add(checkOutField, "wrap");
+
         mainPanel.add(inputPanel, "wrap, grow");
         inputPanel.add(guestsLabel);
         inputPanel.add(guestsCombo);
@@ -132,18 +152,24 @@ public class ReservationForm extends JFrame {
         saveButton.setBackground(Constants.BLUE);
         saveButton.setForeground(Color.WHITE);
         saveButton.addActionListener(e -> {
-            final short days;
+            final LocalDate checkInDate;
+            final LocalDate checkOutDate;
 
             try {
-                days = Short.parseShort(daysField.getText());
-            } catch (NumberFormatException ex) {
-                JOptionPane.showMessageDialog(this, "Dias de estadia inválidos!", "Aviso", JOptionPane.WARNING_MESSAGE);
+                checkInDate = LocalDate.parse(checkInField.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                checkOutDate = LocalDate.parse(checkOutField.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(this, "Datas de entrada/saída inválidas!", "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
             }
 
+            final long days = Duration.between(checkInDate.atStartOfDay(), checkOutDate.atStartOfDay()).toDays();
+
             final Reservation reservation = new Reservation();
             reservation.setIdReservation(Objects.nonNull(entity) ? entity.getIdReservation() : null);
-            reservation.setDays(days);
+            reservation.setDays((short) days);
+            reservation.setDateTimeCheckIn(convertToDateViaInstant(checkInDate.atStartOfDay()));
+            reservation.setDateTimeCheckOut(convertToDateViaInstant(checkOutDate.atStartOfDay()));
             reservation.setBranch(role.getRole().equals('E') ? role.getBranches().getFirst() : (branchesCombo.getItemCount() > 0 ? branches.get(branchesCombo.getSelectedIndex()) : null));
             reservation.setRoom(roomsCombo.getItemCount() > 0 ? rooms.get(roomsCombo.getSelectedIndex()) : null);
             reservation.setUser(Objects.nonNull(entity) ? entity.getUser() : role.getUser());
@@ -252,4 +278,29 @@ public class ReservationForm extends JFrame {
         }
     }
 
+    private JFormattedTextField createFormattedDateField() {
+        try {
+            MaskFormatter dateMask = new MaskFormatter("##/##/####");
+            dateMask.setPlaceholderCharacter('_');
+            return new JFormattedTextField(dateMask);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new JFormattedTextField();
+        }
+    }
+
+    private String formatDateTime(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        return dateTime.format(formatter);
+    }
+
+    private LocalDateTime convertToLocalDateTimeViaInstant(Date dateToConvert) {
+        return dateToConvert.toInstant()
+                .atZone(ZoneId.systemDefault())
+                .toLocalDateTime();
+    }
+
+    private Date convertToDateViaInstant(LocalDateTime dateToConvert) {
+        return Date.from(dateToConvert.atZone(ZoneId.systemDefault()).toInstant());
+    }
 }

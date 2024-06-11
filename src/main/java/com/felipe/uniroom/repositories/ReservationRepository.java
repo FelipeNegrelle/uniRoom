@@ -58,7 +58,6 @@ public class ReservationRepository extends DatabaseRepository {
     }
 
     public static List<Room> getAvailableRooms(Role role, Reservation currentReservation) {
-        // Primeiro, obtenha todos os quartos disponíveis para o papel específico
         List<Room> allRooms = findAll(Room.class, role);
 
         if (Objects.nonNull(allRooms) && !allRooms.isEmpty()) {
