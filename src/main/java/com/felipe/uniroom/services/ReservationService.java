@@ -2,6 +2,7 @@ package com.felipe.uniroom.services;
 
 import com.felipe.uniroom.entities.Guest;
 import com.felipe.uniroom.entities.Reservation;
+import com.felipe.uniroom.repositories.GuestRepository;
 import com.felipe.uniroom.repositories.ReservationRepository;
 import com.felipe.uniroom.views.Components;
 
@@ -72,9 +73,9 @@ public class ReservationService {
 
                 if (!validations.isEmpty()) {
                     JOptionPane.showMessageDialog(null, validations);
-
                     return false;
                 } else {
+                    // Atualiza as informações da reserva
                     result.setIdReservation(reservation.getIdReservation());
                     result.setUser(reservation.getUser());
                     result.setBranch(reservation.getBranch());
@@ -82,25 +83,31 @@ public class ReservationService {
                     result.setDays(reservation.getDays());
                     result.setStatus(reservation.getStatus());
 
+                    List<Guest> currentGuests = GuestRepository.findByRoom(reservation.getRoom().getIdRoom());
+
                     for (Guest guest : guests) {
                         guest.setRoom(reservation.getRoom());
                         guest.setHosted(true);
                         GuestService.update(guest);
                     }
 
+                    for (Guest currentGuest : currentGuests) {
+                        if (!guests.contains(currentGuest)) {
+                            currentGuest.setRoom(null);
+                            currentGuest.setHosted(false);
+                            GuestService.update(currentGuest);
+                        }
+                    }
+
                     return ReservationRepository.saveOrUpdate(result);
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Reserva não encontrada.");
-
                 return false;
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
-
             Components.showGenericError(null);
-
             return false;
         }
     }

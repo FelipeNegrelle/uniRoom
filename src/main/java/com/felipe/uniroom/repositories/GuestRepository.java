@@ -5,6 +5,8 @@ import com.felipe.uniroom.entities.Guest;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
+import java.util.List;
+
 public class GuestRepository extends DatabaseRepository {
     public static Guest findByCpf(String cpf) {
         final String query = "SELECT g FROM Guest g WHERE g.cpf = :cpf";
@@ -46,6 +48,18 @@ public class GuestRepository extends DatabaseRepository {
             return em.createQuery(query, Guest.class).setParameter("name", name).getSingleResult();
         } catch (
                 NoResultException e) {
+            return null;
+        }
+    }
+
+    public static List<Guest> findByRoom(Integer roomId) {
+        final String query = "SELECT g FROM Guest g WHERE g.room.idRoom = :roomId";
+        try (EntityManager em = ConnectionManager.getEntityManager()) {
+            return em.createQuery(query, Guest.class)
+                    .setParameter("roomId", roomId)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
             return null;
         }
     }

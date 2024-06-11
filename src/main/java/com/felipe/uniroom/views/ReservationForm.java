@@ -2,12 +2,14 @@ package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Guest;
 import com.felipe.uniroom.entities.Reservation;
 import com.felipe.uniroom.entities.Room;
 import com.felipe.uniroom.repositories.BranchRepository;
 import com.felipe.uniroom.repositories.GuestRepository;
+import com.felipe.uniroom.repositories.ReservationRepository;
 import com.felipe.uniroom.repositories.RoomRepository;
 import com.felipe.uniroom.services.ReservationService;
 import net.miginfocom.swing.MigLayout;
@@ -90,7 +92,6 @@ public class ReservationForm extends JFrame {
             }
         });
 
-
         final JLabel branchesLabel = Components.getLabel(Constants.BRANCH + ":", null, Font.BOLD, null, null);
         final JComboBox<String> branchesCombo = new JComboBox<>();
         branchesCombo.setPreferredSize(new Dimension(300, 30));
@@ -104,6 +105,10 @@ public class ReservationForm extends JFrame {
         populateGuestCombo(guestsCombo, entity, role);
         populateBranchCombo(branchesCombo, entity, role);
         populateRoomsCombo(roomsCombo, entity, role);
+
+        if (Objects.nonNull(entity)) {
+            loadReservationGuests(entity);
+        }
 
         inputPanel.add(daysLabel);
         inputPanel.add(daysField, "wrap");
@@ -131,8 +136,7 @@ public class ReservationForm extends JFrame {
 
             try {
                 days = Short.parseShort(daysField.getText());
-            } catch (
-                    NumberFormatException ex) {
+            } catch (NumberFormatException ex) {
                 JOptionPane.showMessageDialog(this, "Dias de estadia inválidos!", "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -145,9 +149,12 @@ public class ReservationForm extends JFrame {
             reservation.setUser(Objects.nonNull(entity) ? entity.getUser() : role.getUser());
             reservation.setStatus(Objects.nonNull(entity) ? entity.getStatus() : "CI");
 
-            final Boolean result = Objects.nonNull(entity) ? ReservationService.update(reservation, guests) : ReservationService.save(reservation, guests);
+            final Boolean result = Objects.nonNull(entity) ? ReservationService.update(reservation, guestsTableList) : ReservationService.save(reservation, guestsTableList);
 
             if (Objects.nonNull(result) && result) {
+                for (Guest guest : guestsTableList) {
+                    GuestRepository.saveOrUpdate(guest);
+                }
                 JOptionPane.showMessageDialog(this, Constants.SUCCESSFUL_REGISTER, Constants.SUCCESS, JOptionPane.PLAIN_MESSAGE);
                 new ReservationView(role);
                 dispose();
@@ -180,9 +187,19 @@ public class ReservationForm extends JFrame {
         for (Guest guest : guestsTableList) {
             model.addRow(new Object[]{
                     guest.getName(),
-                    guest.getCpf()
+                    Util.formatCpf(guest.getCpf())
             });
         }
+    }
+
+    private void loadReservationGuests(Reservation reservation) {
+        List<Guest> reservationGuests = ReservationRepository.getGuests(reservation);
+
+        for (Guest guest : reservationGuests) {
+            guestsTableList.add(guest);
+        }
+
+        updateGuestsTable();
     }
 
     private void populateGuestCombo(JComboBox<String> guestCombo, Reservation entity, Role role) {
@@ -218,7 +235,7 @@ public class ReservationForm extends JFrame {
     }
 
     private void populateRoomsCombo(JComboBox<String> roomsCombo, Reservation entity, Role role) {
-        final List<Room> roomList = RoomRepository.findAll(Room.class, role);
+        final List<Room> roomList = ReservationRepository.getAvailableRooms(role, entity);
 
         if (Objects.nonNull(roomList) && !roomList.isEmpty()) {
             roomsCombo.removeAllItems();
@@ -234,4 +251,5 @@ public class ReservationForm extends JFrame {
             roomsCombo.setSelectedItem(entity.getRoom().getRoomNumber().toString());
         }
     }
+
 }
