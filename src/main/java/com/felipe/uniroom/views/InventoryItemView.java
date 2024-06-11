@@ -20,7 +20,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class InventoryItemView extends JFrame {
+public class
+InventoryItemView extends JFrame {
     private static DefaultTableModel model;
     private static final List<InventoryItem> searchItems = new ArrayList<>();
     private static final List<Item> items = new ArrayList<>();
@@ -52,7 +53,7 @@ public class InventoryItemView extends JFrame {
         backButton.setBackground(Constants.WHITE);
         backButton.setIcon(Constants.BACK_ICON);
         backButton.addActionListener(e -> {
-            new Home(role);
+            new InventoryView(role);
             dispose();
         });
         searchPanel.add(backButton, "align left");
@@ -62,7 +63,7 @@ public class InventoryItemView extends JFrame {
         newInventory.setForeground(Constants.BLACK);
         newInventory.setFont(Constants.FONT.deriveFont(Font.BOLD));
         newInventory.addActionListener(e -> {
-            new InventoryItemForm(role, null);
+            new InventoryItemForm(role, inventory, null);
             dispose();
         });
         searchPanel.add(newInventory, "align left");
@@ -88,7 +89,7 @@ public class InventoryItemView extends JFrame {
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", Constants.ITEM, Constants.QUANTITY}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código do Inventário", "Código do Item", Constants.ITEM, Constants.QUANTITY}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -113,8 +114,8 @@ public class InventoryItemView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final InventoryItem inventoryItem = InventoryItemRepository.findById(InventoryItem.class, (int) model.getValueAt(row, 1));
-                    new InventoryItemForm(role, inventoryItem);
+                    final InventoryItem inventoryItem = InventoryItemRepository.findById(InventoryItem.class, new InventoryItemId((int) model.getValueAt(row, 1), (int) model.getValueAt(row, 2)));
+                    new InventoryItemForm(role, inventory, inventoryItem);
                     dispose();
                 });
 
@@ -156,28 +157,45 @@ public class InventoryItemView extends JFrame {
 
         if (!searchItems.isEmpty()) {
             for (InventoryItem inventoryItem : searchItems) {
-                model.addRow(new Object[]{
-                        null,
-                        inventoryItem.getId(),
-                        items.get(inventoryItem.getId().getIdItem()).getName(),
-                        inventoryItem.getQuantity(),
-                });
+                final Item item = findItemById(inventoryItem.getId().getIdItem());
+                if (item != null) {
+                    model.addRow(new Object[]{
+                            null,
+                            inventoryItem.getId().getIdInvetory(),
+                            inventoryItem.getId().getIdItem(),
+                            item.getName(),
+                            inventoryItem.getQuantity(),
+                    });
+                }
             }
             searchItems.clear();
         } else {
             final List<InventoryItem> inventoryItemList = InventoryItemRepository.findAll(InventoryItem.class, role);
             if (Objects.nonNull(inventoryItemList)) {
                 for (InventoryItem inventoryItem : inventoryItemList) {
-                    model.addRow(new Object[]{
-                            null,
-                            inventoryItem.getId(),
-                            items.get(inventoryItem.getId().getIdItem()).getName(),
-                            inventoryItem.getQuantity(),
-                    });
+                    final Item item = findItemById(inventoryItem.getId().getIdItem());
+                    if (item != null) {
+                        model.addRow(new Object[]{
+                                null,
+                                inventoryItem.getId().getIdInvetory(),
+                                inventoryItem.getId().getIdItem(),
+                                item.getName(),
+                                inventoryItem.getQuantity(),
+                        });
+                    }
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Falha ao carregar dados do inventário.");
             }
         }
+    }
+
+    private static Item findItemById(int id) {
+        for (Item item : items) {
+            if (item.getIdItem() == id) {
+                return item;
+            }
+        }
+        return null;
     }
 }

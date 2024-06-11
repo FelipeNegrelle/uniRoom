@@ -135,6 +135,7 @@ public class InventoryView extends JFrame {
                     }
                 });
 
+                popupMenu.add(itemsItem);
                 popupMenu.add(editItem);
                 popupMenu.add(deleteItem);
 

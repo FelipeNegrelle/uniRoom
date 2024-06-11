@@ -30,6 +30,13 @@ public class ReservationService {
             errorsSb.append("Usuário da reserva não pode ser vazio.\n");
         }
 
+        if(Objects.isNull(reservation.getInitialDate())) {
+            errorsSb.append("Data inicial da reserva não pode ser vazia.\n");
+        }
+
+        if(Objects.isNull(reservation.getFinalDate())) {
+            errorsSb.append("Data final da reserva não pode ser vazia.\n");
+        }
 
         if (Objects.isNull(guests) || guests.isEmpty()) {
             errorsSb.append("A reserva deve ter pelo menos um hóspede.\n");
@@ -94,7 +101,7 @@ public class ReservationService {
                     result.setUser(reservation.getUser());
                     result.setBranch(reservation.getBranch());
                     result.setRoom(reservation.getRoom());
-                    result.setDays(reservation.getDays());
+//                    result.setDays(reservation.getDays());
                     result.setStatus(reservation.getStatus());
 
                     List<Guest> currentGuests = GuestRepository.findByRoom(reservation.getRoom().getIdRoom());

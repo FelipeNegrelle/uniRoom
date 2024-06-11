@@ -17,9 +17,6 @@ public class Reservation {
     @JoinColumn(name = "id_room", nullable = false)
     private Room room;
 
-    @Column(nullable = false)
-    private Short days;
-
     @OneToOne()
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
@@ -39,6 +36,14 @@ public class Reservation {
     @Column(name = "date_time_check_out")
     private Date dateTimeCheckOut;
 
+    @Temporal(TemporalType.DATE)
+    @Column(name = "initial_date", nullable = false)
+    private Date initialDate;
+
+    @Temporal(TemporalType.DATE)
+    @Column(name = "final_date", nullable = false)
+    private Date finalDate;
+
     public Integer getIdReservation() {
         return idReservation;
     }
@@ -53,14 +58,6 @@ public class Reservation {
 
     public void setRoom(Room room) {
         this.room = room;
-    }
-
-    public Short getDays() {
-        return days;
-    }
-
-    public void setDays(Short days) {
-        this.days = days;
     }
 
     public User getUser() {
@@ -103,18 +100,35 @@ public class Reservation {
         this.dateTimeCheckOut = dateTimeCheckOut;
     }
 
+    public Date getInitialDate() {
+        return initialDate;
+    }
+
+    public void setInitialDate(Date initialDate) {
+        this.initialDate = initialDate;
+    }
+
+    public Date getFinalDate() {
+        return finalDate;
+    }
+
+    public void setFinalDate(Date finalDate) {
+        this.finalDate = finalDate;
+    }
+
     public Reservation() {
     }
 
-    public Reservation(Integer idReservation, Room room, Short days, User user, String status, Branch branch, Date dateTimeCheckIn, Date dateTimeCheckOut) {
+    public Reservation(Integer idReservation, Room room, User user, String status, Branch branch, Date dateTimeCheckIn, Date dateTimeCheckOut, Date initialDate, Date finalDate) {
         this.idReservation = idReservation;
         this.room = room;
-        this.days = days;
         this.user = user;
         this.status = status;
         this.branch = branch;
         this.dateTimeCheckIn = dateTimeCheckIn;
         this.dateTimeCheckOut = dateTimeCheckOut;
+        this.initialDate = initialDate;
+        this.finalDate = finalDate;
     }
 
     @Override
@@ -133,6 +147,6 @@ public class Reservation {
 
     @Override
     public String toString() {
-        return "Reservation{" + "idReservation=" + idReservation + ", room=" + room + ", days=" + days + ", user=" + user + ", status='" + status + '\'' + ", branch=" + branch + ", dateTimeCheckIn=" + dateTimeCheckIn + ", dateTimeCheckOut=" + dateTimeCheckOut + '}';
+        return "Reservation{" + "idReservation=" + idReservation + ", room=" + room + ", user=" + user + ", status='" + status + '\'' + ", branch=" + branch + ", dateTimeCheckIn=" + dateTimeCheckIn + ", dateTimeCheckOut=" + dateTimeCheckOut + ", initialDate=" + initialDate + ", finalDate=" + finalDate + '}';
     }
 }

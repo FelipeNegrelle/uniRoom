@@ -158,7 +158,8 @@ public class ReservationForm extends JFrame {
             try {
                 checkInDate = LocalDate.parse(checkInField.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
                 checkOutDate = LocalDate.parse(checkOutField.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            } catch (Exception ex) {
+            } catch (
+                    Exception ex) {
                 JOptionPane.showMessageDialog(this, "Datas de entrada/saída inválidas!", "Aviso", JOptionPane.WARNING_MESSAGE);
                 return;
             }
@@ -167,7 +168,7 @@ public class ReservationForm extends JFrame {
 
             final Reservation reservation = new Reservation();
             reservation.setIdReservation(Objects.nonNull(entity) ? entity.getIdReservation() : null);
-            reservation.setDays((short) days);
+//            reservation.setDays((short) days);
             reservation.setDateTimeCheckIn(convertToDateViaInstant(checkInDate.atStartOfDay()));
             reservation.setDateTimeCheckOut(convertToDateViaInstant(checkOutDate.atStartOfDay()));
             reservation.setBranch(role.getRole().equals('E') ? role.getBranches().getFirst() : (branchesCombo.getItemCount() > 0 ? branches.get(branchesCombo.getSelectedIndex()) : null));
@@ -202,7 +203,6 @@ public class ReservationForm extends JFrame {
 
         add(mainPanel, BorderLayout.CENTER);
 
-        pack();
         setLocationRelativeTo(null);
         setVisible(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -283,7 +283,8 @@ public class ReservationForm extends JFrame {
             MaskFormatter dateMask = new MaskFormatter("##/##/####");
             dateMask.setPlaceholderCharacter('_');
             return new JFormattedTextField(dateMask);
-        } catch (ParseException e) {
+        } catch (
+                ParseException e) {
             e.printStackTrace();
             return new JFormattedTextField();
         }

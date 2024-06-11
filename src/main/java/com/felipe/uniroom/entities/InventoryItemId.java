@@ -17,6 +17,13 @@ public class InventoryItemId implements Serializable {
     @Column(name = "id_item")
     private Integer idItem;
 
+    public InventoryItemId(){}
+
+    public InventoryItemId(Integer idInvetory, Integer idItem) {
+        this.idInvetory = idInvetory;
+        this.idItem = idItem;
+    }
+
     public Integer getIdInvetory() {
         return this.idInvetory;
     }

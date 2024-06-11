@@ -85,7 +85,7 @@ public class DatabaseRepository {
     }
 
 
-    public static <T> T findById(Class<T> entity, Integer id) {
+    public static <T> T findById(Class<T> entity, Object id) {
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             return em.find(entity, id);
         } catch (

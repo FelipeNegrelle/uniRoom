@@ -89,7 +89,7 @@ public class InventoryItemService {
     }
 
     public static List<InventoryItem> search(String search, String field, Role role) {
-//        return InventoryItemRepository.search(search, field);//todo implementar search
-        return Collections.emptyList();
+        return InventoryItemRepository.search(InventoryItem.class, search, field, role);//todo implementar search
+//        return Collections.emptyList();
     }
 }

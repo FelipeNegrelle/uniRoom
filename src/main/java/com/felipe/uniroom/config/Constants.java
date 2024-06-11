@@ -56,6 +56,7 @@ public class Constants {
     public static final String HOSTED = "Hospedado";
     public static final String RECOVER_PASSWORD = "Recuperar Senha";
     public static final String QUANTITY = "Quantidade";
+    public static final String INVENTORY_ITEM = "Inventário-item";
 
     //Colors
     public static final Color WHITE = new Color(0xFFFFFF);
