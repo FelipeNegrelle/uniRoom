@@ -7,6 +7,7 @@ import com.felipe.uniroom.entities.Reservation;
 import com.felipe.uniroom.entities.Room;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
+import jakarta.persistence.TypedQuery;
 
 import java.util.List;
 import java.util.Objects;
@@ -80,6 +81,22 @@ public class ReservationRepository extends DatabaseRepository {
             }
         } else {
             return null;
+        }
+    }
+
+    public static Reservation findByIdWithGuests(Integer id) {
+        EntityManager em = ConnectionManager.getEntityManager();
+        try {
+            TypedQuery<Reservation> query = em.createQuery(
+                    "SELECT r FROM Reservation r LEFT JOIN FETCH r.guestList WHERE r.idReservation = :id",
+                    Reservation.class
+            );
+            query.setParameter("id", id);
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } finally {
+            em.close();
         }
     }
 }

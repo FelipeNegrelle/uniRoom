@@ -3,6 +3,7 @@ package com.felipe.uniroom.entities;
 import jakarta.persistence.*;
 import org.hibernate.validator.constraints.br.CPF;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -30,6 +31,9 @@ public class Guest {
 
     @Column
     private Boolean hosted = false;
+
+    @ManyToMany(mappedBy = "guestList")
+    private List<Reservation> reservationList;
 
     public Guest() {
     }
@@ -91,6 +95,14 @@ public class Guest {
         this.hosted = hosted;
     }
 
+    public List<Reservation> getReservationList() {
+        return reservationList;
+    }
+
+    public void setReservationList(List<Reservation> reservationList) {
+        this.reservationList = reservationList;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -108,6 +120,13 @@ public class Guest {
 
     @Override
     public String toString() {
-        return "Guest{" + "idGuest=" + idGuest + ", name='" + name + '\'' + ", cpf='" + cpf + '\'' + ", room=" + room + ", branch=" + branch + ", hosted=" + hosted + '}';
+        return "Guest{" +
+                "idGuest=" + idGuest +
+                ", name='" + name + '\'' +
+                ", cpf='" + cpf + '\'' +
+                ", room=" + room +
+                ", branch=" + branch +
+                ", hosted=" + hosted +
+                '}';
     }
 }

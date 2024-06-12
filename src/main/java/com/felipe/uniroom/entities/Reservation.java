@@ -3,6 +3,7 @@ package com.felipe.uniroom.entities;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -13,18 +14,18 @@ public class Reservation {
     @Column(name = "id_reservation")
     private Integer idReservation;
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "id_room", nullable = false)
     private Room room;
 
-    @OneToOne()
+    @OneToOne
     @JoinColumn(name = "id_user", nullable = false)
     private User user;
 
     @Column(nullable = false, length = 2)
     private String status = "CI";
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "id_branch", nullable = false)
     private Branch branch;
 
@@ -43,6 +44,12 @@ public class Reservation {
     @Temporal(TemporalType.DATE)
     @Column(name = "final_date", nullable = false)
     private Date finalDate;
+
+    @ManyToMany
+    @JoinTable(name = "reservation_guest",
+            joinColumns = @JoinColumn(name = "reservation_id"),
+            inverseJoinColumns = @JoinColumn(name = "guest_id"))
+    private List<Guest> guestList;
 
     public Integer getIdReservation() {
         return idReservation;
@@ -116,6 +123,14 @@ public class Reservation {
         this.finalDate = finalDate;
     }
 
+    public List<Guest> getGuestList() {
+        return guestList;
+    }
+
+    public void setGuestList(List<Guest> guestList) {
+        this.guestList = guestList;
+    }
+
     public Reservation() {
     }
 
@@ -135,8 +150,9 @@ public class Reservation {
     public boolean equals(Object o) {
         if (this == o)
             return true;
-        if (!(o instanceof Reservation that))
+        if (!(o instanceof Reservation))
             return false;
+        Reservation that = (Reservation) o;
         return Objects.equals(idReservation, that.idReservation);
     }
 
@@ -147,6 +163,17 @@ public class Reservation {
 
     @Override
     public String toString() {
-        return "Reservation{" + "idReservation=" + idReservation + ", room=" + room + ", user=" + user + ", status='" + status + '\'' + ", branch=" + branch + ", dateTimeCheckIn=" + dateTimeCheckIn + ", dateTimeCheckOut=" + dateTimeCheckOut + ", initialDate=" + initialDate + ", finalDate=" + finalDate + '}';
+        return "Reservation{" +
+                "idReservation=" + idReservation +
+                ", room=" + room +
+                ", user=" + user +
+                ", status='" + status + '\'' +
+                ", branch=" + branch +
+                ", dateTimeCheckIn=" + dateTimeCheckIn +
+                ", dateTimeCheckOut=" + dateTimeCheckOut +
+                ", initialDate=" + initialDate +
+                ", finalDate=" + finalDate +
+                ", guestList=" + guestList +
+                '}';
     }
 }

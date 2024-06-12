@@ -72,11 +72,11 @@ public class ReservationService {
 
                 return false;
             } else {
-                for (Guest guest : guests) {
-                    guest.setRoom(reservation.getRoom());
-                    guest.setHosted(true);
-                    GuestService.update(guest);
-                }
+//                for (Guest guest : guests) {
+//                    guest.setRoom(reservation.getRoom());
+//                    guest.setHosted(true);
+//                    GuestService.update(guest);
+//                }
 
                 return ReservationRepository.saveOrUpdate(reservation);
             }
@@ -106,24 +106,10 @@ public class ReservationService {
                     result.setUser(reservation.getUser());
                     result.setBranch(reservation.getBranch());
                     result.setRoom(reservation.getRoom());
-//                    result.setDays(reservation.getDays());
                     result.setStatus(reservation.getStatus());
-
-                    List<Guest> currentGuests = GuestRepository.findByRoom(reservation.getRoom().getIdRoom());
-
-                    for (Guest guest : guests) {
-                        guest.setRoom(reservation.getRoom());
-                        guest.setHosted(true);
-                        GuestService.update(guest);
-                    }
-
-                    for (Guest currentGuest : currentGuests) {
-                        if (!guests.contains(currentGuest)) {
-                            currentGuest.setRoom(null);
-                            currentGuest.setHosted(false);
-                            GuestService.update(currentGuest);
-                        }
-                    }
+                    result.setGuestList(reservation.getGuestList());
+                    result.setFinalDate(reservation.getFinalDate());
+                    result.setInitialDate(reservation.getInitialDate());
 
                     return ReservationRepository.saveOrUpdate(result);
                 }
