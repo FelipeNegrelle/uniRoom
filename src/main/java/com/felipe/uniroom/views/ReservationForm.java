@@ -221,9 +221,7 @@ public class ReservationForm extends JFrame {
     private void loadReservationGuests(Reservation reservation) {
         List<Guest> reservationGuests = ReservationRepository.getGuests(reservation);
 
-        for (Guest guest : reservationGuests) {
-            guestsTableList.add(guest);
-        }
+        guestsTableList.addAll(reservationGuests);
 
         updateGuestsTable();
     }
