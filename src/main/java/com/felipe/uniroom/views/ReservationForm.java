@@ -164,13 +164,12 @@ public class ReservationForm extends JFrame {
                 return;
             }
 
-            final long days = Duration.between(checkInDate.atStartOfDay(), checkOutDate.atStartOfDay()).toDays();
+            System.out.println(checkOutDate);
 
             final Reservation reservation = new Reservation();
             reservation.setIdReservation(Objects.nonNull(entity) ? entity.getIdReservation() : null);
-//            reservation.setDays((short) days);
-            reservation.setDateTimeCheckIn(convertToDateViaInstant(checkInDate.atStartOfDay()));
-            reservation.setDateTimeCheckOut(convertToDateViaInstant(checkOutDate.atStartOfDay()));
+            reservation.setInitialDate(convertToDateViaInstant(checkInDate.atStartOfDay()));
+            reservation.setFinalDate(convertToDateViaInstant(checkOutDate.atStartOfDay()));
             reservation.setBranch(role.getRole().equals('E') ? role.getBranches().getFirst() : (branchesCombo.getItemCount() > 0 ? branches.get(branchesCombo.getSelectedIndex()) : null));
             reservation.setRoom(roomsCombo.getItemCount() > 0 ? rooms.get(roomsCombo.getSelectedIndex()) : null);
             reservation.setUser(Objects.nonNull(entity) ? entity.getUser() : role.getUser());

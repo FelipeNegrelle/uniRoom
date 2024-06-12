@@ -42,18 +42,23 @@ public class ReservationService {
             errorsSb.append("A reserva deve ter pelo menos um hóspede.\n");
         }
 
-        if(reservation.getDateTimeCheckOut().toInstant().isBefore(reservation.getDateTimeCheckIn().toInstant())){
+        if(reservation.getFinalDate().toInstant().isBefore(reservation.getInitialDate().toInstant())){
             errorsSb.append("Data de saída deve ser após a data de entrada!\n");
         }
 
-        LocalDate checkInDate = reservation.getDateTimeCheckIn().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate checkOutDate = reservation.getDateTimeCheckOut().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate checkInDate = reservation.getInitialDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate checkOutDate = reservation.getFinalDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
         final LocalDateTime now = LocalDateTime.now();
         LocalDate currentDate = now.toLocalDate();
 
         if (checkInDate.isBefore(currentDate) || checkOutDate.isBefore(currentDate)) {
             errorsSb.append("Datas de entrada e saída devem ser iguais ou posteriores à data atual!\n");
         }
+
+        if(checkInDate.equals(checkOutDate)){
+            errorsSb.append("Datas de entrada e saída não devem ser iguais!");
+        }
+
 
         return errorsSb.toString();
     }

@@ -61,7 +61,7 @@ public class ReservationView extends JFrame {
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Quarto", "Dias", "Funcionário", "Filial", "Check-In", "Check-out", "Situação"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Quarto", "Funcionário", "Filial", "Data inicial", "Data final", "Check-In", "Check-out", "Situação"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -150,6 +150,8 @@ public class ReservationView extends JFrame {
 //                        reservation.getDays(),
                         reservation.getUser().getName(),
                         reservation.getBranch().getName(),
+                        new SimpleDateFormat("dd/MM/yyyy").format(reservation.getInitialDate()),
+                        new SimpleDateFormat("dd/MM/yyyy").format(reservation.getFinalDate()),
                         new SimpleDateFormat("dd/MM/yyyy HH:mm").format(reservation.getDateTimeCheckIn()),
                         Objects.nonNull(reservation.getDateTimeCheckOut()) ? new SimpleDateFormat("dd/MM/yyyy HH:mm").format(reservation.getDateTimeCheckOut()) : "-",
                         Util.convertStatusReservation(reservation.getStatus())
@@ -167,6 +169,8 @@ public class ReservationView extends JFrame {
 //                            reservation.getDays(),
                             reservation.getUser().getName(),
                             reservation.getBranch().getName(),
+                            new SimpleDateFormat("dd/MM/yyyy").format(reservation.getInitialDate()),
+                            new SimpleDateFormat("dd/MM/yyyy").format(reservation.getFinalDate()),
                             new SimpleDateFormat("dd/MM/yyyy HH:mm").format(reservation.getDateTimeCheckIn()),
                             Objects.nonNull(reservation.getDateTimeCheckOut()) ? new SimpleDateFormat("dd/MM/yyyy HH:mm").format(reservation.getDateTimeCheckOut()) : "-",
                             Util.convertStatusReservation(reservation.getStatus())
