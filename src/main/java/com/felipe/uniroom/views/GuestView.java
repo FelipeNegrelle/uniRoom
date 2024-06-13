@@ -78,7 +78,7 @@ public class GuestView extends JFrame {
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "CPF", "Quarto", "Hospedado"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "CPF", "Passaporte"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -88,10 +88,6 @@ public class GuestView extends JFrame {
         table.setDefaultEditor(Object.class, null);
         table.getTableHeader().setReorderingAllowed(false);
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-
-        final Components.IconCellRenderer iconCellRenderer = new Components.IconCellRenderer();
-        final TableColumn activeColumn = table.getColumnModel().getColumn(5);
-        activeColumn.setCellRenderer(iconCellRenderer);
 
         final Components.OptionsCellRenderer optionsCellRenderer = new Components.OptionsCellRenderer();
         table.getColumnModel().getColumn(0).setCellRenderer(optionsCellRenderer);
@@ -157,23 +153,21 @@ public class GuestView extends JFrame {
                         null,
                         guest.getIdGuest(),
                         guest.getName(),
-                        Util.formatCpf(guest.getCpf()),
-                        Objects.isNull(guest.getRoom()) ? "-" : guest.getRoom().getRoomNumber(),
-                        guest.getHosted(),
+                        guest.getCpf() != null ? Util.formatCpf(guest.getCpf()) : "-",
+                        guest.getPassportNumber() != null ? guest.getPassportNumber() : "-",
                 });
             }
             searchItens.clear();
         } else {
-            final List<Guest> branchList = GuestRepository.findAll(Guest.class, role);
-            if (Objects.nonNull(branchList)) {
-                for (Guest guest : branchList) {
+            final List<Guest> guestList = GuestRepository.findAll(Guest.class, role);
+            if (Objects.nonNull(guestList)) {
+                for (Guest guest : guestList) {
                     model.addRow(new Object[]{
                             null,
                             guest.getIdGuest(),
                             guest.getName(),
-                            Util.formatCpf(guest.getCpf()),
-                            Objects.isNull(guest.getRoom()) ? "-" : guest.getRoom().getRoomNumber(),
-                            guest.getHosted(),
+                            guest.getCpf() != null ? Util.formatCpf(guest.getCpf()) : "-",
+                            guest.getPassportNumber() != null ? guest.getPassportNumber() : "-",
                     });
                 }
             } else {

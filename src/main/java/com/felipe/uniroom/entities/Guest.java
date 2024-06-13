@@ -14,23 +14,22 @@ public class Guest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer idGuest;
 
-    @Column(nullable = false, length = 50, unique = true)
+    @Column(nullable = false, length = 50)
     private String name;
 
     @CPF
-    @Column(columnDefinition = "char(11)", nullable = false, unique = true)
+    @Column(columnDefinition = "char(11)", nullable = true, unique = true)
     private String cpf;
 
-    @ManyToOne
-    @JoinColumn(name = "id_room")
-    private Room room;
+    @Column(nullable = false)
+    private Boolean isForeigner;
+
+    @Column(length = 9, unique = true, nullable = true)
+    private String passportNumber;
 
     @OneToOne
     @JoinColumn(name = "id_branch", nullable = false)
     private Branch branch;
-
-    @Column
-    private Boolean hosted = false;
 
     @ManyToMany(mappedBy = "guestList")
     private List<Reservation> reservationList;
@@ -38,13 +37,13 @@ public class Guest {
     public Guest() {
     }
 
-    public Guest(Integer idGuest, String name, String cpf, Room room, Branch branch, Boolean hosted) {
+    public Guest(Integer idGuest, String name, String cpf, Boolean isForeigner, String passportNumber, Branch branch) {
         this.idGuest = idGuest;
         this.name = name;
         this.cpf = cpf;
-        this.room = room;
+        this.isForeigner = isForeigner;
+        this.passportNumber = passportNumber;
         this.branch = branch;
-        this.hosted = hosted;
     }
 
     public Integer getIdGuest() {
@@ -71,12 +70,20 @@ public class Guest {
         this.cpf = cpf;
     }
 
-    public Room getRoom() {
-        return room;
+    public Boolean getIsForeigner() {
+        return isForeigner;
     }
 
-    public void setRoom(Room room) {
-        this.room = room;
+    public void setIsForeigner(Boolean isForeigner) {
+        this.isForeigner = isForeigner;
+    }
+
+    public String getPassportNumber() {
+        return passportNumber;
+    }
+
+    public void setPassportNumber(String passportNumber) {
+        this.passportNumber = passportNumber;
     }
 
     public Branch getBranch() {
@@ -85,14 +92,6 @@ public class Guest {
 
     public void setBranch(Branch branch) {
         this.branch = branch;
-    }
-
-    public Boolean getHosted() {
-        return hosted;
-    }
-
-    public void setHosted(Boolean hosted) {
-        this.hosted = hosted;
     }
 
     public List<Reservation> getReservationList() {
@@ -105,17 +104,20 @@ public class Guest {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (o == null || getClass() != o.getClass())
-            return false;
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
         Guest guest = (Guest) o;
-        return idGuest == guest.idGuest && Objects.equals(name, guest.name) && Objects.equals(cpf, guest.cpf) && Objects.equals(room, guest.room) && Objects.equals(hosted, guest.hosted);
+        return Objects.equals(idGuest, guest.idGuest) &&
+                Objects.equals(name, guest.name) &&
+                Objects.equals(cpf, guest.cpf) &&
+                Objects.equals(isForeigner, guest.isForeigner) &&
+                Objects.equals(passportNumber, guest.passportNumber) &&
+                Objects.equals(branch, guest.branch);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idGuest, name, cpf, room, branch, hosted);
+        return Objects.hash(idGuest, name, cpf, isForeigner, passportNumber, branch);
     }
 
     @Override
@@ -124,9 +126,9 @@ public class Guest {
                 "idGuest=" + idGuest +
                 ", name='" + name + '\'' +
                 ", cpf='" + cpf + '\'' +
-                ", room=" + room +
+                ", isForeigner=" + isForeigner +
+                ", passportNumber='" + passportNumber + '\'' +
                 ", branch=" + branch +
-                ", hosted=" + hosted +
                 '}';
     }
 }

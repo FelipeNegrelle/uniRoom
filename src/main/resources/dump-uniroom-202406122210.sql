@@ -88,18 +88,19 @@ DROP TABLE IF EXISTS `guest`;
 CREATE TABLE `guest` (
   `id_guest` int NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,
-  `cpf` char(11) NOT NULL,
-  `id_room` int DEFAULT NULL,
-  `hosted` tinyint(1) NOT NULL DEFAULT '0',
+  `passport` varchar(9) DEFAULT NULL,
+  `cpf` char(11) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
   `id_branch` int NOT NULL DEFAULT '0',
+  `isForeigner` tinyint(1) NOT NULL DEFAULT '0',
+  `passportNumber` varchar(9) DEFAULT NULL,
   PRIMARY KEY (`id_guest`),
   UNIQUE KEY `guest_unique` (`name`),
   UNIQUE KEY `guest_unique_1` (`cpf`),
-  KEY `guest_room_id_room_fk` (`id_room`),
+  UNIQUE KEY `guest_unique_2` (`passport`),
+  UNIQUE KEY `UK_i8uku938fqahnb8x532ibo6ro` (`passportNumber`),
   KEY `guest_branch_id_branch_fk` (`id_branch`),
-  CONSTRAINT `guest_branch_id_branch_fk` FOREIGN KEY (`id_branch`) REFERENCES `branch` (`id_branch`),
-  CONSTRAINT `guest_room_id_room_fk` FOREIGN KEY (`id_room`) REFERENCES `room` (`id_room`)
-) ENGINE=InnoDB AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  CONSTRAINT `guest_branch_id_branch_fk` FOREIGN KEY (`id_branch`) REFERENCES `branch` (`id_branch`)
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -108,7 +109,7 @@ CREATE TABLE `guest` (
 
 LOCK TABLES `guest` WRITE;
 /*!40000 ALTER TABLE `guest` DISABLE KEYS */;
-INSERT INTO `guest` VALUES (10,'Teste','03735655939',3,1,27),(13,'Teste da Silva','11490333983',NULL,0,27),(14,'jair messias bolsonaro','57977966000',4,1,27),(15,'arthur petry','99267426028',NULL,0,27);
+INSERT INTO `guest` VALUES (10,'Teste',NULL,'03735655939',27,0,NULL),(13,'Teste da Silva',NULL,'11490333983',27,0,NULL),(14,'jair messias bolsonaro',NULL,'57977966000',27,0,NULL),(15,'arthur petry',NULL,'99267426028',27,0,NULL),(16,'carlos fodedor',NULL,NULL,27,1,'33333');
 /*!40000 ALTER TABLE `guest` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -233,7 +234,7 @@ CREATE TABLE `reservation` (
 
 LOCK TABLES `reservation` WRITE;
 /*!40000 ALTER TABLE `reservation` DISABLE KEYS */;
-INSERT INTO `reservation` VALUES (7,3,46,'CO',27,'2024-06-12 22:59:13','2024-06-12 22:59:27','2024-06-12','2024-06-20'),(8,4,46,'CO',27,'2024-06-13 00:14:54','2024-06-13 00:15:05','2024-06-12','2024-06-21'),(9,4,46,'CO',27,'2024-06-12 23:37:11','2024-06-12 23:37:17','2024-06-12','2024-06-13'),(10,3,46,'C',27,NULL,NULL,'2024-06-12','2024-06-14');
+INSERT INTO `reservation` VALUES (7,3,46,'CO',27,'2024-06-12 22:59:13','2024-06-12 22:59:27','2024-06-12','2024-06-20'),(8,4,46,'CO',27,'2024-06-13 00:14:54','2024-06-13 00:15:05','2024-06-12','2024-06-21'),(9,4,46,'CO',27,'2024-06-12 23:37:11','2024-06-12 23:37:17','2024-06-12','2024-06-13'),(10,3,46,'CO',27,'2024-06-13 01:07:56','2024-06-13 01:08:04','2024-06-12','2024-06-14');
 /*!40000 ALTER TABLE `reservation` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -260,7 +261,7 @@ CREATE TABLE `reservation_guest` (
 
 LOCK TABLES `reservation_guest` WRITE;
 /*!40000 ALTER TABLE `reservation_guest` DISABLE KEYS */;
-INSERT INTO `reservation_guest` VALUES (7,10),(8,10),(9,10),(10,10),(7,14),(8,14);
+INSERT INTO `reservation_guest` VALUES (7,10),(8,10),(9,10),(10,10),(10,13),(7,14),(8,14),(10,15);
 /*!40000 ALTER TABLE `reservation_guest` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -346,6 +347,8 @@ CREATE TABLE `user` (
   PRIMARY KEY (`id_user`),
   UNIQUE KEY `user_unique` (`username`),
   KEY `user_branch_id_branch_fk` (`id_branch`),
+  KEY `FKjke3rf5h9b23w47rqsvtolky9` (`id_corporate`),
+  CONSTRAINT `FKjke3rf5h9b23w47rqsvtolky9` FOREIGN KEY (`id_corporate`) REFERENCES `corporate` (`id_corporate`),
   CONSTRAINT `user_branch_id_branch_fk` FOREIGN KEY (`id_branch`) REFERENCES `branch` (`id_branch`)
 ) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -373,4 +376,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-06-12 21:21:17
+-- Dump completed on 2024-06-12 22:10:18

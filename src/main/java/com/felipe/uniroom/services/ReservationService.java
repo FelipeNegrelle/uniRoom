@@ -83,12 +83,6 @@ public class ReservationService {
 
                 return false;
             } else {
-                for (Guest guest : guests) {
-                    guest.setRoom(reservation.getRoom());
-                    guest.setHosted(true);
-                    GuestService.update(guest);
-                }
-
                 return ReservationRepository.saveOrUpdate(reservation);
             }
         } catch (Exception e) {
@@ -111,32 +105,16 @@ public class ReservationService {
                     JOptionPane.showMessageDialog(null, validations);
                     return false;
                 } else {
-                    // Atualiza as informações da reserva
                     result.setIdReservation(reservation.getIdReservation());
                     result.setUser(reservation.getUser());
                     result.setBranch(reservation.getBranch());
                     result.setRoom(reservation.getRoom());
                     result.setStatus(reservation.getStatus());
+                    result.setGuestList(reservation.getGuestList());
                     result.setInitialDate(reservation.getInitialDate());
                     result.setFinalDate(reservation.getFinalDate());
                     result.setDateTimeCheckIn(reservation.getDateTimeCheckIn());
                     result.setDateTimeCheckOut(reservation.getDateTimeCheckOut());
-
-                    List<Guest> currentGuests = GuestRepository.findByRoom(reservation.getRoom().getIdRoom());
-
-                    for (Guest guest : guests) {
-                        guest.setRoom(reservation.getRoom());
-                        guest.setHosted(true);
-                        GuestService.update(guest);
-                    }
-
-                    for (Guest currentGuest : currentGuests) {
-                        if (!guests.contains(currentGuest)) {
-                            currentGuest.setRoom(null);
-                            currentGuest.setHosted(false);
-                            GuestService.update(currentGuest);
-                        }
-                    }
 
                     return ReservationRepository.saveOrUpdate(result);
                 }

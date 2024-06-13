@@ -5,9 +5,7 @@ import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Guest;
-import com.felipe.uniroom.entities.Room;
 import com.felipe.uniroom.repositories.BranchRepository;
-import com.felipe.uniroom.repositories.RoomRepository;
 import com.felipe.uniroom.services.GuestService;
 import net.miginfocom.swing.MigLayout;
 
@@ -18,7 +16,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class GuestForm extends JFrame {
-    final List<Room> rooms = new ArrayList<>();
     final List<Branch> branches = new ArrayList<>();
 
     public GuestForm(Role role, Guest entity) {
@@ -43,37 +40,47 @@ public class GuestForm extends JFrame {
         nameLabel.setFont(new Font("Sans", Font.BOLD, 20));
 
         final JTextField nameField = new JTextField(20);
-        if (Objects.nonNull(entity))
+        if (Objects.nonNull(entity)) {
             nameField.setText(entity.getName());
+        }
         nameField.setPreferredSize(new Dimension(300, 30));
         nameField.setFont(new Font("Sans", Font.PLAIN, 20));
 
-        final JLabel cpfLabel = Components.getLabel(Constants.CPF + ": ", null, Font.BOLD, null, null);
+        final JCheckBox foreignerCheckBox = new JCheckBox("É estrangeiro?");
+        foreignerCheckBox.setFont(new Font("Sans", Font.BOLD, 20));
+        foreignerCheckBox.setSelected(Objects.nonNull(entity) && entity.getIsForeigner());
 
+        final JLabel cpfLabel = new JLabel("CPF:");
+        cpfLabel.setFont(new Font("Sans", Font.BOLD, 20));
         final JFormattedTextField cpfField = new JFormattedTextField(Components.getCpfFormatter());
-        if (Objects.nonNull(entity)) {
+        if (Objects.nonNull(entity) && !entity.getIsForeigner()) {
             cpfField.setText(Util.formatCpf(entity.getCpf()));
         }
         cpfField.setPreferredSize(new Dimension(300, 30));
-        cpfField.setFont(Constants.FONT);
+        cpfField.setFont(new Font("Sans", Font.PLAIN, 20));
 
-        final JLabel hostedLabel = Components.getLabel(Constants.HOSTED + ": ", null, Font.BOLD, null, null);
-        final JCheckBox hostedCheck = new JCheckBox();
-        hostedCheck.setPreferredSize(new Dimension(50, 50));
-        hostedCheck.setSelected(Objects.nonNull(entity) && entity.getHosted());
+        final JLabel passportLabel = new JLabel("Passaporte:");
+        passportLabel.setFont(new Font("Sans", Font.BOLD, 20));
+        final JTextField passportField = new JTextField(20);
+        if (Objects.nonNull(entity) && entity.getIsForeigner()) {
+            passportField.setText(entity.getPassportNumber());
+        }
+        passportField.setPreferredSize(new Dimension(300, 30));
+        passportField.setFont(new Font("Sans", Font.PLAIN, 20));
 
-        final JLabel branchLabel = Components.getLabel(Constants.BRANCH + ": ", null, Font.BOLD, null, null);
+        final JLabel branchLabel = new JLabel("Filial:");
+        branchLabel.setFont(new Font("Sans", Font.BOLD, 20));
         final JComboBox<String> branchCombo = new JComboBox<>();
         branchCombo.setPreferredSize(new Dimension(300, 30));
         branchCombo.setFont(Constants.FONT);
 
-        final JLabel roomLabel = Components.getLabel(Constants.ROOM + ": ", null, Font.BOLD, null, null);
-        final JComboBox<String> roomCombo = new JComboBox<>();
-        roomCombo.setPreferredSize(new Dimension(300, 30));
-        roomCombo.setFont(Constants.FONT);
-
-//        populateRoomCombo(roomCombo, entity, role);
-        populateBranchCombo(branchCombo, entity, role);
+        foreignerCheckBox.addActionListener(e -> {
+            boolean isForeigner = foreignerCheckBox.isSelected();
+            cpfLabel.setVisible(!isForeigner);
+            cpfField.setVisible(!isForeigner);
+            passportLabel.setVisible(isForeigner);
+            passportField.setVisible(isForeigner);
+        });
 
         inputPanel.add(nameLabel);
         inputPanel.add(nameField, "wrap");
@@ -81,32 +88,43 @@ public class GuestForm extends JFrame {
         inputPanel.add(cpfLabel);
         inputPanel.add(cpfField, "wrap");
 
-//        inputPanel.add(hostedLabel);
-//        inputPanel.add(hostedCheck, "wrap");
+        inputPanel.add(passportLabel);
+        inputPanel.add(passportField, "wrap");
 
-//        inputPanel.add(roomLabel);
-//        inputPanel.add(roomCombo, "wrap");
-        if(!role.getRole().equals('E')) {
-            inputPanel.add(branchLabel);
-            inputPanel.add(branchCombo, "wrap");
+        inputPanel.add(foreignerCheckBox, "span, wrap");
+
+        inputPanel.add(branchLabel);
+        inputPanel.add(branchCombo, "wrap");
+
+        if (Objects.nonNull(entity) && entity.getIsForeigner()) {
+            cpfLabel.setVisible(false);
+            cpfField.setVisible(false);
+        } else {
+            passportLabel.setVisible(false);
+            passportField.setVisible(false);
         }
 
-        mainPanel.add(inputPanel, "wrap, grow");
+        populateBranchCombo(branchCombo, entity, role);
 
         final JButton saveButton = new JButton(Constants.SAVE);
-        saveButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-        saveButton.setPreferredSize(Constants.BUTTON_SIZE);
+        saveButton.setFont(new Font("Sans", Font.BOLD, 20));
+        saveButton.setPreferredSize(new Dimension(150, 40));
         saveButton.setBackground(Constants.BLUE);
         saveButton.setForeground(Color.WHITE);
         saveButton.addActionListener(e -> {
             final Guest guest = new Guest();
             guest.setIdGuest(Objects.nonNull(entity) ? entity.getIdGuest() : null);
             guest.setName(nameField.getText());
-            guest.setCpf(cpfField.getText());
-//            guest.setRoom(rooms.get(roomCombo.getSelectedIndex()));
-            guest.setRoom(null);
-            guest.setBranch(role.getRole().equals('E') ? role.getBranches().getFirst() : branches.get(branchCombo.getSelectedIndex()));
-            guest.setHosted(Objects.nonNull(entity) ? guest.getHosted() : false);
+            if (foreignerCheckBox.isSelected()) {
+                guest.setIsForeigner(true);
+                guest.setPassportNumber(passportField.getText());
+                guest.setCpf(null);
+            } else {
+                guest.setIsForeigner(false);
+                guest.setCpf(cpfField.getText());
+                guest.setPassportNumber(null);
+            }
+            guest.setBranch(branches.get(branchCombo.getSelectedIndex()));
 
             final Boolean result = Objects.nonNull(entity) ? GuestService.update(guest) : GuestService.save(guest);
 
@@ -118,8 +136,8 @@ public class GuestForm extends JFrame {
         });
 
         final JButton cancelButton = new JButton(Constants.BACK);
-        cancelButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-        cancelButton.setPreferredSize(Constants.BUTTON_SIZE);
+        cancelButton.setFont(new Font("Sans", Font.BOLD, 20));
+        cancelButton.setPreferredSize(new Dimension(150, 40));
         cancelButton.setBackground(Constants.RED);
         cancelButton.setForeground(Color.WHITE);
         cancelButton.addActionListener(e -> {
@@ -127,6 +145,7 @@ public class GuestForm extends JFrame {
             dispose();
         });
 
+        mainPanel.add(inputPanel, "wrap, grow");
         mainPanel.add(saveButton, "split 2, align center");
         mainPanel.add(cancelButton, "align center, wrap");
 
@@ -136,24 +155,6 @@ public class GuestForm extends JFrame {
         setLocationRelativeTo(null);
         setVisible(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-    }
-
-    private void populateRoomCombo(JComboBox<String> roomCombo, Guest entity, Role role) {
-        final List<Room> roomList = RoomRepository.findAll(Room.class, role);
-
-        if (Objects.nonNull(roomList) && !roomList.isEmpty()) {
-            roomCombo.removeAllItems();
-            rooms.clear();
-
-            for (Room room : roomList) {
-                roomCombo.addItem(room.getRoomNumber().toString());
-                rooms.add(room);
-            }
-        }
-
-        if (Objects.nonNull(entity)) {
-            roomCombo.setSelectedItem(entity.getRoom().getRoomNumber());
-        }
     }
 
     private void populateBranchCombo(JComboBox<String> branchCombo, Guest entity, Role role) {
@@ -174,4 +175,3 @@ public class GuestForm extends JFrame {
         }
     }
 }
-

@@ -81,7 +81,7 @@ public class ReservationForm extends JFrame {
         guestsCombo.setPreferredSize(new Dimension(300, 30));
         guestsCombo.setFont(Constants.FONT);
 
-        model = new DefaultTableModel(new Object[]{"Nome", "CPF"}, 0);
+        model = new DefaultTableModel(new Object[]{"Nome", "CPF", "Passaporte"}, 0);
 
         final JTable guestsTable = new JTable();
         guestsTable.setModel(model);
@@ -186,7 +186,7 @@ public class ReservationForm extends JFrame {
             }
         });
 
-        JButton checkButton = new JButton(Objects.nonNull(entity) && Objects.nonNull(entity.getDateTimeCheckIn()) ? "Realizar Checkout" : "Realizar Checkin");
+        JButton checkButton = new JButton(Objects.nonNull(entity) && Objects.nonNull(entity.getDateTimeCheckIn()) ? "Realizar Check-out" : "Realizar Check-in");
         checkButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
         checkButton.setPreferredSize(Constants.BUTTON_SIZE);
         checkButton.setBackground(Constants.GREEN);
@@ -249,7 +249,8 @@ public class ReservationForm extends JFrame {
         for (Guest guest : guestsTableList) {
             model.addRow(new Object[]{
                     guest.getName(),
-                    Util.formatCpf(guest.getCpf())
+                    guest.getCpf() != null ? Util.formatCpf(guest.getCpf()) : "-",
+                    guest.getPassportNumber() != null ? guest.getPassportNumber() : "-"
             });
         }
     }

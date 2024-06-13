@@ -52,15 +52,23 @@ public class GuestRepository extends DatabaseRepository {
         }
     }
 
-    public static List<Guest> findByRoom(Integer roomId) {
-        final String query = "SELECT g FROM Guest g WHERE g.room.idRoom = :roomId";
+    public static Guest findByPassport(String passport) {
+        final String query = "SELECT g FROM Guest g WHERE g.passportNumber = :passport";
+
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            return em.createQuery(query, Guest.class)
-                    .setParameter("roomId", roomId)
-                    .getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
+            return em.createQuery(query, Guest.class).setParameter("passport", passport).getSingleResult();
+        } catch (NoResultException e) {
             return null;
+        }
+    }
+
+    public static Boolean hasDuplicatePassport(String passport, Integer idGuest) {
+        final String query = "SELECT g FROM Guest g WHERE g.passportNumber = :passport and g.idGuest <> :idGuest";
+
+        try (EntityManager em = ConnectionManager.getEntityManager()) {
+            return em.createQuery(query, Guest.class).setParameter("passport", passport).setParameter("idGuest", idGuest).getSingleResult() != null;
+        } catch (NoResultException e) {
+            return false;
         }
     }
 }
