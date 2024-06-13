@@ -193,8 +193,11 @@ public class ReservationForm extends JFrame {
         checkButton.setForeground(Color.WHITE);
         checkButton.addActionListener(e -> {
             if (Objects.nonNull(entity)) {
+                if (entity.getInitialDate().after(new Date())) {
+                    JOptionPane.showMessageDialog(this, "Não é possível realizar o check-in antes da data de entrada!\n", "Aviso", JOptionPane.WARNING_MESSAGE);
+                    return;
+                }
                 boolean isSuccessful = false;
-
                 if (Objects.isNull(entity.getDateTimeCheckIn())) {
                     entity.setDateTimeCheckIn(new Date());
                     entity.setStatus("H");
@@ -218,7 +221,6 @@ public class ReservationForm extends JFrame {
                     dispose();
                 }
             }
-
         });
 
         JButton cancelButton = new JButton(Constants.BACK);
@@ -295,7 +297,7 @@ public class ReservationForm extends JFrame {
     }
 
     private void populateRoomsCombo(JComboBox<String> roomsCombo, Reservation entity, Role role) {
-        final List<Room> roomList = ReservationRepository.getAvailableRooms(role, entity);
+        final List<Room> roomList = ReservationRepository.findAll(Room.class, role);
 
         if (Objects.nonNull(roomList) && !roomList.isEmpty()) {
             roomsCombo.removeAllItems();

@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class ReservationService {
-    private static String validateReservation(Reservation reservation, List<Guest> guests) {
+    private static String validateReservation(Reservation reservation) {
         final StringBuilder errorsSb = new StringBuilder();
         final LocalDateTime now = LocalDateTime.now();
 
@@ -32,7 +32,7 @@ public class ReservationService {
             errorsSb.append("Usuário da reserva não pode ser vazio.\n");
         }
 
-        if (Objects.isNull(guests) || guests.isEmpty()) {
+        if (Objects.isNull(reservation.getGuestList()) || reservation.getGuestList().isEmpty()) {
             errorsSb.append("A reserva deve ter pelo menos um hóspede.\n");
         }
 
@@ -51,7 +51,6 @@ public class ReservationService {
             errorsSb.append("Data de saída deve ser igual ou posterior à data atual!\n");
         }
 
-
 //        if (Objects.nonNull(reservation.getRoom()) && Objects.nonNull(reservation.getGuestList())) {
 //            if (reservation.getRoom().getRoomType().getCapacity() < reservation.getGuestList().size()) {
 //                errorsSb.append("A quantidade de hóspedes deve ser menor ou igual à capacidade do quarto (Capacidade: ")
@@ -59,10 +58,16 @@ public class ReservationService {
 //                        .append(").\n");
 //            }
 //        }
+        //essa verificacao eh para ver se a quantidade de hospede respeita a capacidade do quarto, mas quando vou realizar o checkin ele dar erro (verificar ao finalizar projeto)
 
-        if (reservation.getInitialDate().after(new Date())) {
-            errorsSb.append("Não é possível realizar o check-in antes da data de entrada!\n");
+        if (!ReservationRepository.isRoomAvailable(
+                reservation.getRoom().getIdRoom(),
+                reservation.getInitialDate(),
+                reservation.getFinalDate(),
+                reservation.getIdReservation())) {
+            errorsSb.append("O quarto selecionado está ocupado no período escolhido.\n");
         }
+
 
         return errorsSb.toString();
     }
@@ -74,9 +79,9 @@ public class ReservationService {
         return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
-    public static Boolean save(Reservation reservation, List<Guest> guests) {
+    public static Boolean save(Reservation reservation) {
         try {
-            final String validations = validateReservation(reservation, guests);
+            final String validations = validateReservation(reservation);
 
             if (!validations.isEmpty()) {
                 JOptionPane.showMessageDialog(null, validations);
@@ -94,12 +99,12 @@ public class ReservationService {
         }
     }
 
-    public static Boolean update(Reservation reservation, List<Guest> guests) {
+    public static Boolean update(Reservation reservation) {
         try {
             final Reservation result = ReservationRepository.findById(Reservation.class, reservation.getIdReservation());
 
             if (Objects.nonNull(result)) {
-                final String validations = validateReservation(reservation, guests);
+                final String validations = validateReservation(reservation);
 
                 if (!validations.isEmpty()) {
                     JOptionPane.showMessageDialog(null, validations);

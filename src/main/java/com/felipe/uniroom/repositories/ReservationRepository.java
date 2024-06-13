@@ -9,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -29,33 +30,6 @@ public class ReservationRepository extends DatabaseRepository {
                 NoResultException e) {
             return null;
         }
-    }
-
-    public static List<Guest> getGuests(Reservation reservation) {
-        try {
-            final Reservation result = findById(Reservation.class, reservation.getIdReservation());
-
-            if (Objects.nonNull(result)) {
-                final String query = "SELECT g FROM Guest g WHERE g.room.idRoom = :idRoom AND g.branch.idBranch = :idBranch";
-
-                try (EntityManager em = ConnectionManager.getEntityManager()) {
-                    return em.createQuery(query, Guest.class)
-                            .setParameter("idRoom", reservation.getRoom().getIdRoom())
-                            .setParameter("idBranch", reservation.getBranch().getIdBranch())
-                            .getResultList();
-                } catch (
-                        NoResultException e) {
-                    return null;
-                }
-            } else {
-                return null;
-            }
-        } catch (
-                Exception e) {
-            return null;
-        }
-
-
     }
 
     public static List<Room> getAvailableRooms(Role role, Reservation currentReservation) {
@@ -98,6 +72,24 @@ public class ReservationRepository extends DatabaseRepository {
             return null;
         } finally {
             em.close();
+        }
+    }
+
+    public static boolean isRoomAvailable(Integer roomId, Date checkInDate, Date checkOutDate, Integer reservationId) {
+        String query = "SELECT COUNT(r) FROM Reservation r WHERE r.room.idRoom = :roomId AND r.idReservation <> :reservationId AND r.status != 'C' AND r.status != 'CO' AND (:checkInDate < r.finalDate AND :checkOutDate > r.initialDate)";
+
+        try (EntityManager em = ConnectionManager.getEntityManager()) {
+            Long count = em.createQuery(query, Long.class)
+                    .setParameter("roomId", roomId)
+                    .setParameter("reservationId", reservationId != null ? reservationId : -1)
+                    .setParameter("checkInDate", checkInDate)
+                    .setParameter("checkOutDate", checkOutDate)
+                    .getSingleResult();
+
+            return count == 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
