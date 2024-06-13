@@ -62,7 +62,7 @@ public class ReservationRepository extends DatabaseRepository {
         List<Room> allRooms = findAll(Room.class, role);
 
         if (Objects.nonNull(allRooms) && !allRooms.isEmpty()) {
-            final String query = "SELECT res.room.idRoom FROM Reservation res WHERE res.status = 'CI'";
+            final String query = "SELECT res.room.idRoom FROM Reservation res WHERE res.status = 'CI' OR res.status = 'H'";
             try (EntityManager em = ConnectionManager.getEntityManager()) {
                 List<Long> reservedRoomIds = em.createQuery(query, Long.class).getResultList();
 
@@ -83,6 +83,7 @@ public class ReservationRepository extends DatabaseRepository {
             return null;
         }
     }
+
 
     public static Reservation findByIdWithGuests(Integer id) {
         EntityManager em = ConnectionManager.getEntityManager();

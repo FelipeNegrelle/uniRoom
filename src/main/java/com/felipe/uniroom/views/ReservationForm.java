@@ -71,6 +71,11 @@ public class ReservationForm extends JFrame {
             checkOutField.setText(formatDateTime(convertToLocalDateTimeViaInstant(entity.getFinalDate())));
         }
 
+        if (Objects.nonNull(entity) && Objects.nonNull(entity.getDateTimeCheckIn())) {
+            checkOutField.setEnabled(false);
+            checkInField.setEnabled(false);
+        }
+
         final JLabel guestsLabel = Components.getLabel(Constants.GUEST + ":", null, Font.BOLD, null, null);
         final JComboBox<String> guestsCombo = new JComboBox<>();
         guestsCombo.setPreferredSize(new Dimension(300, 30));
@@ -181,6 +186,41 @@ public class ReservationForm extends JFrame {
             }
         });
 
+        JButton checkButton = new JButton(Objects.nonNull(entity) && Objects.nonNull(entity.getDateTimeCheckIn()) ? "Realizar Checkout" : "Realizar Checkin");
+        checkButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
+        checkButton.setPreferredSize(Constants.BUTTON_SIZE);
+        checkButton.setBackground(Constants.GREEN);
+        checkButton.setForeground(Color.WHITE);
+        checkButton.addActionListener(e -> {
+            if (Objects.nonNull(entity)) {
+                boolean isSuccessful = false;
+
+                if (Objects.isNull(entity.getDateTimeCheckIn())) {
+                    entity.setDateTimeCheckIn(new Date());
+                    entity.setStatus("H");
+                    isSuccessful = ReservationService.update(entity, guestsTableList);
+                    if (isSuccessful) {
+                        JOptionPane.showMessageDialog(this, "Check-in realizado com sucesso!", "Sucesso", JOptionPane.PLAIN_MESSAGE);
+                    }
+                } else if (Objects.isNull(entity.getDateTimeCheckOut())) {
+                    entity.setDateTimeCheckOut(new Date());
+                    entity.setStatus("CO");
+                    isSuccessful = ReservationService.update(entity, guestsTableList);
+                    if (isSuccessful) {
+                        JOptionPane.showMessageDialog(this, "Check-out realizado com sucesso!", "Sucesso", JOptionPane.PLAIN_MESSAGE);
+                    }
+                } else {
+                    JOptionPane.showMessageDialog(this, "Check-out já realizado!", "Aviso", JOptionPane.WARNING_MESSAGE);
+                }
+
+                if (isSuccessful) {
+                    new ReservationView(role);
+                    dispose();
+                }
+            }
+
+        });
+
         JButton cancelButton = new JButton(Constants.BACK);
         cancelButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
         cancelButton.setPreferredSize(Constants.BUTTON_SIZE);
@@ -191,7 +231,10 @@ public class ReservationForm extends JFrame {
             dispose();
         });
 
-        mainPanel.add(saveButton, "split 2, align center");
+        mainPanel.add(saveButton, "split 3, align center");
+        if(Objects.nonNull(entity)) {
+            mainPanel.add(checkButton, "align center");
+        }
         mainPanel.add(cancelButton, "align center, wrap");
 
         add(mainPanel, BorderLayout.CENTER);
@@ -285,6 +328,9 @@ public class ReservationForm extends JFrame {
     }
 
     private LocalDateTime convertToLocalDateTimeViaInstant(Date dateToConvert) {
+        if (dateToConvert == null) {
+            return null;
+        }
         if (dateToConvert instanceof java.sql.Date) {
             return ((java.sql.Date) dateToConvert).toLocalDate().atStartOfDay();
         } else {
@@ -295,6 +341,9 @@ public class ReservationForm extends JFrame {
     }
 
     private Date convertToDateViaInstant(LocalDateTime dateToConvert) {
+        if (dateToConvert == null) {
+            return null;
+        }
         return Date.from(dateToConvert.atZone(ZoneId.systemDefault()).toInstant());
     }
 }

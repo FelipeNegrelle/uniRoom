@@ -5,18 +5,20 @@ import com.felipe.uniroom.entities.Reservation;
 import com.felipe.uniroom.repositories.GuestRepository;
 import com.felipe.uniroom.repositories.ReservationRepository;
 import com.felipe.uniroom.views.Components;
+import org.hibernate.Hibernate;
 
 import javax.swing.*;
 import java.time.Instant;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
 public class ReservationService {
     private static String validateReservation(Reservation reservation, List<Guest> guests) {
         final StringBuilder errorsSb = new StringBuilder();
+        final LocalDateTime now = LocalDateTime.now();
 
         if (Objects.isNull(reservation.getRoom())) {
             errorsSb.append("Quarto da reserva não pode ser vazio.\n");
@@ -30,37 +32,46 @@ public class ReservationService {
             errorsSb.append("Usuário da reserva não pode ser vazio.\n");
         }
 
-        if(Objects.isNull(reservation.getInitialDate())) {
-            errorsSb.append("Data inicial da reserva não pode ser vazia.\n");
-        }
-
-        if(Objects.isNull(reservation.getFinalDate())) {
-            errorsSb.append("Data final da reserva não pode ser vazia.\n");
-        }
-
         if (Objects.isNull(guests) || guests.isEmpty()) {
             errorsSb.append("A reserva deve ter pelo menos um hóspede.\n");
         }
 
-        if(reservation.getFinalDate().toInstant().isBefore(reservation.getInitialDate().toInstant())){
+        if (Objects.nonNull(reservation.getFinalDate()) && reservation.getFinalDate().before(reservation.getInitialDate())) {
             errorsSb.append("Data de saída deve ser após a data de entrada!\n");
         }
 
-        LocalDate checkInDate = reservation.getInitialDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate checkOutDate = reservation.getFinalDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        final LocalDateTime now = LocalDateTime.now();
-        LocalDate currentDate = now.toLocalDate();
+        LocalDateTime checkInDateTime = convertToLocalDateTime(reservation.getInitialDate());
+        LocalDateTime checkOutDateTime = convertToLocalDateTime(reservation.getFinalDate());
 
-        if (checkInDate.isBefore(currentDate) || checkOutDate.isBefore(currentDate)) {
-            errorsSb.append("Datas de entrada e saída devem ser iguais ou posteriores à data atual!\n");
+        if (Objects.nonNull(checkInDateTime) && checkInDateTime.isBefore(now.toLocalDate().atStartOfDay())) {
+            errorsSb.append("Data de entrada deve ser igual ou posterior à data atual!\n");
         }
 
-        if(checkInDate.equals(checkOutDate)){
-            errorsSb.append("Datas de entrada e saída não devem ser iguais!");
+        if (Objects.nonNull(checkOutDateTime) && checkOutDateTime.isBefore(now.toLocalDate().atStartOfDay())) {
+            errorsSb.append("Data de saída deve ser igual ou posterior à data atual!\n");
         }
 
+
+//        if (Objects.nonNull(reservation.getRoom()) && Objects.nonNull(reservation.getGuestList())) {
+//            if (reservation.getRoom().getRoomType().getCapacity() < reservation.getGuestList().size()) {
+//                errorsSb.append("A quantidade de hóspedes deve ser menor ou igual à capacidade do quarto (Capacidade: ")
+//                        .append(reservation.getRoom().getRoomType().getCapacity())
+//                        .append(").\n");
+//            }
+//        }
+
+        if (reservation.getInitialDate().after(new Date())) {
+            errorsSb.append("Não é possível realizar o check-in antes da data de entrada!\n");
+        }
 
         return errorsSb.toString();
+    }
+
+    private static LocalDateTime convertToLocalDateTime(Date date) {
+        if (date == null) {
+            return null;
+        }
+        return Instant.ofEpochMilli(date.getTime()).atZone(ZoneId.systemDefault()).toLocalDateTime();
     }
 
     public static Boolean save(Reservation reservation, List<Guest> guests) {
@@ -72,16 +83,15 @@ public class ReservationService {
 
                 return false;
             } else {
-//                for (Guest guest : guests) {
-//                    guest.setRoom(reservation.getRoom());
-//                    guest.setHosted(true);
-//                    GuestService.update(guest);
-//                }
+                for (Guest guest : guests) {
+                    guest.setRoom(reservation.getRoom());
+                    guest.setHosted(true);
+                    GuestService.update(guest);
+                }
 
                 return ReservationRepository.saveOrUpdate(reservation);
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
 
             Components.showGenericError(null);
@@ -107,9 +117,26 @@ public class ReservationService {
                     result.setBranch(reservation.getBranch());
                     result.setRoom(reservation.getRoom());
                     result.setStatus(reservation.getStatus());
-                    result.setGuestList(reservation.getGuestList());
-                    result.setFinalDate(reservation.getFinalDate());
                     result.setInitialDate(reservation.getInitialDate());
+                    result.setFinalDate(reservation.getFinalDate());
+                    result.setDateTimeCheckIn(reservation.getDateTimeCheckIn());
+                    result.setDateTimeCheckOut(reservation.getDateTimeCheckOut());
+
+                    List<Guest> currentGuests = GuestRepository.findByRoom(reservation.getRoom().getIdRoom());
+
+                    for (Guest guest : guests) {
+                        guest.setRoom(reservation.getRoom());
+                        guest.setHosted(true);
+                        GuestService.update(guest);
+                    }
+
+                    for (Guest currentGuest : currentGuests) {
+                        if (!guests.contains(currentGuest)) {
+                            currentGuest.setRoom(null);
+                            currentGuest.setHosted(false);
+                            GuestService.update(currentGuest);
+                        }
+                    }
 
                     return ReservationRepository.saveOrUpdate(result);
                 }
@@ -124,18 +151,12 @@ public class ReservationService {
         }
     }
 
-    public static Boolean cancel(Reservation reservation, List<Guest> guests) {
+    public static Boolean cancel(Reservation reservation) {
         try {
             final Reservation result = ReservationRepository.findById(Reservation.class, reservation.getIdReservation());
 
             if (Objects.nonNull(result)) {
                 result.setStatus("C");
-
-                for(Guest guest : guests) {
-                    guest.setRoom(null);
-                    guest.setHosted(false);
-                    GuestService.update(guest);
-                }
 
                 return ReservationRepository.cancel(result);
             } else {
@@ -143,8 +164,7 @@ public class ReservationService {
 
                 return false;
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
 
             Components.showGenericError(null);

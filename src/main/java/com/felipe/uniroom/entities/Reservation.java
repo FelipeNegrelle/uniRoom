@@ -30,8 +30,8 @@ public class Reservation {
     private Branch branch;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "date_time_check_in", nullable = false)
-    private Date dateTimeCheckIn = new Date();
+    @Column(name = "date_time_check_in")
+    private Date dateTimeCheckIn;
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "date_time_check_out")

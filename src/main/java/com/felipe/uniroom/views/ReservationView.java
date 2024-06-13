@@ -15,6 +15,7 @@ import java.awt.*;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +24,7 @@ public class ReservationView extends JFrame {
     private static final List<Reservation> searchItens = new ArrayList<>();
 
     public ReservationView(Role role) {
-        super(Constants.CORPORATE);
+        super(Constants.RESERVATION);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
 
@@ -101,7 +102,7 @@ public class ReservationView extends JFrame {
 
                     reservation.setIdReservation((int) model.getValueAt(row, 1));
 
-                    if (ReservationService.cancel(reservation, ReservationRepository.getGuests(reservation))) {
+                    if (ReservationService.cancel(reservation)) {
                         try {
                             updateReservationTable(role);
                         } catch (
@@ -147,13 +148,12 @@ public class ReservationView extends JFrame {
                         null,
                         reservation.getIdReservation(),
                         reservation.getRoom().getRoomNumber(),
-//                        reservation.getDays(),
                         reservation.getUser().getName(),
                         reservation.getBranch().getName(),
-                        new SimpleDateFormat("dd/MM/yyyy").format(reservation.getInitialDate()),
-                        new SimpleDateFormat("dd/MM/yyyy").format(reservation.getFinalDate()),
-                        new SimpleDateFormat("dd/MM/yyyy HH:mm").format(reservation.getDateTimeCheckIn()),
-                        Objects.nonNull(reservation.getDateTimeCheckOut()) ? new SimpleDateFormat("dd/MM/yyyy HH:mm").format(reservation.getDateTimeCheckOut()) : "-",
+                        formatNullableDate(reservation.getInitialDate(), "dd/MM/yyyy"),
+                        formatNullableDate(reservation.getFinalDate(), "dd/MM/yyyy"),
+                        formatNullableDate(reservation.getDateTimeCheckIn(), "dd/MM/yyyy HH:mm"),
+                        formatNullableDate(reservation.getDateTimeCheckOut(), "dd/MM/yyyy HH:mm"),
                         Util.convertStatusReservation(reservation.getStatus())
                 });
             }
@@ -166,13 +166,12 @@ public class ReservationView extends JFrame {
                             null,
                             reservation.getIdReservation(),
                             reservation.getRoom().getRoomNumber(),
-//                            reservation.getDays(),
                             reservation.getUser().getName(),
                             reservation.getBranch().getName(),
-                            new SimpleDateFormat("dd/MM/yyyy").format(reservation.getInitialDate()),
-                            new SimpleDateFormat("dd/MM/yyyy").format(reservation.getFinalDate()),
-                            new SimpleDateFormat("dd/MM/yyyy HH:mm").format(reservation.getDateTimeCheckIn()),
-                            Objects.nonNull(reservation.getDateTimeCheckOut()) ? new SimpleDateFormat("dd/MM/yyyy HH:mm").format(reservation.getDateTimeCheckOut()) : "-",
+                            formatNullableDate(reservation.getInitialDate(), "dd/MM/yyyy"),
+                            formatNullableDate(reservation.getFinalDate(), "dd/MM/yyyy"),
+                            formatNullableDate(reservation.getDateTimeCheckIn(), "dd/MM/yyyy HH:mm"),
+                            formatNullableDate(reservation.getDateTimeCheckOut(), "dd/MM/yyyy HH:mm"),
                             Util.convertStatusReservation(reservation.getStatus())
                     });
                 }
@@ -180,5 +179,12 @@ public class ReservationView extends JFrame {
                 JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);
             }
         }
+    }
+
+    private static String formatNullableDate(Date date, String pattern) {
+        if (date == null) {
+            return "-";
+        }
+        return new SimpleDateFormat(pattern).format(date);
     }
 }
