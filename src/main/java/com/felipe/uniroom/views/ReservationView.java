@@ -19,6 +19,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
+import static com.felipe.uniroom.config.Util.formatNullableDate;
+
 public class ReservationView extends JFrame {
     private static DefaultTableModel model;
     private static final List<Reservation> searchItens = new ArrayList<>();
@@ -84,11 +86,21 @@ public class ReservationView extends JFrame {
             if (column == 0) {
                 final JPopupMenu popupMenu = new JPopupMenu();
 
+                final JMenuItem expenseItem = new JMenuItem(Constants.EXPENSE);
+                expenseItem.setIcon(Constants.EXPENSE_ICON);
+                expenseItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
+                expenseItem.addActionListener(e -> {
+                    final Reservation reservation = ReservationRepository.findById(Reservation.class, model.getValueAt(row, 1));
+
+                    new ExpenseView(role, reservation);
+                    dispose();
+                });
+
                 final JMenuItem editItem = new JMenuItem(Constants.EDIT);
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Reservation reservation = ReservationRepository.findById(Reservation.class, (int) model.getValueAt(row, 1));
+                    final Reservation reservation = ReservationRepository.findById(Reservation.class, model.getValueAt(row, 1));
 
                     new ReservationForm(role, reservation);
                     dispose();
@@ -114,6 +126,7 @@ public class ReservationView extends JFrame {
                     }
                 });
 
+                popupMenu.add(expenseItem);
                 popupMenu.add(editItem);
                 popupMenu.add(deleteItem);
 
@@ -179,12 +192,5 @@ public class ReservationView extends JFrame {
                 JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);
             }
         }
-    }
-
-    private static String formatNullableDate(Date date, String pattern) {
-        if (date == null) {
-            return "-";
-        }
-        return new SimpleDateFormat(pattern).format(date);
     }
 }

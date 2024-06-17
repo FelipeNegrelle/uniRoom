@@ -155,7 +155,7 @@ public class RoomTypeView extends JFrame {
                         null,
                         roomType.getIdRoomType(),
                         roomType.getName(),
-                        roomType.getPrice(),
+                        "R$ " + roomType.getPrice(),
                         roomType.getCapacity(),
                         roomType.getBranch().getName(),
                         roomType.getActive()
@@ -170,14 +170,14 @@ public class RoomTypeView extends JFrame {
                             null,
                             roomType.getIdRoomType(),
                             roomType.getName(),
-                            "R$ " +roomType.getPrice(),
+                            "R$ " + roomType.getPrice(),
                             roomType.getCapacity(),
                             roomType.getBranch().getName(),
                             roomType.getActive()
                     });
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to load room type data");
+                JOptionPane.showMessageDialog(null, "Falha ao carregar dados do tipo de quarto");
             }
         }
     }

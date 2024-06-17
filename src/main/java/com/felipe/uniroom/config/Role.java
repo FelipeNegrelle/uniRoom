@@ -83,6 +83,7 @@ public class Role {
                 menusCorporate.add(Menus.MENU_ROOM.getMenu());
                 menusCorporate.add(Menus.MENU_ROOM_TYPE.getMenu());
                 menusCorporate.add(Menus.MENU_GUEST.getMenu());
+                menusCorporate.add(Menus.MENU_SERVICE.getMenu());
 
                 return menusCorporate;
             case 'B':
@@ -95,6 +96,7 @@ public class Role {
                 menusBranch.add(Menus.MENU_ROOM.getMenu());
                 menusBranch.add(Menus.MENU_ROOM_TYPE.getMenu());
                 menusBranch.add(Menus.MENU_GUEST.getMenu());
+                menusBranch.add(Menus.MENU_SERVICE.getMenu());
 
                 return menusBranch;
             case 'E':

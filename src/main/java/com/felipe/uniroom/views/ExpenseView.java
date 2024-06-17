@@ -3,9 +3,10 @@ package com.felipe.uniroom.views;
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
-import com.felipe.uniroom.entities.Corporate;
-import com.felipe.uniroom.repositories.CorporateRepository;
-import com.felipe.uniroom.services.CorporateService;
+import com.felipe.uniroom.entities.Expense;
+import com.felipe.uniroom.entities.Reservation;
+import com.felipe.uniroom.repositories.ExpenseRepository;
+import com.felipe.uniroom.services.ExpenseService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -18,12 +19,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CorporateView extends JFrame {
+public class ExpenseView extends JFrame {
     private static DefaultTableModel model;
-    private static final List<Corporate> searchItens = new ArrayList<>();
+    private static final List<Expense> searchItens = new ArrayList<>();
 
-    public CorporateView(Role role) {
-        super(Constants.CORPORATE);
+    public ExpenseView(Role role, Reservation reservation) {
+        super(Constants.EXPENSE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
 
@@ -31,7 +32,7 @@ public class CorporateView extends JFrame {
         panel.setBackground(Constants.BLUE);
         setIconImage(Constants.LOGO);
 
-        final JLabel titleLabel = new JLabel(Constants.CORPORATE);
+        final JLabel titleLabel = new JLabel(Constants.EXPENSE);
         titleLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 40));
         titleLabel.setForeground(Color.WHITE);
         panel.add(titleLabel, "align center");
@@ -44,26 +45,23 @@ public class CorporateView extends JFrame {
         backButton.setBackground(Constants.WHITE);
         backButton.setIcon(Constants.BACK_ICON);
         backButton.addActionListener(e -> {
-            new Home(role);
+            new ReservationView(role);
             dispose();
         });
         searchPanel.add(backButton, "align left ");
 
-        final JButton newCorporate = new JButton(Constants.NEW);
-        newCorporate.setBackground(Constants.WHITE);
-        newCorporate.setForeground(Constants.BLACK);
-        newCorporate.setFont(Constants.FONT.deriveFont(Font.BOLD));
-        newCorporate.addActionListener(e -> {
-            new CorporateForm(role, null);
+        final JButton newExpense = new JButton(Constants.NEW);
+        newExpense.setBackground(Constants.WHITE);
+        newExpense.setForeground(Constants.BLACK);
+        newExpense.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        newExpense.addActionListener(e -> {
+            new ExpenseForm(role, reservation, null);
             dispose();
         });
-        searchPanel.add(newCorporate, "align left");
-
-        final JLabel searchLabel = new JLabel(Constants.SEARCH);
-        searchLabel.setFont(Constants.FONT.deriveFont(Font.BOLD));
-        searchLabel.setForeground(Color.WHITE);
-        searchLabel.setPreferredSize(new Dimension(70, 40));
-        searchPanel.add(searchLabel, "align right");
+        if (reservation.getStatus().equals("C")) {
+            newExpense.setEnabled(false);
+        }
+        searchPanel.add(newExpense, "align left");
 
         final JTextField searchField = new JTextField(20);
         searchField.setFont(Constants.FONT.deriveFont(Font.BOLD));
@@ -71,15 +69,15 @@ public class CorporateView extends JFrame {
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                searchItens.addAll(CorporateService.search(searchField.getText(), null, role));
-                updateCorporateTable(role);
+                searchItens.addAll(ExpenseService.search(searchField.getText(), null, role));
+                updateExpenseTable(role);
             }
         });
         searchPanel.add(searchField, "align left");
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "CNPJ", "Gerente", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Item", "Serviço", "Quantidade", "Data/Hora despesa"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -93,9 +91,6 @@ public class CorporateView extends JFrame {
         final TableColumn optionsColumn = table.getColumnModel().getColumn(0);
         optionsColumn.setCellRenderer(new Components.OptionsCellRenderer());
 
-        final TableColumn activeColumn = table.getColumnModel().getColumn(5);
-        activeColumn.setCellRenderer(new Components.IconCellRenderer());
-
         final Components.MouseAction mouseAction = (tableEvt, evt) -> {
             final int row = tableEvt.rowAtPoint(evt.getPoint());
             final int column = tableEvt.columnAtPoint(evt.getPoint());
@@ -107,9 +102,9 @@ public class CorporateView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Corporate corporate = CorporateRepository.findById(Corporate.class, (int) model.getValueAt(row, 1));
+                    final Expense expense = ExpenseRepository.findById(Expense.class, model.getValueAt(row, 1));
 
-                    new CorporateForm(role, corporate);
+                    new ExpenseForm(role, reservation, expense);
                     dispose();
                 });
 
@@ -117,21 +112,23 @@ public class CorporateView extends JFrame {
                 deleteItem.setIcon(Constants.DELETE_ICON);
                 deleteItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 deleteItem.addActionListener(e -> {
-                    final Corporate corporate = new Corporate();
+                    final Expense expense = new Expense();
 
-                    corporate.setIdCorporate((int) model.getValueAt(row, 1));
+                    expense.setIdExpense((int) model.getValueAt(row, 1));
 
-                    if (CorporateService.delete(corporate)) {
-                        updateCorporateTable(role);
+                    if (ExpenseService.delete(expense)) {
+                        updateExpenseTable(role);
                     } else {
                         Components.showGenericError(this);
                     }
                 });
 
-                popupMenu.add(editItem);
-                popupMenu.add(deleteItem);
+                if (!reservation.getStatus().equals("C")) {
+                    popupMenu.add(editItem);
+                    popupMenu.add(deleteItem);
 
-                popupMenu.show(tableEvt, evt.getX(), evt.getY());
+                    popupMenu.show(tableEvt, evt.getX(), evt.getY());
+                }
             }
         };
         final Components.GenericMouseListener genericMouseListener = new Components.GenericMouseListener(table, 0, mouseAction);
@@ -141,39 +138,39 @@ public class CorporateView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateCorporateTable(role);
+        updateExpenseTable(role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
     }
 
-    private static void updateCorporateTable(Role role) {
+    private static void updateExpenseTable(Role role) {
         model.setRowCount(0);
 
         if (!searchItens.isEmpty()) {
-            for (Corporate corporate : searchItens) {
+            for (Expense expense : searchItens) {
                 model.addRow(new Object[]{
                         null,
-                        corporate.getIdCorporate(),
-                        corporate.getName(),
-                        Util.formatCnpj(corporate.getCnpj()),
-                        corporate.getUser().getName(),
-                        corporate.getActive(),
+                        expense.getIdExpense(),
+                        Objects.isNull(expense.getItem()) ? "-" : expense.getItem().getName(),
+                        Objects.isNull(expense.getService()) ? "-" : expense.getService().getDescription(),
+                        expense.getAmount(),
+                        Util.formatNullableDate(expense.getDateTimeExpense(), "dd/MM/yyyy HH:mm"),
                 });
             }
             searchItens.clear();
         } else {
-            final List<Corporate> corporateList = CorporateRepository.findAll(Corporate.class, role);
-            if (Objects.nonNull(corporateList)) {
-                for (Corporate corporate : corporateList) {
+            final List<Expense> ExpenseList = ExpenseRepository.findAll(Expense.class, role);
+            if (Objects.nonNull(ExpenseList)) {
+                for (Expense expense : ExpenseList) {
                     model.addRow(new Object[]{
                             null,
-                            corporate.getIdCorporate(),
-                            corporate.getName(),
-                            Util.formatCnpj(corporate.getCnpj()),
-                            corporate.getUser().getName(),
-                            corporate.getActive(),
+                            expense.getIdExpense(),
+                            Objects.isNull(expense.getItem()) ? "-" : expense.getItem().getName(),
+                            Objects.isNull(expense.getService()) ? "-" : expense.getService().getDescription(),
+                            expense.getAmount(),
+                            Util.formatNullableDate(expense.getDateTimeExpense(), "dd/MM/yyyy HH:mm"),
                     });
                 }
             } else {

@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+//TODO talvez tornar esta classe do tipo <T> e fazer como no spring boot
 @Transactional
 public class DatabaseRepository {
     public static <T> List<T> findAll(Class<T> entity, Role role) {

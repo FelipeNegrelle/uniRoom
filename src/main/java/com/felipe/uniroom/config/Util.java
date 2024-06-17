@@ -3,6 +3,8 @@ package com.felipe.uniroom.config;
 import javax.swing.text.MaskFormatter;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class Util {
     public static String formatCnpj(String cnpj) {
@@ -40,6 +42,13 @@ public class Util {
             pattern.append("0".repeat(decimalPlaces));
         }
         return new DecimalFormat(pattern.toString());
+    }
+
+    public static String formatNullableDate(Date date, String pattern) {
+        if (date == null) {
+            return "-";
+        }
+        return new SimpleDateFormat(pattern).format(date);
     }
 
     public static String convertStatusReservation(String status) {

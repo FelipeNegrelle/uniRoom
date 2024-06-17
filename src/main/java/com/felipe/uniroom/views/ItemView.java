@@ -175,7 +175,7 @@ public class ItemView extends JFrame {
                     });
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to load item data");
+                JOptionPane.showMessageDialog(null, "Falha ao carregar dados do item.");
             }
         }
     }

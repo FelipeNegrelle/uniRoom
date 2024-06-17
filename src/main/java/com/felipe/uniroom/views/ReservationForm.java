@@ -177,7 +177,7 @@ public class ReservationForm extends JFrame {
             reservation.setStatus(Objects.nonNull(entity) ? entity.getStatus() : "CI");
             reservation.setGuestList(guestsTableList);
 
-            final Boolean result = Objects.nonNull(entity) ? ReservationService.update(reservation, guestsTableList) : ReservationService.save(reservation, guestsTableList);
+            final Boolean result = Objects.nonNull(entity) ? ReservationService.update(reservation) : ReservationService.save(reservation);
 
             if (Objects.nonNull(result) && result) {
                 JOptionPane.showMessageDialog(this, Constants.SUCCESSFUL_REGISTER, Constants.SUCCESS, JOptionPane.PLAIN_MESSAGE);
@@ -201,14 +201,14 @@ public class ReservationForm extends JFrame {
                 if (Objects.isNull(entity.getDateTimeCheckIn())) {
                     entity.setDateTimeCheckIn(new Date());
                     entity.setStatus("H");
-                    isSuccessful = ReservationService.update(entity, guestsTableList);
+                    isSuccessful = ReservationService.update(entity);
                     if (isSuccessful) {
                         JOptionPane.showMessageDialog(this, "Check-in realizado com sucesso!", "Sucesso", JOptionPane.PLAIN_MESSAGE);
                     }
                 } else if (Objects.isNull(entity.getDateTimeCheckOut())) {
                     entity.setDateTimeCheckOut(new Date());
                     entity.setStatus("CO");
-                    isSuccessful = ReservationService.update(entity, guestsTableList);
+                    isSuccessful = ReservationService.update(entity);
                     if (isSuccessful) {
                         JOptionPane.showMessageDialog(this, "Check-out realizado com sucesso!", "Sucesso", JOptionPane.PLAIN_MESSAGE);
                     }

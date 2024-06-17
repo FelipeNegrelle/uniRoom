@@ -57,6 +57,9 @@ public class Constants {
     public static final String RECOVER_PASSWORD = "Recuperar Senha";
     public static final String QUANTITY = "Quantidade";
     public static final String INVENTORY_ITEM = "Inventário-item";
+    public static final String SERVICE = "Serviço";
+    public static final String EXPENSE = "Despesa";
+    public static final String TYPE = "Tipo";
 
     //Colors
     public static final Color WHITE = new Color(0xFFFFFF);
@@ -92,5 +95,7 @@ public class Constants {
     public static final Icon BACK_ICON = new ImageIcon("src/main/resources/images/icons/arrow-back.png");
     public static final Icon ADD_ICON = new ImageIcon("src/main/resources/images/icons/add.png");
     public static final Icon EXIT_ICON = new ImageIcon("src/main/resources/images/icons/exit.png");
+    public static final Icon SERVICE_ICON = new ImageIcon("src/main/resources/images/icons/service.png");
+    public static final Icon EXPENSE_ICON = new ImageIcon("src/main/resources/images/icons/expense.png");
     public static final Image LOGO = Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/images/uniroom.jpeg"));
 }

@@ -2,15 +2,13 @@ package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
-import com.felipe.uniroom.config.Util;
-import com.felipe.uniroom.entities.Corporate;
-import com.felipe.uniroom.repositories.CorporateRepository;
-import com.felipe.uniroom.services.CorporateService;
+import com.felipe.uniroom.entities.Service;
+import com.felipe.uniroom.repositories.ServiceRepository;
+import com.felipe.uniroom.services.ServiceService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -18,12 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class CorporateView extends JFrame {
+public class ServiceView extends JFrame {
     private static DefaultTableModel model;
-    private static final List<Corporate> searchItens = new ArrayList<>();
+    private static final List<Service> searchServices = new ArrayList<>();
 
-    public CorporateView(Role role) {
-        super(Constants.CORPORATE);
+    public ServiceView(Role role) {
+        super(Constants.SERVICE);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
 
@@ -31,7 +29,7 @@ public class CorporateView extends JFrame {
         panel.setBackground(Constants.BLUE);
         setIconImage(Constants.LOGO);
 
-        final JLabel titleLabel = new JLabel(Constants.CORPORATE);
+        final JLabel titleLabel = new JLabel(Constants.SERVICE);
         titleLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 40));
         titleLabel.setForeground(Color.WHITE);
         panel.add(titleLabel, "align center");
@@ -47,17 +45,17 @@ public class CorporateView extends JFrame {
             new Home(role);
             dispose();
         });
-        searchPanel.add(backButton, "align left ");
+        searchPanel.add(backButton, "align left");
 
-        final JButton newCorporate = new JButton(Constants.NEW);
-        newCorporate.setBackground(Constants.WHITE);
-        newCorporate.setForeground(Constants.BLACK);
-        newCorporate.setFont(Constants.FONT.deriveFont(Font.BOLD));
-        newCorporate.addActionListener(e -> {
-            new CorporateForm(role, null);
+        final JButton newItem = new JButton(Constants.NEW);
+        newItem.setBackground(Constants.WHITE);
+        newItem.setForeground(Constants.BLACK);
+        newItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        newItem.addActionListener(e -> {
+            new ServiceForm(role, null);
             dispose();
         });
-        searchPanel.add(newCorporate, "align left");
+        searchPanel.add(newItem, "align left");
 
         final JLabel searchLabel = new JLabel(Constants.SEARCH);
         searchLabel.setFont(Constants.FONT.deriveFont(Font.BOLD));
@@ -71,15 +69,16 @@ public class CorporateView extends JFrame {
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                searchItens.addAll(CorporateService.search(searchField.getText(), null, role));
-                updateCorporateTable(role);
+                searchServices.clear();
+                searchServices.addAll(ServiceService.search(searchField.getText(), null, role));
+                updateServiceTable(role);
             }
         });
         searchPanel.add(searchField, "align left");
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "CNPJ", "Gerente", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Descrição", "Preço", "Filial"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -90,11 +89,8 @@ public class CorporateView extends JFrame {
         table.getTableHeader().setReorderingAllowed(false);
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
-        final TableColumn optionsColumn = table.getColumnModel().getColumn(0);
-        optionsColumn.setCellRenderer(new Components.OptionsCellRenderer());
-
-        final TableColumn activeColumn = table.getColumnModel().getColumn(5);
-        activeColumn.setCellRenderer(new Components.IconCellRenderer());
+        final Components.OptionsCellRenderer optionsCellRenderer = new Components.OptionsCellRenderer();
+        table.getColumnModel().getColumn(0).setCellRenderer(optionsCellRenderer);
 
         final Components.MouseAction mouseAction = (tableEvt, evt) -> {
             final int row = tableEvt.rowAtPoint(evt.getPoint());
@@ -107,9 +103,8 @@ public class CorporateView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Corporate corporate = CorporateRepository.findById(Corporate.class, (int) model.getValueAt(row, 1));
-
-                    new CorporateForm(role, corporate);
+                    final Service service = ServiceRepository.findById(Service.class, model.getValueAt(row, 1));
+                    new ServiceForm(role, service);
                     dispose();
                 });
 
@@ -117,14 +112,12 @@ public class CorporateView extends JFrame {
                 deleteItem.setIcon(Constants.DELETE_ICON);
                 deleteItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 deleteItem.addActionListener(e -> {
-                    final Corporate corporate = new Corporate();
-
-                    corporate.setIdCorporate((int) model.getValueAt(row, 1));
-
-                    if (CorporateService.delete(corporate)) {
-                        updateCorporateTable(role);
+                    final Service service = new Service();
+                    service.setIdService((Integer) model.getValueAt(row, 1));
+                    if (ServiceService.delete(service)) {
+                        updateServiceTable(role);
                     } else {
-                        Components.showGenericError(this);
+                        JOptionPane.showMessageDialog(null, "Erro ao deletar serviço.", "Erro", JOptionPane.ERROR_MESSAGE);
                     }
                 });
 
@@ -141,43 +134,42 @@ public class CorporateView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateCorporateTable(role);
+        updateServiceTable(role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
     }
 
-    private static void updateCorporateTable(Role role) {
+    private void updateServiceTable(Role role) {
         model.setRowCount(0);
 
-        if (!searchItens.isEmpty()) {
-            for (Corporate corporate : searchItens) {
+        if (!searchServices.isEmpty()) {
+            for (Service service : searchServices) {
                 model.addRow(new Object[]{
                         null,
-                        corporate.getIdCorporate(),
-                        corporate.getName(),
-                        Util.formatCnpj(corporate.getCnpj()),
-                        corporate.getUser().getName(),
-                        corporate.getActive(),
+                        service.getIdService(),
+                        service.getDescription(),
+                        "R$" + service.getPrice(),
+                        service.getBranch().getName(),
                 });
             }
-            searchItens.clear();
+            searchServices.clear();
         } else {
-            final List<Corporate> corporateList = CorporateRepository.findAll(Corporate.class, role);
-            if (Objects.nonNull(corporateList)) {
-                for (Corporate corporate : corporateList) {
+            final List<Service> serviceList = ServiceRepository.findAll(Service.class, role);
+            if (Objects.nonNull(serviceList)) {
+                for (Service service : serviceList) {
                     model.addRow(new Object[]{
                             null,
-                            corporate.getIdCorporate(),
-                            corporate.getName(),
-                            Util.formatCnpj(corporate.getCnpj()),
-                            corporate.getUser().getName(),
-                            corporate.getActive(),
+                            service.getIdService(),
+                            service.getDescription(),
+                            "R$" + service.getPrice(),
+                            service.getBranch().getName(),
+                            service.getActive(),
                     });
                 }
             } else {
-                JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);
+                JOptionPane.showMessageDialog(null, "Falha ao carregar dados do serviço.");
             }
         }
     }

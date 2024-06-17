@@ -5,32 +5,14 @@ import com.felipe.uniroom.entities.Item;
 import com.felipe.uniroom.repositories.InventoryRepository;
 import com.felipe.uniroom.repositories.ItemRepository;
 import com.felipe.uniroom.views.Components;
-import jakarta.validation.ConstraintViolation;
-import jakarta.validation.Validation;
-import jakarta.validation.Validator;
-import org.hibernate.validator.messageinterpolation.ParameterMessageInterpolator;
 
 import javax.swing.*;
 import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 public class ItemService {
-    private static final Validator validator = Validation.byDefaultProvider()
-            .configure()
-            .messageInterpolator(new ParameterMessageInterpolator())
-            .buildValidatorFactory()
-            .getValidator();
-
     private static String validateItem(Item item, boolean isUpdate) {
         final StringBuilder errorsSb = new StringBuilder();
-
-        final Set<ConstraintViolation<Item>> violations = validator.validate(item);
-        if (!violations.isEmpty()) {
-            for (ConstraintViolation<Item> violation : violations) {
-                errorsSb.append(violation.getMessage()).append("\n");
-            }
-        }
 
         if (isUpdate) {
             List<Item> existingItems = ItemRepository.findItemsByNameBranchAndNotId(item.getName(), item.getBranch().getIdBranch(), item.getIdItem());
@@ -44,7 +26,7 @@ public class ItemService {
             }
         }
 
-        if(item.getName().isBlank()){
+        if (item.getName().isBlank()) {
             errorsSb.append("Nome do item não pode ser vazio.\n");
         }
 
