@@ -45,10 +45,10 @@ public class Reservation {
     @Column(name = "final_date", nullable = false)
     private Date finalDate;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "reservation_guest",
-            joinColumns = @JoinColumn(name = "reservation_id"),
-            inverseJoinColumns = @JoinColumn(name = "guest_id"))
+            joinColumns = @JoinColumn(name = "id_reservation"),
+            inverseJoinColumns = @JoinColumn(name = "id_guest"))
     private List<Guest> guestList;
 
     public Integer getIdReservation() {

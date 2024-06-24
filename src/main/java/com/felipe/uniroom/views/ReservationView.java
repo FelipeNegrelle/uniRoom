@@ -112,15 +112,18 @@ public class ReservationView extends JFrame {
                 checkoutItem.setIcon(Constants.CORPORATE_ICON);
                 checkoutItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 checkoutItem.addActionListener(e -> {
-                    if (ReservationService.checkout(reservation)) {
-                        try {
-                            updateReservationTable(role);
-                        } catch (ParseException ex) {
-                            throw new RuntimeException(ex);
-                        }
-                    } else {
-                        Components.showGenericError(this);
-                    }
+                    Components.CheckoutDialog checkoutDialog = new Components.CheckoutDialog(this, reservation, role);
+                    checkoutDialog.setVisible(true);
+
+//                    if (ReservationService.checkout(reservation)) {
+//                        try {
+//                            updateReservationTable(role);
+//                        } catch (ParseException ex) {
+//                            throw new RuntimeException(ex);
+//                        }
+//                    } else {
+//                        Components.showGenericError(this);
+//                    }
                 });
 
                 final JMenuItem editItem = new JMenuItem(Constants.EDIT);
@@ -146,6 +149,8 @@ public class ReservationView extends JFrame {
                     }
                 });
 
+                popupMenu.add(checkinItem);
+                popupMenu.add(checkoutItem);
                 popupMenu.add(expenseItem);
                 if (!reservation.getStatus().equals("C") && !reservation.getStatus().equals("CO")) {
                     popupMenu.add(editItem);
