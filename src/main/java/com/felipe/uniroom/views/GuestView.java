@@ -156,7 +156,7 @@ public class GuestView extends JFrame {
                         null,
                         guest.getIdGuest(),
                         guest.getName(),
-                        guest.getCpf() != null ? Util.formatCpf(guest.getCpf()) : "-",
+                        guest.getCpf() != null ? Util.maskCpf(guest.getCpf()) : "-",
                         guest.getPassportNumber() != null ? guest.getPassportNumber() : "-",
                         guest.isHosted()
                 });
@@ -170,7 +170,7 @@ public class GuestView extends JFrame {
                             null,
                             guest.getIdGuest(),
                             guest.getName(),
-                            guest.getCpf() != null ? Util.formatCpf(guest.getCpf()) : "-",
+                            guest.getCpf() != null ? Util.maskCpf(guest.getCpf()) : "-",
                             guest.getPassportNumber() != null ? guest.getPassportNumber() : "-",
                             guest.isHosted()
                     });

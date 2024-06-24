@@ -207,7 +207,7 @@ public class ReservationForm extends JFrame {
         for (Guest guest : guestsTableList) {
             model.addRow(new Object[]{
                     guest.getName(),
-                    guest.getCpf() != null ? Util.formatCpf(guest.getCpf()) : "-",
+                    guest.getCpf() != null ? Util.maskCpf(guest.getCpf()) : "-",
                     guest.getPassportNumber() != null ? guest.getPassportNumber() : "-"
             });
         }
@@ -228,7 +228,7 @@ public class ReservationForm extends JFrame {
             guests.clear();
 
             for (Guest guest : guestList) {
-                guestCombo.addItem(guest.getName() + " - " + (Objects.isNull(guest.getCpf()) ? guest.getPassportNumber() : Util.formatCpf(guest.getCpf())));
+                guestCombo.addItem(guest.getName() + " - " + (Objects.isNull(guest.getCpf()) ? guest.getPassportNumber() : Util.maskCpf(guest.getCpf())));
                 guests.add(guest);
             }
         }

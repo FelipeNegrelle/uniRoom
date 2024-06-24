@@ -35,6 +35,14 @@ public class Util {
         }
     }
 
+    public static String maskCpf(String cpf) {
+        if (cpf == null || cpf.length() != 11) {
+            return "";
+        }
+        // Máscara para o CPF
+        return cpf.substring(0, 3) + "." + cpf.substring(3, 6) + ".***.**";
+    }
+
     public static NumberFormat getNumberFormatter(int decimalPlaces) {
         StringBuilder pattern = new StringBuilder("#,##0");
         if (decimalPlaces > 0) {
