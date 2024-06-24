@@ -9,6 +9,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -92,4 +93,33 @@ public class ReservationRepository extends DatabaseRepository {
             return false;
         }
     }
+
+    public static boolean isGuestAvailable(Integer guestId, Date checkInDate, Date checkOutDate, Integer reservationId) {
+        String query = "SELECT COUNT(r) FROM Reservation r JOIN r.guestList g WHERE g.idGuest = :guestId AND r.idReservation <> :reservationId AND r.status != 'C' AND r.status != 'CO' AND (:checkInDate < r.finalDate AND :checkOutDate > r.initialDate)";
+
+        try (EntityManager em = ConnectionManager.getEntityManager()) {
+            Long count = em.createQuery(query, Long.class)
+                    .setParameter("guestId", guestId)
+                    .setParameter("reservationId", reservationId != null ? reservationId : -1)
+                    .setParameter("checkInDate", checkInDate)
+                    .setParameter("checkOutDate", checkOutDate)
+                    .getSingleResult();
+
+            return count == 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static List<Guest> getConflictingGuests(List<Guest> guests, Date checkInDate, Date checkOutDate, Integer reservationId) {
+        List<Guest> conflictingGuests = new ArrayList<>();
+        for (Guest guest : guests) {
+            if (!isGuestAvailable(guest.getIdGuest(), checkInDate, checkOutDate, reservationId)) {
+                conflictingGuests.add(guest);
+            }
+        }
+        return conflictingGuests;
+    }
+
 }

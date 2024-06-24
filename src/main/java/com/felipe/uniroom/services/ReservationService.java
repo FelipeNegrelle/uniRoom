@@ -1,6 +1,7 @@
 package com.felipe.uniroom.services;
 
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.entities.Guest;
 import com.felipe.uniroom.entities.Reservation;
 import com.felipe.uniroom.repositories.ReservationRepository;
 import com.felipe.uniroom.views.Components;
@@ -60,6 +61,13 @@ public class ReservationService {
 
         if (!ReservationRepository.isRoomAvailable(reservation.getRoom().getIdRoom(), reservation.getInitialDate(), reservation.getFinalDate(), reservation.getIdReservation())) {
             errorsSb.append("O quarto selecionado está ocupado no período escolhido.\n");
+        }
+
+        List<Guest> conflictingGuests = ReservationRepository.getConflictingGuests(reservation.getGuestList(), reservation.getInitialDate(), reservation.getFinalDate(), reservation.getIdReservation());
+        if (!conflictingGuests.isEmpty()) {
+            for (Guest guest : conflictingGuests) {
+                errorsSb.append("O hóspede ").append(guest.getName()).append(" já possui uma reserva no período escolhido.\n");
+            }
         }
 
 
