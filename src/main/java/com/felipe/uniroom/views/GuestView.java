@@ -78,7 +78,7 @@ public class GuestView extends JFrame {
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "CPF", "Passaporte"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "CPF", "Passaporte", "Hospedado"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -88,6 +88,10 @@ public class GuestView extends JFrame {
         table.setDefaultEditor(Object.class, null);
         table.getTableHeader().setReorderingAllowed(false);
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
+
+        final Components.IconCellRenderer iconCellRenderer = new Components.IconCellRenderer();
+        final TableColumn hostedColumn = table.getColumnModel().getColumn(5);
+        hostedColumn.setCellRenderer(iconCellRenderer);
 
         final Components.OptionsCellRenderer optionsCellRenderer = new Components.OptionsCellRenderer();
         table.getColumnModel().getColumn(0).setCellRenderer(optionsCellRenderer);
@@ -155,6 +159,7 @@ public class GuestView extends JFrame {
                         guest.getName(),
                         guest.getCpf() != null ? Util.formatCpf(guest.getCpf()) : "-",
                         guest.getPassportNumber() != null ? guest.getPassportNumber() : "-",
+                        guest.isHosted()
                 });
             }
             searchItens.clear();
@@ -168,6 +173,7 @@ public class GuestView extends JFrame {
                             guest.getName(),
                             guest.getCpf() != null ? Util.formatCpf(guest.getCpf()) : "-",
                             guest.getPassportNumber() != null ? guest.getPassportNumber() : "-",
+                            guest.isHosted()
                     });
                 }
             } else {
