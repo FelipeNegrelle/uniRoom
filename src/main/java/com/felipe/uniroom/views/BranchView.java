@@ -163,7 +163,7 @@ public class BranchView extends JFrame {
                         branch.getIdBranch(),
                         branch.getName(),
                         Util.formatCnpj(branch.getCnpj()),
-                        branch.getCorporate().getName(),
+                        Objects.nonNull(branch.getCorporate()) ? branch.getCorporate().getName() : "-",
                         branch.getUser().getName(),
                         branch.getActive(),
                 });
@@ -178,7 +178,7 @@ public class BranchView extends JFrame {
                             branch.getIdBranch(),
                             branch.getName(),
                             Util.formatCnpj(branch.getCnpj()),
-                            branch.getCorporate().getName(),
+                            Objects.nonNull(branch.getCorporate()) ? branch.getCorporate().getName() : "-",
                             branch.getUser().getName(),
                             branch.getActive(),
                     });

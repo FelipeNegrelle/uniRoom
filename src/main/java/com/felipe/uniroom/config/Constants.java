@@ -38,7 +38,7 @@ public class Constants {
     public static final String BACK = "Voltar";
     public static final String RESERVATIONS_HISTORY = "Histórico de reservas";
     public static final String CORPORATE = "Matriz";
-    public static final String BRANCH = "Filial";
+    public static final String BRANCH = "Estabelecimento";
     public static final String INVENTORY = "Inventário";
     public static final String ITEM = "Item";
     public static final String ITEMS = "Itens";
@@ -60,6 +60,11 @@ public class Constants {
     public static final String SERVICE = "Serviço";
     public static final String EXPENSE = "Despesa";
     public static final String TYPE = "Tipo";
+    public static final String CANCEL = "Cancelar";
+    public static final String CHECKOUT = "Check-out";
+    public static final String CHECKIN = "Check-in";
+    public static final String STATUS = "Situação";
+    public static final String TOTAL = "Total";
 
     //Colors
     public static final Color WHITE = new Color(0xFFFFFF);

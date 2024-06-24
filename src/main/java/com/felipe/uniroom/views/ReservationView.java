@@ -13,9 +13,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -86,39 +84,62 @@ public class ReservationView extends JFrame {
             if (column == 0) {
                 final JPopupMenu popupMenu = new JPopupMenu();
 
+                final Reservation reservation = ReservationRepository.findById(Reservation.class, model.getValueAt(row, 1));
+
                 final JMenuItem expenseItem = new JMenuItem(Constants.EXPENSE);
                 expenseItem.setIcon(Constants.EXPENSE_ICON);
                 expenseItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 expenseItem.addActionListener(e -> {
-                    final Reservation reservation = ReservationRepository.findById(Reservation.class, model.getValueAt(row, 1));
-
                     new ExpenseView(role, reservation);
                     dispose();
+                });
+
+                final JMenuItem checkinItem = new JMenuItem(Constants.CHECKIN);
+                checkinItem.setIcon(Constants.CORPORATE_ICON);
+                checkinItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
+                checkinItem.addActionListener(e -> {
+                    if (ReservationService.checkin(reservation)) {
+                        try {
+                            updateReservationTable(role);
+                        } catch (ParseException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    } else {
+                        Components.showGenericError(this);
+                    }
+                });
+
+                final JMenuItem checkoutItem = new JMenuItem(Constants.CHECKOUT);
+                checkoutItem.setIcon(Constants.CORPORATE_ICON);
+                checkoutItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
+                checkoutItem.addActionListener(e -> {
+                    if (ReservationService.checkout(reservation)) {
+                        try {
+                            updateReservationTable(role);
+                        } catch (ParseException ex) {
+                            throw new RuntimeException(ex);
+                        }
+                    } else {
+                        Components.showGenericError(this);
+                    }
                 });
 
                 final JMenuItem editItem = new JMenuItem(Constants.EDIT);
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Reservation reservation = ReservationRepository.findById(Reservation.class, model.getValueAt(row, 1));
-
                     new ReservationForm(role, reservation);
                     dispose();
                 });
 
-                final JMenuItem deleteItem = new JMenuItem(Constants.DELETE);
+                final JMenuItem deleteItem = new JMenuItem(Constants.CANCEL);
                 deleteItem.setIcon(Constants.DELETE_ICON);
                 deleteItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 deleteItem.addActionListener(e -> {
-                    final Reservation reservation = new Reservation();
-
-                    reservation.setIdReservation((int) model.getValueAt(row, 1));
-
                     if (ReservationService.cancel(reservation)) {
                         try {
                             updateReservationTable(role);
-                        } catch (
-                                ParseException ex) {
+                        } catch (ParseException ex) {
                             throw new RuntimeException(ex);
                         }
                     } else {
@@ -127,8 +148,10 @@ public class ReservationView extends JFrame {
                 });
 
                 popupMenu.add(expenseItem);
-                popupMenu.add(editItem);
-                popupMenu.add(deleteItem);
+                if (!reservation.getStatus().equals("C") && !reservation.getStatus().equals("CO")) {
+                    popupMenu.add(editItem);
+                    popupMenu.add(deleteItem);
+                }
 
                 popupMenu.show(tableEvt, evt.getX(), evt.getY());
             }
@@ -142,8 +165,7 @@ public class ReservationView extends JFrame {
 
         try {
             updateReservationTable(role);
-        } catch (
-                ParseException ex) {
+        } catch (ParseException ex) {
             throw new RuntimeException(ex);
         }
 
@@ -157,36 +179,14 @@ public class ReservationView extends JFrame {
 
         if (!searchItens.isEmpty()) {
             for (Reservation reservation : searchItens) {
-                model.addRow(new Object[]{
-                        null,
-                        reservation.getIdReservation(),
-                        reservation.getRoom().getRoomNumber(),
-                        reservation.getUser().getName(),
-                        reservation.getBranch().getName(),
-                        formatNullableDate(reservation.getInitialDate(), "dd/MM/yyyy"),
-                        formatNullableDate(reservation.getFinalDate(), "dd/MM/yyyy"),
-                        formatNullableDate(reservation.getDateTimeCheckIn(), "dd/MM/yyyy HH:mm"),
-                        formatNullableDate(reservation.getDateTimeCheckOut(), "dd/MM/yyyy HH:mm"),
-                        Util.convertStatusReservation(reservation.getStatus())
-                });
+                model.addRow(new Object[]{null, reservation.getIdReservation(), reservation.getRoom().getRoomNumber(), reservation.getUser().getName(), reservation.getBranch().getName(), formatNullableDate(reservation.getInitialDate(), "dd/MM/yyyy"), formatNullableDate(reservation.getFinalDate(), "dd/MM/yyyy"), formatNullableDate(reservation.getDateTimeCheckIn(), "dd/MM/yyyy HH:mm"), formatNullableDate(reservation.getDateTimeCheckOut(), "dd/MM/yyyy HH:mm"), Util.convertStatusReservation(reservation.getStatus())});
             }
             searchItens.clear();
         } else {
             final List<Reservation> reservationList = ReservationRepository.findAll(Reservation.class, role);
             if (Objects.nonNull(reservationList)) {
                 for (Reservation reservation : reservationList) {
-                    model.addRow(new Object[]{
-                            null,
-                            reservation.getIdReservation(),
-                            reservation.getRoom().getRoomNumber(),
-                            reservation.getUser().getName(),
-                            reservation.getBranch().getName(),
-                            formatNullableDate(reservation.getInitialDate(), "dd/MM/yyyy"),
-                            formatNullableDate(reservation.getFinalDate(), "dd/MM/yyyy"),
-                            formatNullableDate(reservation.getDateTimeCheckIn(), "dd/MM/yyyy HH:mm"),
-                            formatNullableDate(reservation.getDateTimeCheckOut(), "dd/MM/yyyy HH:mm"),
-                            Util.convertStatusReservation(reservation.getStatus())
-                    });
+                    model.addRow(new Object[]{null, reservation.getIdReservation(), reservation.getRoom().getRoomNumber(), reservation.getUser().getName(), reservation.getBranch().getName(), formatNullableDate(reservation.getInitialDate(), "dd/MM/yyyy"), formatNullableDate(reservation.getFinalDate(), "dd/MM/yyyy"), formatNullableDate(reservation.getDateTimeCheckIn(), "dd/MM/yyyy HH:mm"), formatNullableDate(reservation.getDateTimeCheckOut(), "dd/MM/yyyy HH:mm"), Util.convertStatusReservation(reservation.getStatus())});
                 }
             } else {
                 JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);

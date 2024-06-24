@@ -17,7 +17,7 @@ public class Branch {
     private String name;
 
     @OneToOne()
-    @JoinColumn(name = "id_corporate", nullable = false)
+    @JoinColumn(name = "id_corporate")
     private Corporate corporate;
 
     @OneToOne()
@@ -93,16 +93,23 @@ public class Branch {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
 
         Branch branch = (Branch) o;
 
-        if (!Objects.equals(idBranch, branch.idBranch)) return false;
-        if (!Objects.equals(name, branch.name)) return false;
-        if (!Objects.equals(corporate, branch.corporate)) return false;
-        if (!Objects.equals(user, branch.user)) return false;
-        if (!Objects.equals(cnpj, branch.cnpj)) return false;
+        if (!Objects.equals(idBranch, branch.idBranch))
+            return false;
+        if (!Objects.equals(name, branch.name))
+            return false;
+        if (!Objects.equals(corporate, branch.corporate))
+            return false;
+        if (!Objects.equals(user, branch.user))
+            return false;
+        if (!Objects.equals(cnpj, branch.cnpj))
+            return false;
         return Objects.equals(active, branch.active);
     }
 

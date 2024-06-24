@@ -52,9 +52,9 @@ public class BranchService {
             errorsSb.append("Nome da filial deve ter no máximo 50 caracteres!\n");
         }
 
-        if (Objects.isNull(branch.getCorporate())) {
-            errorsSb.append("Matriz não pode ser vazia!\n");
-        }
+//        if (Objects.isNull(branch.getCorporate())) {
+//            errorsSb.append("Matriz não pode ser vazia!\n");
+//        }
 
         if (Objects.isNull(branch.getUser())) {
             errorsSb.append("Usuário não pode ser vazio!\n");

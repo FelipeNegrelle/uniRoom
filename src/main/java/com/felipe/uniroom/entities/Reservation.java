@@ -23,7 +23,7 @@ public class Reservation {
     private User user;
 
     @Column(nullable = false, length = 2)
-    private String status = "CI";
+    private String status = "P";
 
     @ManyToOne
     @JoinColumn(name = "id_branch", nullable = false)

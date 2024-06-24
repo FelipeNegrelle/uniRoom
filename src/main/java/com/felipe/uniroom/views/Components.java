@@ -1,6 +1,9 @@
 package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
+import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.config.Util;
+import com.felipe.uniroom.entities.Reservation;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -15,118 +18,61 @@ import java.util.List;
 import java.util.Objects;
 
 public class Components {
-    // public static class RegistrationDialog extends JDialog {
-    // public RegistrationDialog(JFrame parent) {
-    // super(parent, Constants.REGISTER, true);
-    // setSize(800, 600);
-    // setLocationRelativeTo(parent);
+    public static class CheckoutDialog extends JDialog {
+        CheckoutDialog(JFrame parent, Reservation reservation, Role role) {
+            super(parent, Constants.CHECKOUT);
 
-    // final JPanel panel = new JPanel(
-    // new MigLayout("filly", "[align right][grow]", "[]10[]10[]10[]10[]10[]10[]"));
+            setSize(800, 600);
+            setLocationRelativeTo(parent);
 
-    // final JLabel nameLabel = getLabel(Constants.NAME, null, Font.BOLD, null,
-    // null);
+            final JLabel titleLabel = new JLabel(Constants.CHECKOUT);
+            titleLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 40));
+            titleLabel.setForeground(Constants.BLUE);
 
-    // final JTextField nameField = new JTextField(30);
-    // nameField.setFont(Constants.FONT);
-    // nameField.setPreferredSize(Constants.TEXT_FIELD_SIZE);
-    // panel.add(nameLabel, "alignx left");
-    // panel.add(nameField, "growx, wrap");
+            final JLabel roomLabel = new JLabel(Constants.ROOM + ": " + reservation.getRoom().getRoomNumber());
+            roomLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
-    // final JLabel numberLabel = getLabel(Constants.NUMBER, null, Font.BOLD, null,
-    // null);
+            final JLabel branchLabel = new JLabel(Constants.BRANCH + ": " + reservation.getBranch().getName());
+            branchLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
-    // final JTextField numberField = new JTextField(30);
-    // numberField.setFont(new Font("Sans", Font.PLAIN, 20));
-    // numberField.setPreferredSize(Constants.TEXT_FIELD_SIZE);
-    // panel.add(numberLabel, "alignx left");
-    // panel.add(numberField, "growx, wrap");
+            final JLabel checkInLabel = new JLabel(Constants.CHECKIN + ": " + Util.formatNullableDate(reservation.getDateTimeCheckIn(), "dd/MM/yyyy HH:mm"));
+            checkInLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
-    // final JLabel positionLabel = new GenericLabel(POSITION, Font.BOLD)
-    // final JComboBox<String> positionField = new JComboBox<>();
-    // positionField.addItem("Atacante");
-    // positionField.addItem("Meio-campo");
-    // positionField.addItem("Lateral");
-    // positionField.addItem("Zagueiro");
-    // positionField.addItem("Goleiro");
-    // positionField.setPreferredSize(new Dimension(300, 10));
-    // positionField.setFont(new Font("Sans", Font.PLAIN, 20));
-    // panel.add(positionLabel, "alignx left");
-    // panel.add(positionField, "growx, wrap");
+            final JLabel checkOutLabel = new JLabel(Constants.CHECKOUT + ": " + Util.formatNullableDate(reservation.getDateTimeCheckOut(), "dd/MM/yyyy HH:mm"));
+            checkOutLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
-    // final GenericLabel usernameLabel = new GenericLabel(USER, Font.BOLD);
-    // JTextField usernameField = new JTextField(30);
-    // usernameField.setFont(new Font("Sans", Font.PLAIN, 20));
-    // usernameField.setPreferredSize(new Dimension(300, 10));
-    // panel.add(usernameLabel, "alignx left");
-    // panel.add(usernameField, "growx, wrap");
+            final JLabel guestLabel = new JLabel(Constants.GUEST + ": " + reservation.getGuestList().get(0).getName());
+            guestLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
-    // final GenericLabel passwordLabel = new GenericLabel(PASSWORD, Font.BOLD);
-    // JPasswordField passwordField = new JPasswordField(30);
-    // passwordField.setFont(new Font("Sans", Font.PLAIN, 20));
-    // passwordField.setPreferredSize(new Dimension(300, 10));
-    // panel.add(passwordLabel, "alignx left");
-    // panel.add(passwordField, "growx, wrap");
+            final JLabel statusLabel = new JLabel(Constants.STATUS + ": " + reservation.getStatus());
+            statusLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
-    // final GenericLabel questionLabel = new GenericLabel(SECRET_PHRASE,
-    // Font.BOLD);
-    // final JComboBox<String> questionField = new JComboBox<>();
-    // questionField.addItem("Qual seu jogador de futebol favorito?");
-    // questionField.addItem("Qual seu time de futebol favorito?");
-    // questionField.addItem("Qual posição você joga?");
-    // questionField.setPreferredSize(new Dimension(300, 10));
-    // questionField.setFont(new Font("Sans", Font.PLAIN, 20));
-    // panel.add(questionLabel, "alignx left");
-    // panel.add(questionField, "growx, wrap");
+            final JLabel totalLabel = new JLabel(Constants.TOTAL + ": " + 0);
+            totalLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
-    // final GenericLabel answerLabel = new GenericLabel(SECRET_ANSWER, Font.BOLD);
-    // JTextField answerField = new JTextField(30);
-    // answerField.setFont(new Font("Sans", Font.PLAIN, 20));
-    // answerField.setPreferredSize(new Dimension(300, 10));
-    // panel.add(answerLabel, "alignx left");
-    // panel.add(answerField, "growx, wrap");
+            final JButton checkoutButton = new JButton(Constants.CHECKOUT);
+            checkoutButton.setFont(Constants.FONT.deriveFont(Font.BOLD));
 
-    // JButton registerButton = new JButton(REGISTER);
-    // registerButton.setFont(new Font("Sans", Font.BOLD, 20));
-    // registerButton.setPreferredSize(new Dimension(300, 40));
-    // registerButton.setBackground(GREEN);
-    // registerButton.setForeground(Color.white);
-    // panel.add(registerButton, "span 2, align center");
+            final JButton backButton = new JButton(Constants.BACK);
+            backButton.setFont(Constants.FONT.deriveFont(Font.BOLD));
 
-    // registerButton.addActionListener(e -> {
-    // if (Util.isNumber(numberField.getText())
-    // && Objects.nonNull(positionField.getSelectedItem())
-    // && Objects.nonNull(usernameField.getText())
-    // && Objects.nonNull(passwordField.getPassword())
-    // && Objects.nonNull(questionField.getSelectedItem())
-    // && Objects.nonNull(answerField.getText())) {
-    // boolean registrationSuccess = Auth.register(
-    // nameField.getText(),
-    // numberField.getText(),
-    // positionField.getSelectedItem().toString(),
-    // usernameField.getText(),
-    // Arrays.toString(passwordField.getPassword()),
-    // questionField.getSelectedItem().toString(),
-    // answerField.getText());
+            final JPanel panel = new JPanel(new MigLayout("fill, wrap 1", "[grow]", ""));
+            panel.setBackground(Constants.WHITE);
 
-    // if (registrationSuccess) {
-    // JOptionPane.showMessageDialog(RegistrationDialog.this, SUCCESSFUL_REGISTER);
-    // } else {
-    // JOptionPane.showMessageDialog(RegistrationDialog.this, FAILED_REGISTER,
-    // Constants.ERROR,
-    // JOptionPane.ERROR_MESSAGE);
-    // }
-    // } else {
-    // System.out.println(numberField.getText());
-    // JOptionPane.showMessageDialog(RegistrationDialog.this, FAILED_REGISTER,
-    // Constants.ERROR,
-    // JOptionPane.ERROR_MESSAGE);
-    // }
-    // });
+            panel.add(titleLabel, "align center");
+            panel.add(roomLabel, "align left");
+            panel.add(branchLabel, "align left");
+            panel.add(checkInLabel, "align left");
+            panel.add(checkOutLabel, "align left");
+            panel.add(guestLabel, "align left");
+            panel.add(statusLabel, "align left");
+            panel.add(totalLabel, "align left");
+            panel.add(checkoutButton, "align center");
+            panel.add(backButton, "align center");
 
-    // add(panel);
-    // }
-    // }
+            add(panel);
+        }
+    }
 
     public static class ForgetPasswordDialog extends JDialog {
         public ForgetPasswordDialog(JFrame parent, String user) {

@@ -1,18 +1,14 @@
 package com.felipe.uniroom.services;
 
-import com.felipe.uniroom.entities.Guest;
 import com.felipe.uniroom.entities.Reservation;
-import com.felipe.uniroom.repositories.GuestRepository;
 import com.felipe.uniroom.repositories.ReservationRepository;
 import com.felipe.uniroom.views.Components;
-import org.hibernate.Hibernate;
 
 import javax.swing.*;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.List;
 import java.util.Objects;
 
 public class ReservationService {
@@ -60,11 +56,7 @@ public class ReservationService {
 //        }
         //essa verificacao eh para ver se a quantidade de hospede respeita a capacidade do quarto, mas quando vou realizar o checkin ele dar erro (verificar ao finalizar projeto)
 
-        if (!ReservationRepository.isRoomAvailable(
-                reservation.getRoom().getIdRoom(),
-                reservation.getInitialDate(),
-                reservation.getFinalDate(),
-                reservation.getIdReservation())) {
+        if (!ReservationRepository.isRoomAvailable(reservation.getRoom().getIdRoom(), reservation.getInitialDate(), reservation.getFinalDate(), reservation.getIdReservation())) {
             errorsSb.append("O quarto selecionado está ocupado no período escolhido.\n");
         }
 
@@ -142,6 +134,52 @@ public class ReservationService {
                 result.setStatus("C");
 
                 return ReservationRepository.cancel(result);
+            } else {
+                JOptionPane.showMessageDialog(null, "Reserva não encontrada.");
+
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Components.showGenericError(null);
+
+            return false;
+        }
+    }
+
+    public static Boolean checkin(Reservation reservation) {
+        try {
+            final Reservation result = ReservationRepository.findById(Reservation.class, reservation.getIdReservation());
+
+            if (Objects.nonNull(result)) {
+                result.setStatus("CI");
+                result.setDateTimeCheckIn(new Date());
+
+                return ReservationService.update(result);
+            } else {
+                JOptionPane.showMessageDialog(null, "Reserva não encontrada.");
+
+                return false;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            Components.showGenericError(null);
+
+            return false;
+        }
+    }
+
+    public static Boolean checkout(Reservation reservation) {
+        try {
+            final Reservation result = ReservationRepository.findById(Reservation.class, reservation.getIdReservation());
+
+            if (Objects.nonNull(result)) {
+                result.setStatus("CO");
+                result.setDateTimeCheckOut(new Date());
+
+                return ReservationService.update(result);
             } else {
                 JOptionPane.showMessageDialog(null, "Reserva não encontrada.");
 

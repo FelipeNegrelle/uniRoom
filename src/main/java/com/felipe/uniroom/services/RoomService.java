@@ -62,7 +62,7 @@ public class RoomService {
 
             Components.showGenericError(null);
 
-            return null;
+            return false;
         }
     }
 

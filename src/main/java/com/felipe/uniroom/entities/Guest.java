@@ -18,13 +18,13 @@ public class Guest {
     private String name;
 
     @CPF
-    @Column(columnDefinition = "char(11)", nullable = true, unique = true)
+    @Column(columnDefinition = "char(11)")
     private String cpf;
 
-    @Column(nullable = false)
+    @Column(name = "is_foreigner", nullable = false)
     private Boolean isForeigner;
 
-    @Column(length = 9, unique = true, nullable = true)
+    @Column(name = "passport_number", length = 9)
     private String passportNumber;
 
     @OneToOne
@@ -104,8 +104,10 @@ public class Guest {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o)
+            return true;
+        if (o == null || getClass() != o.getClass())
+            return false;
         Guest guest = (Guest) o;
         return Objects.equals(idGuest, guest.idGuest) &&
                 Objects.equals(name, guest.name) &&

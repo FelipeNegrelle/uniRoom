@@ -131,7 +131,10 @@ public class BranchForm extends JFrame {
 
         if (Objects.nonNull(corporateList) && !corporateList.isEmpty()) {
             corporateCombo.removeAllItems();
+            corporates.clear();
 
+            corporateCombo.addItem("-");
+            corporates.add(null);
             for (Corporate corporate : corporateList) {
                 corporateCombo.addItem(corporate.getName());
                 corporates.add(corporate);

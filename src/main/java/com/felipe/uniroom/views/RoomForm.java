@@ -97,14 +97,21 @@ public class RoomForm extends JFrame {
         saveButton.addActionListener(e -> {
             Room room = new Room();
             room.setIdRoom(Objects.nonNull(entity) ? entity.getIdRoom() : null);
-            String numberStr = numberField.getText().trim();
-            if (!numberStr.isEmpty()) {
-                room.setRoomNumber(Integer.parseInt(numberStr));
-            } else {
-                room.setRoomNumber(null);
+            try {
+                final int roomNumber = Integer.parseInt(numberField.getText());
+                if (roomNumber <= 0) {
+                    JOptionPane.showMessageDialog(this, "Número do quarto inválido", Constants.WARN, JOptionPane.PLAIN_MESSAGE);
+                    return;
+                } else {
+                    room.setRoomNumber(roomNumber);
+                }
+            } catch (
+                    NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this, "Número do quarto inválido", Constants.WARN, JOptionPane.PLAIN_MESSAGE);
+                return;
             }
-            room.setBranch(branches.get(branchCombo.getSelectedIndex()));
-            room.setRoomType(roomTypes.get(roomTypeCombo.getSelectedIndex()));
+            room.setBranch(branchCombo.getSelectedIndex() != -1 ? branches.get(branchCombo.getSelectedIndex()) : null);
+            room.setRoomType(roomTypeCombo.getSelectedIndex() != -1 ? roomTypes.get(roomTypeCombo.getSelectedIndex()) : null);
             room.setActive(true);
 
             boolean result = Objects.nonNull(entity) ? RoomService.update(room) : RoomService.save(room);
@@ -130,8 +137,6 @@ public class RoomForm extends JFrame {
         mainPanel.add(cancelButton, "align center, wrap");
 
         add(mainPanel, BorderLayout.CENTER);
-
-        pack();
         setLocationRelativeTo(null);
         setVisible(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
@@ -155,7 +160,7 @@ public class RoomForm extends JFrame {
 
     private void populateRoomTypeCombo(JComboBox<String> roomTypeCombo, List<Branch> branches, Room entity) {
         final List<Integer> branchIds = new ArrayList<>();
-        
+
         for (Branch b : branches) {
             branchIds.add(b.getIdBranch());
         }

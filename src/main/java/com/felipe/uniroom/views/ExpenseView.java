@@ -48,7 +48,7 @@ public class ExpenseView extends JFrame {
             new ReservationView(role);
             dispose();
         });
-        searchPanel.add(backButton, "align left ");
+        searchPanel.add(backButton, "align left");
 
         final JButton newExpense = new JButton(Constants.NEW);
         newExpense.setBackground(Constants.WHITE);
@@ -58,11 +58,15 @@ public class ExpenseView extends JFrame {
             new ExpenseForm(role, reservation, null);
             dispose();
         });
-        if (reservation.getStatus().equals("C")) {
-            newExpense.setEnabled(false);
+        if (!reservation.getStatus().equals("C") && !reservation.getStatus().equals("CO")) {
+//            newExpense.setEnabled(false);
+            searchPanel.add(newExpense, "align left");
         }
-        searchPanel.add(newExpense, "align left");
 
+        final JLabel searchLabel = new JLabel(Constants.SEARCH + ":");
+        searchLabel.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        searchLabel.setForeground(Constants.WHITE);
+        searchPanel.add(searchLabel, "align right");
         final JTextField searchField = new JTextField(20);
         searchField.setFont(Constants.FONT.deriveFont(Font.BOLD));
         searchField.setPreferredSize(new Dimension(200, 40));
@@ -73,7 +77,7 @@ public class ExpenseView extends JFrame {
                 updateExpenseTable(role);
             }
         });
-        searchPanel.add(searchField, "align left");
+        searchPanel.add(searchField, "align right");
 
         panel.add(searchPanel, "growx");
 
@@ -123,7 +127,7 @@ public class ExpenseView extends JFrame {
                     }
                 });
 
-                if (!reservation.getStatus().equals("C")) {
+                if (!reservation.getStatus().equals("C") && !reservation.getStatus().equals("CO")) {
                     popupMenu.add(editItem);
                     popupMenu.add(deleteItem);
 
@@ -161,9 +165,9 @@ public class ExpenseView extends JFrame {
             }
             searchItens.clear();
         } else {
-            final List<Expense> ExpenseList = ExpenseRepository.findAll(Expense.class, role);
-            if (Objects.nonNull(ExpenseList)) {
-                for (Expense expense : ExpenseList) {
+            final List<Expense> expenseList = ExpenseRepository.findAll(Expense.class, role);
+            if (Objects.nonNull(expenseList)) {
+                for (Expense expense : expenseList) {
                     model.addRow(new Object[]{
                             null,
                             expense.getIdExpense(),

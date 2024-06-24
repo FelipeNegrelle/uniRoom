@@ -1,6 +1,7 @@
 package com.felipe.uniroom.services;
 
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Guest;
 import com.felipe.uniroom.repositories.GuestRepository;
 import com.felipe.uniroom.views.Components;
@@ -21,23 +22,13 @@ public class GuestService {
             .buildValidatorFactory()
             .getValidator();
 
-    private static String validateGuest(Guest guest, boolean isUpdate) {
+    private static String validateGuest(Guest guest, boolean isUpdate, Role role) {
         final StringBuilder errorsSb = new StringBuilder();
 
         final Set<ConstraintViolation<Guest>> violations = validator.validate(guest);
 
         if (!violations.isEmpty()) {
             violations.forEach(violation -> errorsSb.append(violation.getMessage().equals("número do registro de contribuinte individual brasileiro (CPF) inválido") ? "CPF Inválido!" : violation.getMessage()).append("\n"));
-        }
-
-        if (isUpdate) {
-            if (GuestRepository.hasDuplicateCpf(guest.getCpf(), guest.getIdGuest())) {
-                errorsSb.append("CPF já cadastrado!\n");
-            }
-        } else {
-            if (Objects.nonNull(GuestRepository.findByCpf(guest.getCpf()))) {
-                errorsSb.append("CPF já cadastrado!\n");
-            }
         }
 
         if (guest.getName().isBlank()) {
@@ -48,18 +39,7 @@ public class GuestService {
             errorsSb.append("Nome do hóspede deve ter no máximo 50 caracteres!\n");
         }
 
-        if (isUpdate) {
-            if (GuestRepository.hasDuplicateName(guest.getName(), guest.getIdGuest())) {
-                errorsSb.append("Nome já cadastrado!\n");
-            }
-        } else {
-            if (Objects.nonNull(GuestRepository.findByName(guest.getName()))) {
-                errorsSb.append("Nome já cadastrado!\n");
-            }
-        }
-
         if(guest.getIsForeigner()) {
-
             if (guest.getPassportNumber().length() > 9) {
                 errorsSb.append("Passaporte do hóspede deve ter no máximo 9 caracteres!\n");
             }
@@ -72,18 +52,28 @@ public class GuestService {
                     errorsSb.append("Passaporte já cadastrado!\n");
                 }
             }
+        } else {
+            if (isUpdate) {
+                if (GuestRepository.hasDuplicateCpf(guest.getCpf(), guest.getIdGuest(), role)) {
+                    errorsSb.append("CPF já cadastrado!\n");
+                }
+            } else {
+                if (Objects.nonNull(GuestRepository.findByCpf(guest.getCpf(), role))) {
+                    errorsSb.append("CPF já cadastrado!\n");
+                }
+            }
         }
 
         return errorsSb.toString();
     }
 
-    public static Boolean save(Guest guest) {
+    public static Boolean save(Guest guest, Role role) {
         try {
             if (Objects.nonNull(guest.getCpf())) {
                 guest.setCpf(guest.getCpf().replaceAll("[^0-9]", ""));
             }
 
-            final String validations = validateGuest(guest, false);
+            final String validations = validateGuest(guest, false, role);
             if (!validations.isEmpty()) {
                 JOptionPane.showMessageDialog(null, validations);
                 return false;
@@ -97,7 +87,7 @@ public class GuestService {
         }
     }
 
-    public static Boolean update(Guest guest) {
+    public static Boolean update(Guest guest, Role role) {
         try {
             final Guest result = GuestRepository.findById(Guest.class, guest.getIdGuest());
 
@@ -106,7 +96,7 @@ public class GuestService {
                     guest.setCpf(guest.getCpf().replaceAll("[^0-9]", ""));
                 }
 
-                final String validations = validateGuest(guest, true);
+                final String validations = validateGuest(guest, true, role);
 
                 if (!validations.isEmpty()) {
                     JOptionPane.showMessageDialog(null, validations);

@@ -126,7 +126,7 @@ public class GuestForm extends JFrame {
             }
             guest.setBranch(branches.get(branchCombo.getSelectedIndex()));
 
-            final Boolean result = Objects.nonNull(entity) ? GuestService.update(guest) : GuestService.save(guest);
+            final Boolean result = Objects.nonNull(entity) ? GuestService.update(guest, role) : GuestService.save(guest, role);
 
             if (Objects.nonNull(result) && result) {
                 JOptionPane.showMessageDialog(this, Constants.SUCCESSFUL_REGISTER, Constants.SUCCESS, JOptionPane.PLAIN_MESSAGE);
