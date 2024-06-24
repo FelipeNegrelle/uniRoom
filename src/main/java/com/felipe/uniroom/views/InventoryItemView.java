@@ -7,8 +7,8 @@ import com.felipe.uniroom.entities.InventoryItem;
 import com.felipe.uniroom.entities.InventoryItemId;
 import com.felipe.uniroom.entities.Item;
 import com.felipe.uniroom.repositories.InventoryItemRepository;
-import com.felipe.uniroom.repositories.InventoryRepository;
 import com.felipe.uniroom.services.InventoryItemService;
+import com.felipe.uniroom.services.InventoryService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -31,7 +31,7 @@ InventoryItemView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
 
-        final List<Item> l = InventoryRepository.getItemsFromInventory(inventory);
+        final List<Item> l = (List<Item>) InventoryService.getItemsFromInventory(inventory);
         if (Objects.nonNull(l)) {
             items.addAll(l);
         }
@@ -170,7 +170,7 @@ InventoryItemView extends JFrame {
             }
             searchItems.clear();
         } else {
-            final List<InventoryItem> inventoryItemList = InventoryItemRepository.findAll(InventoryItem.class, role);
+            final List<InventoryItem> inventoryItemList = InventoryItemService.findAll(role);
             if (Objects.nonNull(inventoryItemList)) {
                 for (InventoryItem inventoryItem : inventoryItemList) {
                     final Item item = findItemById(inventoryItem.getId().getIdItem());

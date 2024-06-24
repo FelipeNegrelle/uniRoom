@@ -4,7 +4,6 @@ import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Corporate;
-import com.felipe.uniroom.repositories.CorporateRepository;
 import com.felipe.uniroom.services.CorporateService;
 import net.miginfocom.swing.MigLayout;
 
@@ -107,7 +106,7 @@ public class CorporateView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Corporate corporate = CorporateRepository.findById(Corporate.class, (int) model.getValueAt(row, 1));
+                    final Corporate corporate = CorporateService.findById((int) model.getValueAt(row, 1));
 
                     new CorporateForm(role, corporate);
                     dispose();
@@ -164,7 +163,7 @@ public class CorporateView extends JFrame {
             }
             searchItens.clear();
         } else {
-            final List<Corporate> corporateList = CorporateRepository.findAll(Corporate.class, role);
+            final List<Corporate> corporateList = CorporateService.findAll(role);
             if (Objects.nonNull(corporateList)) {
                 for (Corporate corporate : corporateList) {
                     model.addRow(new Object[]{

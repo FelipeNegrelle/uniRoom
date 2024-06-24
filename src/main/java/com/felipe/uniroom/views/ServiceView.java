@@ -103,7 +103,7 @@ public class ServiceView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Service service = ServiceRepository.findById(Service.class, model.getValueAt(row, 1));
+                    final Service service = ServiceService.findById((Integer) model.getValueAt(row, 1));
                     new ServiceForm(role, service);
                     dispose();
                 });
@@ -156,7 +156,7 @@ public class ServiceView extends JFrame {
             }
             searchServices.clear();
         } else {
-            final List<Service> serviceList = ServiceRepository.findAll(Service.class, role);
+            final List<Service> serviceList = ServiceService.findAll(role);
             if (Objects.nonNull(serviceList)) {
                 for (Service service : serviceList) {
                     model.addRow(new Object[]{

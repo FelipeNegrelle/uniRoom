@@ -60,6 +60,14 @@ public class CorporateService {
         return errorsSb.toString();
     }
 
+    public static List<Corporate> findAll(Role role){
+        return CorporateRepository.findAll(Corporate.class, role);
+    }
+
+    public static Corporate findById(int id){
+        return CorporateRepository.findById(Corporate.class, id);
+    }
+
     public static Boolean save(Corporate corporate) {
         try {
             corporate.setCnpj(corporate.getCnpj().replaceAll("[^0-9]", ""));

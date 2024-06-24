@@ -6,8 +6,8 @@ import com.felipe.uniroom.entities.Inventory;
 import com.felipe.uniroom.entities.InventoryItem;
 import com.felipe.uniroom.entities.InventoryItemId;
 import com.felipe.uniroom.entities.Item;
-import com.felipe.uniroom.repositories.ItemRepository;
 import com.felipe.uniroom.services.InventoryItemService;
+import com.felipe.uniroom.services.ItemService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -112,7 +112,7 @@ public class InventoryItemForm extends JFrame {
 
 
     private void populateItemCombo(JComboBox<String> itemCombo, InventoryItem entity, Role role) {
-        final List<Item> itemList = ItemRepository.findAll(Item.class, role);
+        final List<Item> itemList = ItemService.findAll(role);
         if (Objects.nonNull(itemList)) {
             itemCombo.removeAllItems();
             items.clear();

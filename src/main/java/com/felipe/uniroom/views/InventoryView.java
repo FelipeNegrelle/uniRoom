@@ -3,7 +3,6 @@ package com.felipe.uniroom.views;
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Inventory;
-import com.felipe.uniroom.repositories.InventoryRepository;
 import com.felipe.uniroom.services.InventoryService;
 import net.miginfocom.swing.MigLayout;
 
@@ -108,7 +107,7 @@ public class InventoryView extends JFrame {
                 itemsItem.setIcon(Constants.ITEM_ICON);
                 itemsItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 itemsItem.addActionListener(e -> {
-                    final Inventory inventory = InventoryRepository.findById(Inventory.class, (Integer) model.getValueAt(row, 1));
+                    final Inventory inventory = InventoryService.findById((Integer) model.getValueAt(row, 1));
                     new InventoryItemView(role, inventory);
                     dispose();
                 });
@@ -117,7 +116,7 @@ public class InventoryView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Inventory inventory = InventoryRepository.findById(Inventory.class, (Integer) model.getValueAt(row, 1));
+                    final Inventory inventory = InventoryService.findById((Integer) model.getValueAt(row, 1));
                     new InventoryForm(role, inventory);
                     dispose();
                 });
@@ -172,7 +171,7 @@ public class InventoryView extends JFrame {
             }
             searchItems.clear();
         } else {
-            final List<Inventory> inventoryList = InventoryRepository.findAll(Inventory.class, role);
+            final List<Inventory> inventoryList = InventoryService.findAll(role);
             if (Objects.nonNull(inventoryList)) {
                 for (Inventory inventory : inventoryList) {
                     model.addRow(new Object[]{

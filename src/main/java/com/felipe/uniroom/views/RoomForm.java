@@ -6,8 +6,7 @@ import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Room;
 import com.felipe.uniroom.entities.RoomType;
-import com.felipe.uniroom.repositories.BranchRepository;
-import com.felipe.uniroom.repositories.RoomRepository;
+import com.felipe.uniroom.services.BranchService;
 import com.felipe.uniroom.services.RoomService;
 import net.miginfocom.swing.MigLayout;
 
@@ -143,7 +142,7 @@ public class RoomForm extends JFrame {
     }
 
     private void populateBranchCombo(JComboBox<String> branchCombo, Room entity, Role role) {
-        final List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
+        final List<Branch> branchList = BranchService.findAll(role);
 
         if (Objects.nonNull(branchList) && !branchList.isEmpty()) {
             branchCombo.removeAllItems();
@@ -165,7 +164,7 @@ public class RoomForm extends JFrame {
             branchIds.add(b.getIdBranch());
         }
 
-        final List<RoomType> roomTypeList = RoomRepository.findByBranchId(branchIds);
+        final List<RoomType> roomTypeList = RoomService.findByBranchId(branchIds);
 
         if (Objects.nonNull(roomTypeList)) {
             roomTypeCombo.removeAllItems();

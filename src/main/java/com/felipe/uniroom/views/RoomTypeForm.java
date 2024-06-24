@@ -5,7 +5,7 @@ import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.RoomType;
-import com.felipe.uniroom.repositories.BranchRepository;
+import com.felipe.uniroom.services.BranchService;
 import com.felipe.uniroom.services.RoomTypeService;
 import net.miginfocom.swing.MigLayout;
 
@@ -150,7 +150,7 @@ public class RoomTypeForm extends JFrame {
     }
 
     private void populateBranchCombo(JComboBox<String> branchCombo, RoomType entity, Role role) {
-        List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
+        List<Branch> branchList = BranchService.findAll(role);
         for (Branch branch : branchList) {
             branchCombo.addItem(branch.getName());
             branches.add(branch);

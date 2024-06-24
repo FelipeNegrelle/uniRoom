@@ -5,7 +5,6 @@ import com.felipe.uniroom.entities.InventoryItem;
 import com.felipe.uniroom.repositories.InventoryItemRepository;
 
 import javax.swing.*;
-import java.util.Collections;
 import java.util.List;
 
 public class InventoryItemService {
@@ -29,6 +28,14 @@ public class InventoryItemService {
         }
 
         return errorsSb.toString();
+    }
+
+    public static List<InventoryItem> findAll(Role role){
+        return InventoryItemRepository.findAll(InventoryItem.class, role);
+    }
+
+    public static InventoryItem findById(int idInventory, int id){
+        return InventoryItemRepository.findById(InventoryItem.class,id);
     }
 
     public static Boolean save(InventoryItem inventoryItem) {

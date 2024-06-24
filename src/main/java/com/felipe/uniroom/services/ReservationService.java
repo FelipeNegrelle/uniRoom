@@ -1,5 +1,6 @@
 package com.felipe.uniroom.services;
 
+import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Reservation;
 import com.felipe.uniroom.repositories.ReservationRepository;
 import com.felipe.uniroom.views.Components;
@@ -9,6 +10,7 @@ import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class ReservationService {
@@ -62,6 +64,14 @@ public class ReservationService {
 
 
         return errorsSb.toString();
+    }
+
+    public static List<Reservation> findAll(Role role){
+        return ReservationRepository.findAll(Reservation.class, role);
+    }
+
+    public static Reservation findById(int id){
+        return ReservationRepository.findById(Reservation.class,id);
     }
 
     private static LocalDateTime convertToLocalDateTime(Date date) {
@@ -192,5 +202,9 @@ public class ReservationService {
 
             return false;
         }
+    }
+
+    public static Reservation findByIdWithGuests(int idreservation){
+        return ReservationRepository.findByIdWithGuests(idreservation);
     }
 }

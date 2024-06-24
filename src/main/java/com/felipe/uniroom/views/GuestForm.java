@@ -5,7 +5,7 @@ import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Guest;
-import com.felipe.uniroom.repositories.BranchRepository;
+import com.felipe.uniroom.services.BranchService;
 import com.felipe.uniroom.services.GuestService;
 import net.miginfocom.swing.MigLayout;
 
@@ -158,7 +158,7 @@ public class GuestForm extends JFrame {
     }
 
     private void populateBranchCombo(JComboBox<String> branchCombo, Guest entity, Role role) {
-        final List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
+        final List<Branch> branchList = BranchService.findAll(role);
 
         if (Objects.nonNull(branchList) && !branchList.isEmpty()) {
             branchCombo.removeAllItems();

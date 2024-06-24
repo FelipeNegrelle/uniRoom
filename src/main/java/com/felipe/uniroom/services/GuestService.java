@@ -67,6 +67,14 @@ public class GuestService {
         return errorsSb.toString();
     }
 
+    public static List<Guest> findAll(Role role){
+        return GuestRepository.findAll(Guest.class, role);
+    }
+
+    public static Guest findById(int id){
+        return GuestRepository.findById(Guest.class,id);
+    }
+
     public static Boolean save(Guest guest, Role role) {
         try {
             if (Objects.nonNull(guest.getCpf())) {

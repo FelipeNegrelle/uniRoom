@@ -2,6 +2,7 @@ package com.felipe.uniroom.services;
 
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Room;
+import com.felipe.uniroom.entities.RoomType;
 import com.felipe.uniroom.repositories.RoomRepository;
 import com.felipe.uniroom.views.Components;
 
@@ -42,6 +43,14 @@ public class RoomService {
         }
 
         return errorsSb.toString();
+    }
+
+    public static List<Room> findAll(Role role){
+        return RoomRepository.findAll(Room.class, role);
+    }
+
+    public static Room findById(int id){
+        return RoomRepository.findById(Room.class,id);
     }
 
     public static Boolean save(Room room) {
@@ -124,5 +133,9 @@ public class RoomService {
             field = "roomNumber";
         }
         return RoomRepository.search(Room.class, search, field, role);
+    }
+
+    public static List<RoomType> findByBranchId(List<Integer> idBranches){
+        return RoomRepository.findByBranchId(idBranches);
     }
 }

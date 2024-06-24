@@ -2,6 +2,8 @@ package com.felipe.uniroom.services;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.entities.Branch;
+import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.entities.User;
 import com.felipe.uniroom.repositories.UserRepository;
 import com.felipe.uniroom.views.Components;
@@ -13,6 +15,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import javax.swing.*;
 import java.util.Collections;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -70,6 +73,14 @@ public class UserService {
         }
 
         return errorsSb.toString();
+    }
+
+    public static List<User> findAll(Role role){
+        return UserRepository.findAll(User.class, role);
+    }
+
+    public static User findById(int id){
+        return UserRepository.findById(User.class,id);
     }
 
     public static Boolean register(User user) {
@@ -208,5 +219,21 @@ public class UserService {
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static List<User> searchByUsernameOrName(String searchText){
+        return UserRepository.searchByUsernameOrName(searchText);
+    }
+
+    public static List<Corporate> getCorporateUser(User user){
+        return UserRepository.getCorporateUser(user);
+    }
+
+    public static List<Branch> getBranchUser(User user){
+        return UserRepository.getBranchUser(user);
+    }
+
+    public static User findByUsername(String username){
+        return UserRepository.findByUsername(username);
     }
 }

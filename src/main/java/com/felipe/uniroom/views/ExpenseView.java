@@ -5,7 +5,6 @@ import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Expense;
 import com.felipe.uniroom.entities.Reservation;
-import com.felipe.uniroom.repositories.ExpenseRepository;
 import com.felipe.uniroom.services.ExpenseService;
 import net.miginfocom.swing.MigLayout;
 
@@ -106,7 +105,7 @@ public class ExpenseView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Expense expense = ExpenseRepository.findById(Expense.class, model.getValueAt(row, 1));
+                    final Expense expense = ExpenseService.findById((int) model.getValueAt(row, 1));
 
                     new ExpenseForm(role, reservation, expense);
                     dispose();
@@ -165,7 +164,7 @@ public class ExpenseView extends JFrame {
             }
             searchItens.clear();
         } else {
-            final List<Expense> expenseList = ExpenseRepository.findAll(Expense.class, role);
+            final List<Expense> expenseList = ExpenseService.findAll(role);
             if (Objects.nonNull(expenseList)) {
                 for (Expense expense : expenseList) {
                     model.addRow(new Object[]{

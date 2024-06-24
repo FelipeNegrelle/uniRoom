@@ -42,6 +42,14 @@ public class RoomTypeService {
         return errors.toString();
     }
 
+    public static List<RoomType> findAll(Role role){
+        return RoomTypeRepository.findAll(RoomType.class, role);
+    }
+
+    public static RoomType findById(int id){
+        return RoomTypeRepository.findById(RoomType.class,id);
+    }
+
     public static boolean save(RoomType roomType) {
         try {
             String validations = validateRoomType(roomType, false);

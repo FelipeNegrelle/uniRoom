@@ -63,6 +63,14 @@ public class BranchService {
         return errorsSb.toString();
     }
 
+    public static List<Branch> findAll(Role role){
+        return BranchRepository.findAll(Branch.class, role);
+    }
+
+    public static Branch findById(int id){
+        return BranchRepository.findById(Branch.class, id);
+    }
+
     public static Boolean save(Branch branch) {
         try {
             branch.setCnpj(branch.getCnpj().replaceAll("[^0-9]", ""));

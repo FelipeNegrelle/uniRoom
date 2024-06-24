@@ -3,7 +3,6 @@ package com.felipe.uniroom.views;
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Item;
-import com.felipe.uniroom.repositories.ItemRepository;
 import com.felipe.uniroom.services.ItemService;
 import net.miginfocom.swing.MigLayout;
 
@@ -108,7 +107,7 @@ public class ItemView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Item item = ItemRepository.findById(Item.class, (Integer) model.getValueAt(row, 1));
+                    final Item item = ItemService.findById((Integer) model.getValueAt(row, 1));
                     new ItemForm(role, item);
                     dispose();
                 });
@@ -162,7 +161,7 @@ public class ItemView extends JFrame {
             }
             searchItems.clear();
         } else {
-            final List<Item> itemList = ItemRepository.findAll(Item.class, role);
+            final List<Item> itemList = ItemService.findAll(role);
             if (Objects.nonNull(itemList)) {
                 for (Item item : itemList) {
                     model.addRow(new Object[]{

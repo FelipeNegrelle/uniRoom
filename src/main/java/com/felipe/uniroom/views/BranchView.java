@@ -4,7 +4,6 @@ import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Branch;
-import com.felipe.uniroom.repositories.BranchRepository;
 import com.felipe.uniroom.services.BranchService;
 import net.miginfocom.swing.MigLayout;
 
@@ -112,8 +111,7 @@ public class BranchView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Branch branch = BranchRepository.findById(Branch.class, (int) model.getValueAt(row, 1));
-
+                    final Branch branch = BranchService.findById((int) model.getValueAt(row, 1));
                     new BranchForm(role, branch);
                     dispose();
                 });
@@ -170,7 +168,7 @@ public class BranchView extends JFrame {
             }
             searchItens.clear();
         } else {
-            final List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
+            final List<Branch> branchList = BranchService.findAll(role);
             if (Objects.nonNull(branchList)) {
                 for (Branch branch : branchList) {
                     model.addRow(new Object[]{

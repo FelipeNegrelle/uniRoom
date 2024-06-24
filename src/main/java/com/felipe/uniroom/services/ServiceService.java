@@ -28,6 +28,14 @@ public class ServiceService {
         return errorsSb.toString();
     }
 
+    public static List<Service> findAll(Role role){
+        return ServiceRepository.findAll(Service.class, role);
+    }
+
+    public static Service findById(int id){
+        return ServiceRepository.findById(Service.class,id);
+    }
+
     public static boolean save(Service service) {
         try {
             final String validations = validateService(service, false);

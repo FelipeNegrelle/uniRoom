@@ -6,8 +6,9 @@ import com.felipe.uniroom.entities.Expense;
 import com.felipe.uniroom.entities.Item;
 import com.felipe.uniroom.entities.Reservation;
 import com.felipe.uniroom.entities.Service;
-import com.felipe.uniroom.repositories.ItemRepository;
 import com.felipe.uniroom.services.ExpenseService;
+import com.felipe.uniroom.services.ItemService;
+import com.felipe.uniroom.services.ServiceService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -201,7 +202,7 @@ public class ExpenseForm extends JFrame {
     }
 
     private void populateItemCombo(JComboBox<String> itemCombo, Expense entity, Role role) {
-        final List<Item> itemList = ItemRepository.findAll(Item.class, role);
+        final List<Item> itemList = ItemService.findAll(role);
 
         if (Objects.nonNull(itemList) && !itemList.isEmpty()) {
             for (Item item : itemList) {
@@ -216,7 +217,7 @@ public class ExpenseForm extends JFrame {
     }
 
     private void populateServiceCombo(JComboBox<String> serviceCombo, Expense entity, Role role) {
-        final List<Service> serviceList = ItemRepository.findAll(Service.class, role);
+        final List<Service> serviceList = ServiceService.findAll(role);
 
         if (Objects.nonNull(serviceList) && !serviceList.isEmpty()) {
             for (Service service : serviceList) {

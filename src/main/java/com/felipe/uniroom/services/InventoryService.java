@@ -2,6 +2,7 @@ package com.felipe.uniroom.services;
 
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Inventory;
+import com.felipe.uniroom.entities.Item;
 import com.felipe.uniroom.repositories.InventoryRepository;
 import com.felipe.uniroom.views.Components;
 
@@ -32,6 +33,19 @@ public class InventoryService {
 
         return errorsSb.toString();
     }
+
+    public static List<Inventory> findAll(Role role){
+        return InventoryRepository.findAll(Inventory.class, role);
+    }
+
+    public static Inventory findById(int id){
+        return InventoryRepository.findById(Inventory.class,id);
+    }
+
+    public static Item getItemsFromInventory(Inventory inventory){
+       return (Item) InventoryRepository.getItemsFromInventory(inventory);
+    }
+
 
     public static Boolean save(Inventory inventory) {
         try {

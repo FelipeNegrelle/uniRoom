@@ -6,9 +6,9 @@ import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Guest;
 import com.felipe.uniroom.entities.Reservation;
 import com.felipe.uniroom.entities.Room;
-import com.felipe.uniroom.repositories.GuestRepository;
-import com.felipe.uniroom.repositories.ReservationRepository;
+import com.felipe.uniroom.services.GuestService;
 import com.felipe.uniroom.services.ReservationService;
+import com.felipe.uniroom.services.RoomService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -214,14 +214,14 @@ public class ReservationForm extends JFrame {
     }
 
     private void loadReservationGuests(Reservation reservation) {
-        Reservation fullReservation = ReservationRepository.findByIdWithGuests(reservation.getIdReservation());
+        Reservation fullReservation = ReservationService.findByIdWithGuests(reservation.getIdReservation());
         List<Guest> reservationGuests = fullReservation.getGuestList();
         guestsTableList.addAll(reservationGuests);
         updateGuestsTable();
     }
 
     private void populateGuestCombo(JComboBox<String> guestCombo, Reservation entity, Role role) {
-        final List<Guest> guestList = GuestRepository.findAll(Guest.class, role);
+        final List<Guest> guestList = GuestService.findAll(role);
 
         if (Objects.nonNull(guestList) && !guestList.isEmpty()) {
             guestCombo.removeAllItems();
@@ -235,7 +235,7 @@ public class ReservationForm extends JFrame {
     }
 
     private void populateRoomsCombo(JComboBox<String> roomsCombo, Reservation entity, Role role) {
-        final List<Room> roomList = ReservationRepository.findAll(Room.class, role);
+        final List<Room> roomList = RoomService.findAll(role);
 
         if (Objects.nonNull(roomList) && !roomList.isEmpty()) {
             roomsCombo.removeAllItems();

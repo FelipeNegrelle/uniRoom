@@ -4,7 +4,6 @@ import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Reservation;
-import com.felipe.uniroom.repositories.ReservationRepository;
 import com.felipe.uniroom.services.ReservationService;
 import net.miginfocom.swing.MigLayout;
 
@@ -84,7 +83,7 @@ public class ReservationView extends JFrame {
             if (column == 0) {
                 final JPopupMenu popupMenu = new JPopupMenu();
 
-                final Reservation reservation = ReservationRepository.findById(Reservation.class, model.getValueAt(row, 1));
+                final Reservation reservation = ReservationService.findById((Integer) model.getValueAt(row, 1));
 
                 final JMenuItem expenseItem = new JMenuItem(Constants.EXPENSE);
                 expenseItem.setIcon(Constants.EXPENSE_ICON);
@@ -183,7 +182,7 @@ public class ReservationView extends JFrame {
             }
             searchItens.clear();
         } else {
-            final List<Reservation> reservationList = ReservationRepository.findAll(Reservation.class, role);
+            final List<Reservation> reservationList = ReservationService.findAll(role);
             if (Objects.nonNull(reservationList)) {
                 for (Reservation reservation : reservationList) {
                     model.addRow(new Object[]{null, reservation.getIdReservation(), reservation.getRoom().getRoomNumber(), reservation.getUser().getName(), reservation.getBranch().getName(), formatNullableDate(reservation.getInitialDate(), "dd/MM/yyyy"), formatNullableDate(reservation.getFinalDate(), "dd/MM/yyyy"), formatNullableDate(reservation.getDateTimeCheckIn(), "dd/MM/yyyy HH:mm"), formatNullableDate(reservation.getDateTimeCheckOut(), "dd/MM/yyyy HH:mm"), Util.convertStatusReservation(reservation.getStatus())});

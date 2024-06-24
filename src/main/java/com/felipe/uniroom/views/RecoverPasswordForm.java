@@ -3,7 +3,6 @@ package com.felipe.uniroom.views;
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.User;
-import com.felipe.uniroom.repositories.UserRepository;
 import com.felipe.uniroom.services.UserService;
 import net.miginfocom.swing.MigLayout;
 
@@ -53,7 +52,7 @@ public class RecoverPasswordForm extends JFrame {
 
             @Override
             public void focusLost(FocusEvent e) {
-                final User user = UserRepository.findByUsername(nameField.getText());
+                final User user = UserService.findByUsername(nameField.getText());
                 if (user != null) {
                     foundUser = user;
                     nameField.setText(user.getUsername());

@@ -4,6 +4,7 @@ import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.User;
 import com.felipe.uniroom.repositories.UserRepository;
+import com.felipe.uniroom.services.UserService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -104,8 +105,7 @@ public class UserView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final User user = UserRepository.findById(User.class, (int) model.getValueAt(row, 1));
-
+                    final User user = UserService.findById((int) model.getValueAt(row, 1));
                     new UserForm(role, user);
                     dispose();
                 });
@@ -114,7 +114,7 @@ public class UserView extends JFrame {
                 deleteItem.setIcon(Constants.DELETE_ICON);
                 deleteItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 deleteItem.addActionListener(e -> {
-                    final User user = UserRepository.findById(User.class, (int) model.getValueAt(row, 1));
+                    final User user = UserService.findById((int) model.getValueAt(row, 1));
 
                     if (UserRepository.delete(User.class, user.getIdUser())) {
                         updateUserTable(searchField.getText());
@@ -161,11 +161,11 @@ public class UserView extends JFrame {
     private static void updateUserTable(String searchText) {
         model.setRowCount(0);
 
-        final List<User> userList = UserRepository.searchByUsernameOrName(searchText);
+        final List<User> userList = UserService.searchByUsernameOrName(searchText);
         if (Objects.nonNull(userList)) {
             for (User user : userList) {
                 model.addRow(new Object[]{
-                        "...", // Adiciona os três pontinhos como uma opção de edição e exclusão
+                        "...",
                         user.getIdUser(),
                         user.getName(),
                         user.getUsername(),

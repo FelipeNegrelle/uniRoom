@@ -46,6 +46,14 @@ public class ExpenseService {
         return errorsSb.toString();
     }
 
+    public static List<Expense> findAll(Role role){
+        return ExpenseRepository.findAll(Expense.class, role);
+    }
+
+    public static Expense findById(int id){
+        return ExpenseRepository.findById(Expense.class,id);
+    }
+
     public static boolean save(Expense expense, char type) {
         try {
             final String validations = validateExpense(expense, false, type);

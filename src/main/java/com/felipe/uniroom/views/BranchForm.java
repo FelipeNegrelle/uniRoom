@@ -6,9 +6,9 @@ import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.entities.User;
-import com.felipe.uniroom.repositories.CorporateRepository;
-import com.felipe.uniroom.repositories.UserRepository;
 import com.felipe.uniroom.services.BranchService;
+import com.felipe.uniroom.services.CorporateService;
+import com.felipe.uniroom.services.UserService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -127,7 +127,7 @@ public class BranchForm extends JFrame {
     }
 
     private void populateCorporateCombo(JComboBox<String> corporateCombo, Branch entity, Role role) {
-        final List<Corporate> corporateList = CorporateRepository.findAll(Corporate.class, role);
+        final List<Corporate> corporateList = CorporateService.findAll(role);
 
         if (Objects.nonNull(corporateList) && !corporateList.isEmpty()) {
             corporateCombo.removeAllItems();
@@ -147,7 +147,7 @@ public class BranchForm extends JFrame {
     }
 
     private void populateUserCombo(JComboBox<String> userCombo, Branch entity, Role role) {
-        final List<User> userList = UserRepository.findAll(User.class, role);
+        final List<User> userList = UserService.findAll(role);
 
         if (Objects.nonNull(userList) && !userList.isEmpty()) {
             userCombo.removeAllItems();

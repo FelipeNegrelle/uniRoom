@@ -5,9 +5,9 @@ import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Inventory;
 import com.felipe.uniroom.entities.Room;
-import com.felipe.uniroom.repositories.BranchRepository;
-import com.felipe.uniroom.repositories.RoomRepository;
+import com.felipe.uniroom.services.BranchService;
 import com.felipe.uniroom.services.InventoryService;
+import com.felipe.uniroom.services.RoomService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -82,7 +82,7 @@ public class InventoryForm extends JFrame {
                 JOptionPane.showMessageDialog(this, "Por favor, selecione um quarto válido.", Constants.WARN, JOptionPane.WARNING_MESSAGE);
                 return;
             }
-            Room room = RoomRepository.findById(Room.class, selectedItem.getId());
+            Room room = RoomService.findById(selectedItem.getId());
             inventory.setIdInventory(Objects.nonNull(entity) ? entity.getIdInventory() : null);
             inventory.setRoom(room);
             inventory.setBranch(branches.get(branchCombo.getSelectedIndex()));
@@ -124,7 +124,7 @@ public class InventoryForm extends JFrame {
 
 
     private void populateRoomCombo(JComboBox<RoomItem> roomCombo, JButton saveButton, Role role) {
-        List<Room> rooms = RoomRepository.findAll(Room.class, role);
+        List<Room> rooms = RoomService.findAll(role);
         if (rooms.isEmpty()) {
             JOptionPane.showMessageDialog(this, "Não há quartos registrados.\nNão é possível fazer inventários sem quartos.", Constants.WARN, JOptionPane.PLAIN_MESSAGE);
             roomCombo.addItem(null);
@@ -139,7 +139,7 @@ public class InventoryForm extends JFrame {
     }
 
     private void populateBranchCombo(JComboBox<String> branchCombo, Inventory entity, Role role) {
-        final List<Branch> branchList = BranchRepository.findAll(Branch.class, role);
+        final List<Branch> branchList = BranchService.findAll(role);
 
         if (Objects.nonNull(branchList) && !branchList.isEmpty()) {
             branchCombo.removeAllItems();

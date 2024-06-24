@@ -41,6 +41,14 @@ public class ItemService {
         return errorsSb.toString();
     }
 
+    public static List<Item> findAll(Role role){
+        return ItemRepository.findAll(Item.class, role);
+    }
+
+    public static Item findById(int id){
+        return ItemRepository.findById(Item.class,id);
+    }
+
     public static boolean save(Item item) {
         try {
             String validations = validateItem(item, false);

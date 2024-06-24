@@ -5,8 +5,8 @@ import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.entities.User;
-import com.felipe.uniroom.repositories.UserRepository;
 import com.felipe.uniroom.services.CorporateService;
+import com.felipe.uniroom.services.UserService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -109,7 +109,7 @@ public class CorporateForm extends JFrame {
     }
 
     private void populateUserCombo(JComboBox<String> userCombo, Corporate entity, Role role) {
-        final List<User> userList = UserRepository.findAll(User.class, role);
+        final List<User> userList = UserService.findAll(role);
 
         if (Objects.isNull(userList) || userList.isEmpty()) {
             userCombo.addItem("Nenhum usuário cadastrado");

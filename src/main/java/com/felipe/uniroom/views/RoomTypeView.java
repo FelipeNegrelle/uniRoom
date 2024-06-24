@@ -3,7 +3,6 @@ package com.felipe.uniroom.views;
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.RoomType;
-import com.felipe.uniroom.repositories.RoomTypeRepository;
 import com.felipe.uniroom.services.RoomTypeService;
 import net.miginfocom.swing.MigLayout;
 
@@ -108,7 +107,7 @@ public class RoomTypeView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final RoomType roomType = RoomTypeRepository.findById(RoomType.class, (Integer) model.getValueAt(row, 1));
+                    final RoomType roomType = RoomTypeService.findById((Integer) model.getValueAt(row, 1));
                     new RoomTypeForm(role, roomType);
                     dispose();
                 });
@@ -163,7 +162,7 @@ public class RoomTypeView extends JFrame {
             }
             searchItems.clear();
         } else {
-            final List<RoomType> roomTypeList = RoomTypeRepository.findAll(RoomType.class, role);
+            final List<RoomType> roomTypeList = RoomTypeService.findAll(role);
             if (Objects.nonNull(roomTypeList)) {
                 for (RoomType roomType : roomTypeList) {
                     model.addRow(new Object[]{

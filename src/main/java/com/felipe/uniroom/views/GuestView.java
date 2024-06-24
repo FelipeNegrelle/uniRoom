@@ -4,7 +4,6 @@ import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Guest;
-import com.felipe.uniroom.repositories.GuestRepository;
 import com.felipe.uniroom.services.GuestService;
 import net.miginfocom.swing.MigLayout;
 
@@ -107,7 +106,7 @@ public class GuestView extends JFrame {
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
-                    final Guest guest = GuestRepository.findById(Guest.class, (int) model.getValueAt(row, 1));
+                    final Guest guest = GuestService.findById((int) model.getValueAt(row, 1));
 
                     new GuestForm(role, guest);
                     dispose();
@@ -164,7 +163,7 @@ public class GuestView extends JFrame {
             }
             searchItens.clear();
         } else {
-            final List<Guest> guestList = GuestRepository.findAll(Guest.class, role);
+            final List<Guest> guestList = GuestService.findAll(role);
             if (Objects.nonNull(guestList)) {
                 for (Guest guest : guestList) {
                     model.addRow(new Object[]{

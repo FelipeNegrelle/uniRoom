@@ -5,7 +5,6 @@ import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.entities.User;
-import com.felipe.uniroom.repositories.UserRepository;
 import com.felipe.uniroom.services.UserService;
 import net.miginfocom.swing.MigLayout;
 
@@ -68,7 +67,7 @@ public class Login extends JFrame {
 
                     JOptionPane.showMessageDialog(this, Constants.FAILED_LOGIN);
                 } else {
-                    user = UserRepository.findByUsername(user.getUsername());
+                    user = UserService.findByUsername(user.getUsername());
 
                     JOptionPane.showMessageDialog(this, Constants.SUCCESSFUL_LOGIN);
 
@@ -83,8 +82,8 @@ public class Login extends JFrame {
                             if (user.getRole().equals('E')) {
                                 role = new Role(user.getRole(), user, Collections.emptyList(), Collections.singletonList(user.getBranch()));
                             } else {
-                                final java.util.List<Corporate> userCorporate = UserRepository.getCorporateUser(user);
-                                final java.util.List<Branch> userBranch = UserRepository.getBranchUser(user);
+                                final java.util.List<Corporate> userCorporate = UserService.getCorporateUser(user);
+                                final java.util.List<Branch> userBranch = UserService.getBranchUser(user);
 
                                 role = new Role(user.getRole(), user, userCorporate, userBranch);
                             }
