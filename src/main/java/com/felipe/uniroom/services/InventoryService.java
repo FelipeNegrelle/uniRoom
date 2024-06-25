@@ -42,10 +42,9 @@ public class InventoryService {
         return InventoryRepository.findById(Inventory.class,id);
     }
 
-    public static Item getItemsFromInventory(Inventory inventory){
-       return (Item) InventoryRepository.getItemsFromInventory(inventory);
+    public static List<Item> getItemsFromInventory(Inventory inventory){
+       return InventoryRepository.getItemsFromInventory(inventory);
     }
-
 
     public static Boolean save(Inventory inventory) {
         try {

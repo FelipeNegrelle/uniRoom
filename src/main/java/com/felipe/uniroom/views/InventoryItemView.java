@@ -31,7 +31,7 @@ InventoryItemView extends JFrame {
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
 
-        final List<Item> l = (List<Item>) InventoryService.getItemsFromInventory(inventory);
+        final List<Item> l = InventoryService.getItemsFromInventory(inventory);
         if (Objects.nonNull(l)) {
             items.addAll(l);
         }
@@ -82,7 +82,7 @@ InventoryItemView extends JFrame {
             public void keyReleased(KeyEvent e) {
                 searchItems.clear();
                 searchItems.addAll(InventoryItemService.search(searchField.getText(), null, role));
-                updateInventoryItemTable(role);
+                updateInventoryItemTable(inventory, role);
             }
         });
         searchPanel.add(searchField, "align left");
@@ -126,7 +126,7 @@ InventoryItemView extends JFrame {
                     final InventoryItem inventoryItem = new InventoryItem();
                     inventoryItem.setId((InventoryItemId) model.getValueAt(row, 1));//todo ver como pegar id
                     if (InventoryItemService.delete(inventoryItem)) {
-                        updateInventoryItemTable(role);
+                        updateInventoryItemTable(inventory, role);
                     } else {
                         JOptionPane.showMessageDialog(null, "Erro ao deletar item", "Error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -145,14 +145,14 @@ InventoryItemView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateInventoryItemTable(role);
+        updateInventoryItemTable(inventory, role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
     }
 
-    private static void updateInventoryItemTable(Role role) {
+    private static void updateInventoryItemTable(Inventory inventory, Role role) {
         model.setRowCount(0);
 
         if (!searchItems.isEmpty()) {
@@ -170,7 +170,7 @@ InventoryItemView extends JFrame {
             }
             searchItems.clear();
         } else {
-            final List<InventoryItem> inventoryItemList = InventoryItemService.findAll(role);
+            final List<InventoryItem> inventoryItemList = InventoryItemService.findAll(inventory, role);
             if (Objects.nonNull(inventoryItemList)) {
                 for (InventoryItem inventoryItem : inventoryItemList) {
                     final Item item = findItemById(inventoryItem.getId().getIdItem());

@@ -18,62 +18,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class Components {
-    public static class CheckoutDialog extends JDialog {
-        CheckoutDialog(JFrame parent, Reservation reservation, Role role) {
-            super(parent, Constants.CHECKOUT);
-
-            setSize(800, 600);
-            setLocationRelativeTo(parent);
-
-            final JLabel titleLabel = new JLabel(Constants.CHECKOUT);
-            titleLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 40));
-            titleLabel.setForeground(Constants.BLUE);
-
-            final JLabel roomLabel = new JLabel(Constants.ROOM + ": " + reservation.getRoom().getRoomNumber());
-            roomLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-
-            final JLabel branchLabel = new JLabel(Constants.BRANCH + ": " + reservation.getBranch().getName());
-            branchLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-
-            final JLabel checkInLabel = new JLabel(Constants.CHECKIN + ": " + Util.formatNullableDate(reservation.getDateTimeCheckIn(), "dd/MM/yyyy HH:mm"));
-            checkInLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-
-            final JLabel checkOutLabel = new JLabel(Constants.CHECKOUT + ": " + Util.formatNullableDate(reservation.getDateTimeCheckOut(), "dd/MM/yyyy HH:mm"));
-            checkOutLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-
-            final JLabel guestLabel = new JLabel(Constants.GUEST + ": " + reservation.getGuestList().get(0).getName());
-            guestLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-
-            final JLabel statusLabel = new JLabel(Constants.STATUS + ": " + reservation.getStatus());
-            statusLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-
-            final JLabel totalLabel = new JLabel(Constants.TOTAL + ": " + 0);
-            totalLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-
-            final JButton checkoutButton = new JButton(Constants.CHECKOUT);
-            checkoutButton.setFont(Constants.FONT.deriveFont(Font.BOLD));
-
-            final JButton backButton = new JButton(Constants.BACK);
-            backButton.setFont(Constants.FONT.deriveFont(Font.BOLD));
-
-            final JPanel panel = new JPanel(new MigLayout("fill, wrap 1", "[grow]", ""));
-            panel.setBackground(Constants.WHITE);
-
-            panel.add(titleLabel, "align center");
-            panel.add(roomLabel, "align left");
-            panel.add(branchLabel, "align left");
-            panel.add(checkInLabel, "align left");
-            panel.add(checkOutLabel, "align left");
-            panel.add(guestLabel, "align left");
-            panel.add(statusLabel, "align left");
-            panel.add(totalLabel, "align left");
-            panel.add(checkoutButton, "align center");
-            panel.add(backButton, "align center");
-
-            add(panel);
-        }
-    }
-
     public static class ForgetPasswordDialog extends JDialog {
         public ForgetPasswordDialog(JFrame parent, String user) {
             super(parent, Constants.FORGOT, true);

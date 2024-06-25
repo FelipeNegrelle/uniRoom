@@ -1,11 +1,27 @@
 package com.felipe.uniroom.repositories;
 
 import com.felipe.uniroom.config.ConnectionManager;
+import com.felipe.uniroom.entities.Inventory;
 import com.felipe.uniroom.entities.InventoryItem;
 import com.felipe.uniroom.entities.InventoryItemId;
 import jakarta.persistence.EntityManager;
 
+import java.util.List;
+
 public class InventoryItemRepository extends DatabaseRepository {
+    public static List<InventoryItem> findAllByInventory(Inventory inventory) {
+        final String query = "SELECT ii FROM InventoryItem ii WHERE ii.id.idInvetory = :idInventory";
+
+        try (EntityManager em = ConnectionManager.getEntityManager()) {
+            return em.createQuery(query, InventoryItem.class)
+                    .setParameter("idInventory", inventory.getIdInventory())
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static InventoryItem findById(InventoryItemId id) {
         final String query = "SELECT ii FROM InventoryItem ii WHERE ii.id.idItem = :idItem AND ii.id.idInvetory = :idInventory";
 
@@ -14,8 +30,7 @@ public class InventoryItemRepository extends DatabaseRepository {
                     .setParameter("idItem", id.getIdItem())
                     .setParameter("idInventory", id.getIdInvetory())
                     .getSingleResult();
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -32,8 +47,7 @@ public class InventoryItemRepository extends DatabaseRepository {
                     .executeUpdate();
             em.getTransaction().commit();
             return deleted > 0;
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }

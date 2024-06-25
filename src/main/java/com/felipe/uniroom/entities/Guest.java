@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "guest")
-public class Guest {
+public class    Guest {
     @Id
     @Column(name = "id_guest")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,7 +27,7 @@ public class Guest {
     @Column(name = "passport_number", length = 9)
     private String passportNumber;
 
-    private boolean hosted;
+//    private boolean hosted;
 
     @OneToOne
     @JoinColumn(name = "id_branch", nullable = false)
@@ -104,13 +104,13 @@ public class Guest {
         this.reservationList = reservationList;
     }
 
-    public boolean isHosted() {
-        return hosted;
-    }
+//    public boolean isHosted() {
+//        return hosted;
+//    }
 
-    public void setHosted(boolean hosted) {
-        this.hosted = hosted;
-    }
+//    public void setHosted(boolean hosted) {
+//        this.hosted = hosted;
+//    }
 
     @Override
     public boolean equals(Object o) {
@@ -124,14 +124,14 @@ public class Guest {
                 Objects.equals(cpf, guest.cpf) &&
                 Objects.equals(isForeigner, guest.isForeigner) &&
                 Objects.equals(passportNumber, guest.passportNumber) &&
-                Objects.equals(hosted, guest.hosted) &&
+//                Objects.equals(hosted, guest.hosted) &&
                 Objects.equals(branch, guest.branch);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(idGuest, name, cpf, isForeigner, passportNumber, hosted, branch);
-    }
+//    @Override
+//    public int hashCode() {
+//        return Objects.hash(idGuest, name, cpf, isForeigner, passportNumber, hosted, branch);
+//    }
 
     @Override
     public String toString() {
@@ -141,7 +141,7 @@ public class Guest {
                 ", cpf='" + cpf + '\'' +
                 ", isForeigner=" + isForeigner +
                 ", passportNumber='" + passportNumber + '\'' +
-                ", hosted='" + hosted + '\'' +
+//                ", hosted='" + hosted + '\'' +
                 ", branch=" + branch +
                 '}';
     }

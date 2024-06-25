@@ -18,6 +18,10 @@ public class Expense {
     private Reservation reservation;
 
     @ManyToOne
+    @JoinColumn(name = "id_guest", nullable = false)
+    private Guest guest;
+
+    @ManyToOne
     @JoinColumn(name = "id_branch", nullable = false)
     private Branch branch;
 

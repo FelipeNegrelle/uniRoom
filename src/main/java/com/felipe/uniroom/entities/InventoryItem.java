@@ -1,6 +1,9 @@
 package com.felipe.uniroom.entities;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import java.io.Serializable;
 import java.util.Objects;
@@ -40,7 +43,8 @@ public class InventoryItem implements Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) return true;
+        if (o == this)
+            return true;
         if (!(o instanceof InventoryItem)) {
             return false;
         }

@@ -112,9 +112,8 @@ public class ReservationView extends JFrame {
                 checkoutItem.setIcon(Constants.CORPORATE_ICON);
                 checkoutItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 checkoutItem.addActionListener(e -> {
-                    Components.CheckoutDialog checkoutDialog = new Components.CheckoutDialog(this, reservation, role);
-                    checkoutDialog.setVisible(true);
-
+                    new ReservationCheckoutForm(reservation, role);
+                    dispose();
 //                    if (ReservationService.checkout(reservation)) {
 //                        try {
 //                            updateReservationTable(role);
