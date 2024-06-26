@@ -1,7 +1,9 @@
 package com.felipe.uniroom.services;
 
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.entities.Expense;
 import com.felipe.uniroom.entities.RoomType;
+import com.felipe.uniroom.repositories.ExpenseRepository;
 import com.felipe.uniroom.repositories.RoomTypeRepository;
 import com.felipe.uniroom.views.Components;
 
@@ -96,6 +98,16 @@ public class RoomTypeService {
             e.printStackTrace();
             Components.showGenericError(null);
             return false;
+        }
+    }
+
+    public static List<RoomType> findRoomTypesByBranch(Integer branchId){
+        try {
+            return RoomTypeRepository.findRoomTypesByBranch(branchId);
+        } catch (Exception e){
+            e.printStackTrace();
+
+            return null;
         }
     }
 

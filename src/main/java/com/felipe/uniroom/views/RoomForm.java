@@ -8,6 +8,7 @@ import com.felipe.uniroom.entities.Room;
 import com.felipe.uniroom.entities.RoomType;
 import com.felipe.uniroom.services.BranchService;
 import com.felipe.uniroom.services.RoomService;
+import com.felipe.uniroom.services.RoomTypeService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -62,21 +63,19 @@ public class RoomForm extends JFrame {
         roomTypeCombo.setFont(new Font("Sans", Font.PLAIN, 20));
 
         populateBranchCombo(branchCombo, entity, role);
-        populateRoomTypeCombo(roomTypeCombo, role.getBranches(), entity);
 
-        if (branchCombo.getItemCount() > 0) {
-            branchCombo.setSelectedIndex(0);
-        }
-
+        // Adiciona um listener para atualizar os tipos de quarto quando a filial for selecionada
         branchCombo.addActionListener(e -> {
             if (branchCombo.getSelectedIndex() != -1) {
                 Branch selectedBranch = branches.get(branchCombo.getSelectedIndex());
-                populateRoomTypeCombo(roomTypeCombo, role.getBranches(), entity);
+                populateRoomTypeCombo(roomTypeCombo, selectedBranch, entity);
             }
         });
 
+        // Atualiza os tipos de quarto ao carregar a tela, se houver uma filial selecionada
         if (branchCombo.getSelectedIndex() != -1) {
-            populateRoomTypeCombo(roomTypeCombo, role.getBranches(), entity);
+            Branch selectedBranch = branches.get(branchCombo.getSelectedIndex());
+            populateRoomTypeCombo(roomTypeCombo, selectedBranch, entity);
         }
 
         inputPanel.add(numberLabel);
@@ -157,23 +156,17 @@ public class RoomForm extends JFrame {
         }
     }
 
-    private void populateRoomTypeCombo(JComboBox<String> roomTypeCombo, List<Branch> branches, Room entity) {
-        final List<Integer> branchIds = new ArrayList<>();
+    private void populateRoomTypeCombo(JComboBox<String> roomTypeCombo, Branch selectedBranch, Room entity) {
+        final List<RoomType> roomTypeList = RoomTypeService.findRoomTypesByBranch(selectedBranch.getIdBranch());
 
-        for (Branch b : branches) {
-            branchIds.add(b.getIdBranch());
-        }
-
-        final List<RoomType> roomTypeList = RoomService.findByBranchId(branchIds);
-
-        if (Objects.nonNull(roomTypeList)) {
+        if (Objects.nonNull(roomTypeList) && !roomTypeList.isEmpty()) {
             roomTypeCombo.removeAllItems();
             roomTypes.clear();
             for (RoomType roomType : roomTypeList) {
                 roomTypeCombo.addItem(roomType.getName());
                 roomTypes.add(roomType);
             }
-            if (Objects.nonNull(entity) && entity.getBranch() != null) {
+            if (Objects.nonNull(entity) && entity.getRoomType() != null) {
                 roomTypeCombo.setSelectedItem(entity.getRoomType().getName());
             }
         }

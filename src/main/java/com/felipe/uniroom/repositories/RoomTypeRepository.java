@@ -6,6 +6,8 @@ import com.felipe.uniroom.entities.RoomType;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
+import java.util.List;
+
 public class RoomTypeRepository extends DatabaseRepository {
     public static RoomType findByName(String name, Integer idBranch) {
         final String query = "SELECT rt FROM RoomType rt WHERE rt.name = :name AND rt.branch.id = :idBranch";
@@ -30,6 +32,18 @@ public class RoomTypeRepository extends DatabaseRepository {
             return count > 0;
         } catch (NoResultException e) {
             return false;
+        }
+    }
+
+    public static List<RoomType> findRoomTypesByBranch(Integer branchId){
+        final String query = "SELECT rt from RoomType rt WHERE rt.branch.idBranch = :idBranch";
+
+        try(EntityManager em = ConnectionManager.getEntityManager()){
+            return em.createQuery(query, RoomType.class)
+                    .setParameter("idBranch", branchId)
+                    .getResultList();
+        } catch (NoResultException e){
+            return null;
         }
     }
 }
