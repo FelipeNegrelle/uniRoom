@@ -109,6 +109,14 @@ public class Expense {
         this.dateTimeExpense = dateTimeExpense;
     }
 
+    public Guest getGuest() {
+        return guest;
+    }
+
+    public void setGuest(Guest guest) {
+        this.guest = guest;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o)
@@ -116,16 +124,16 @@ public class Expense {
         if (o == null || getClass() != o.getClass())
             return false;
         Expense expense = (Expense) o;
-        return idExpense == expense.idExpense && amount == expense.amount && Objects.equals(reservation, expense.reservation) && Objects.equals(branch, expense.branch) && Objects.equals(item, expense.item) && Objects.equals(service, expense.service) && Objects.equals(dateTimeExpense, expense.dateTimeExpense);
+        return Objects.equals(idExpense, expense.idExpense) && Objects.equals(reservation, expense.reservation) && Objects.equals(guest, expense.guest) && Objects.equals(branch, expense.branch) && Objects.equals(item, expense.item) && Objects.equals(service, expense.service) && Objects.equals(amount, expense.amount) && Objects.equals(dateTimeExpense, expense.dateTimeExpense);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(idExpense, reservation, branch, item, service, amount, dateTimeExpense);
+        return Objects.hash(idExpense, reservation, guest, branch, item, service, amount, dateTimeExpense);
     }
 
     @Override
     public String toString() {
-        return "Expense{" + "idExpense=" + idExpense + ", reservation=" + reservation + ", branch=" + branch + ", item=" + item + ", service=" + service + ", amount=" + amount + ", dateTimeExpense=" + dateTimeExpense + '}';
+        return "Expense{" + "idExpense=" + idExpense + ", reservation=" + reservation + ", guest=" + guest + ", branch=" + branch + ", item=" + item + ", service=" + service + ", amount=" + amount + ", dateTimeExpense=" + dateTimeExpense + '}';
     }
 }

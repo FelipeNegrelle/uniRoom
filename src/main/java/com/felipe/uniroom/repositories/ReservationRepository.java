@@ -2,6 +2,7 @@ package com.felipe.uniroom.repositories;
 
 import com.felipe.uniroom.config.ConnectionManager;
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.entities.Expense;
 import com.felipe.uniroom.entities.Guest;
 import com.felipe.uniroom.entities.Reservation;
 import com.felipe.uniroom.entities.Room;
@@ -122,4 +123,50 @@ public class ReservationRepository extends DatabaseRepository {
         return conflictingGuests;
     }
 
+    public static Float getTotalDays(Integer idReservation, Date finalDate, Role role) {
+        final StringBuilder query = new StringBuilder();
+        query.append("SELECT CAST(rt.price * DATEDIFF(DATE(:date), r.initial_date) AS FLOAT4) as total_days\n");
+        query.append("FROM reservation r\n");
+        query.append("LEFT OUTER JOIN room rr ON r.id_room = rr.id_room\n");
+        query.append("LEFT OUTER JOIN room_type rt ON rt.id_room_type = rr.id_room_type\n");
+        query.append("WHERE r.id_reservation = :idReservation");
+
+        try (EntityManager em = ConnectionManager.getEntityManager()) {
+            return (Float) em.createNativeQuery(query.toString())
+                    .setParameter("date", finalDate)
+                    .setParameter("idReservation", idReservation)
+                    .getSingleResult();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static List<Expense> getExpenses(Integer idReservation) {
+        final String query = "SELECT e from Expense e LEFT OUTER JOIN Reservation r ON e.reservation.idReservation = r.idReservation WHERE e.reservation.idReservation = :idReservation ";
+
+        try (EntityManager em = ConnectionManager.getEntityManager()) {
+            return em.createQuery(query, Expense.class)
+                    .setParameter("idReservation", idReservation)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
+    }
+
+    public static List<Guest> getGuests(Integer idReservation) {
+        final String query = "SELECT g from Guest g LEFT OUTER JOIN ReservationGuest rg ON rg.guest.idGuest = g.idGuest WHERE rg.reservation.idReservation = :idReservation";
+
+        try(EntityManager em = ConnectionManager.getEntityManager()) {
+            return em.createQuery(query, Guest.class)
+                    .setParameter("idReservation", idReservation)
+                    .getResultList();
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
+    }
 }

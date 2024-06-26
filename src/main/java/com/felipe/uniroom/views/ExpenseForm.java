@@ -2,11 +2,9 @@ package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
-import com.felipe.uniroom.entities.Expense;
-import com.felipe.uniroom.entities.Item;
-import com.felipe.uniroom.entities.Reservation;
-import com.felipe.uniroom.entities.Service;
+import com.felipe.uniroom.entities.*;
 import com.felipe.uniroom.services.ExpenseService;
+import com.felipe.uniroom.services.GuestService;
 import com.felipe.uniroom.services.ItemService;
 import com.felipe.uniroom.services.ServiceService;
 import net.miginfocom.swing.MigLayout;
@@ -20,6 +18,7 @@ import java.util.Objects;
 public class ExpenseForm extends JFrame {
     private static final List<Item> items = new ArrayList<>();
     private static final List<Service> services = new ArrayList<>();
+    private static final List<Guest> guests = new ArrayList<>();
 
     public ExpenseForm(Role role, Reservation reservation, Expense entity) {
         super(Constants.EXPENSE);
@@ -60,6 +59,11 @@ public class ExpenseForm extends JFrame {
         final JComboBox<String> serviceCombo = new JComboBox<>();
         serviceCombo.setPreferredSize(new Dimension(300, 30));
         serviceCombo.setFont(Constants.FONT);
+
+        final JLabel guestLabel = Components.getLabel(Constants.GUEST + ": ", null, Font.BOLD, 20, null);
+        final JComboBox<String> guestCombo = new JComboBox<>();
+        guestCombo.setPreferredSize(new Dimension(300, 30));
+        guestCombo.setFont(Constants.FONT);
 
         final JLabel amountLabel = Components.getLabel(Constants.QUANTITY + ": ", null, Font.BOLD, 20, null);
         final JTextField amountField = new JTextField(20);
@@ -124,11 +128,14 @@ public class ExpenseForm extends JFrame {
         inputPanel.add(itemCombo, "wrap");
         inputPanel.add(serviceLabel);
         inputPanel.add(serviceCombo, "wrap");
+        inputPanel.add(guestLabel);
+        inputPanel.add(guestCombo, "wrap");
         inputPanel.add(amountLabel);
         inputPanel.add(amountField, "wrap");
 
         populateItemCombo(itemCombo, entity, role);
         populateServiceCombo(serviceCombo, entity, role);
+        populateGuestCombo(guestCombo, reservation, entity, role);
 
         mainPanel.add(inputPanel, "wrap, grow");
 
@@ -144,6 +151,7 @@ public class ExpenseForm extends JFrame {
                 expense.setItem(itemRadio.isSelected() && itemCombo.getSelectedIndex() != -1 ? items.get(itemCombo.getSelectedIndex()) : null);
                 expense.setService(serviceRadio.isSelected() && serviceCombo.getSelectedIndex() != -1 ? services.get(serviceCombo.getSelectedIndex()) : null);
                 expense.setReservation(reservation);
+                expense.setGuest(guestCombo.getSelectedIndex() != -1 ? guests.get(guestCombo.getSelectedIndex()) : null);
                 if (itemRadio.isSelected()) {
                     if (itemCombo.getSelectedIndex() != -1) {
                         expense.setBranch(items.get(itemCombo.getSelectedIndex()).getBranch());
@@ -228,6 +236,39 @@ public class ExpenseForm extends JFrame {
 
         if (Objects.nonNull(entity) && Objects.nonNull(entity.getService())) {
             serviceCombo.setSelectedItem(entity.getService().getDescription());
+        }
+    }
+
+    private void populateGuestCombo(JComboBox<String> guestCombo, Reservation reservation, Expense entity, Role role) {
+        final List<Guest> guestList = GuestService.findAll(role);
+
+        if (Objects.nonNull(guestList) && !guestList.isEmpty()) {
+            for (Guest guest : guestList) {
+                if (reservation.getGuestList().contains(guest)) {
+                    String guestName;
+
+                    if (guest.getIsForeigner()) {
+                        guestName = guest.getName() + " - " + guest.getPassportNumber();
+                    } else {
+                        guestName = guest.getName() + " - " + guest.getCpf();
+                    }
+
+                    guestCombo.addItem(guestName);
+                    guests.add(guest);
+                }
+            }
+        }
+
+        if (Objects.nonNull(entity) && Objects.nonNull(entity.getGuest())) {
+            String guestName;
+
+            if (entity.getGuest().getIsForeigner()) {
+                guestName = entity.getGuest().getName() + " - " + entity.getGuest().getPassportNumber();
+            } else {
+                guestName = entity.getGuest().getName() + " - " + entity.getGuest().getCpf();
+            }
+
+            guestCombo.setSelectedItem(guestName);
         }
     }
 }

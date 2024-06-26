@@ -1,6 +1,7 @@
 package com.felipe.uniroom.services;
 
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.entities.Expense;
 import com.felipe.uniroom.entities.Guest;
 import com.felipe.uniroom.entities.Reservation;
 import com.felipe.uniroom.repositories.ReservationRepository;
@@ -50,15 +51,14 @@ public class ReservationService {
             errorsSb.append("Data de saída deve ser igual ou posterior à data atual!\n");
         }
 
-//        if (Objects.nonNull(reservation.getRoom()) && Objects.nonNull(reservation.getGuestList())) {
-//            if (reservation.getRoom().getRoomType().getCapacity() < reservation.getGuestList().size()) {
-//                errorsSb.append("A quantidade de hóspedes deve ser menor ou igual à capacidade do quarto (Capacidade: ")
-//                        .append(reservation.getRoom().getRoomType().getCapacity())
-//                        .append(").\n");
-//            }
-//        }
-        //essa verificacao eh para ver se a quantidade de hospede respeita a capacidade do quarto, mas quando vou realizar o checkin ele dar erro (verificar ao finalizar projeto)
-
+        if (Objects.nonNull(reservation.getRoom()) && Objects.nonNull(reservation.getGuestList())) {
+            if (reservation.getRoom().getRoomType().getCapacity() < reservation.getGuestList().size()) {
+                errorsSb.append("A quantidade de hóspedes deve ser menor ou igual à capacidade do quarto (Capacidade: ");
+                errorsSb.append(reservation.getRoom().getRoomType().getCapacity());
+                errorsSb.append(").\n");
+            }
+        }
+        
         if (!ReservationRepository.isRoomAvailable(reservation.getRoom().getIdRoom(), reservation.getInitialDate(), reservation.getFinalDate(), reservation.getIdReservation())) {
             errorsSb.append("O quarto selecionado está ocupado no período escolhido.\n");
         }
@@ -74,12 +74,12 @@ public class ReservationService {
         return errorsSb.toString();
     }
 
-    public static List<Reservation> findAll(Role role){
+    public static List<Reservation> findAll(Role role) {
         return ReservationRepository.findAll(Reservation.class, role);
     }
 
-    public static Reservation findById(int id){
-        return ReservationRepository.findById(Reservation.class,id);
+    public static Reservation findById(int id) {
+        return ReservationRepository.findById(Reservation.class, id);
     }
 
     private static LocalDateTime convertToLocalDateTime(Date date) {
@@ -212,7 +212,27 @@ public class ReservationService {
         }
     }
 
-    public static Reservation findByIdWithGuests(int idreservation){
-        return ReservationRepository.findByIdWithGuests(idreservation);
+    public static Float getTotalDays(Reservation reservation, Date checkoutDate, Role role) {
+        try {
+            return ReservationRepository.getTotalDays(reservation.getIdReservation(), checkoutDate, role);
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
+    }
+
+    public static List<Expense> getExpensesReservation(Reservation reservation, Role role) {
+        try {
+            return ReservationRepository.getExpenses(reservation.getIdReservation());
+        } catch (Exception e) {
+            e.printStackTrace();
+
+            return null;
+        }
+    }
+
+    public static Reservation findByIdWithGuests(int idReservation) {
+        return ReservationRepository.findByIdWithGuests(idReservation);
     }
 }
