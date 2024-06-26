@@ -142,6 +142,23 @@ public class ReservationRepository extends DatabaseRepository {
         }
     }
 
+    public static Float getTotalExpensesByReservationId(Integer reservationId) {
+        String query = "SELECT SUM(COALESCE(i.price * e.amount, 0) + COALESCE(s.price * e.amount, 0)) " +
+                "FROM Expense e " +
+                "LEFT JOIN e.item i " +
+                "LEFT JOIN e.service s " +
+                "WHERE e.reservation.idReservation = :idReservation";
+
+        try (EntityManager em = ConnectionManager.getEntityManager()) {
+            Double result = em.createQuery(query, Double.class)
+                    .setParameter("idReservation", reservationId)
+                    .getSingleResult();
+            return result != null ? result.floatValue() : 0f;
+        } catch (NoResultException e) {
+            return 0f;
+        }
+    }
+
     public static List<Expense> getExpenses(Integer idReservation) {
         final String query = "SELECT e from Expense e LEFT OUTER JOIN Reservation r ON e.reservation.idReservation = r.idReservation WHERE e.reservation.idReservation = :idReservation ";
 

@@ -2,6 +2,7 @@ package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.Expense;
 import com.felipe.uniroom.entities.Reservation;
 import com.felipe.uniroom.entities.ReservationMovement;
@@ -42,7 +43,7 @@ public class ReservationCheckoutForm extends JFrame {
         final JPanel tablePanel = new JPanel(new MigLayout("fill"));
         tablePanel.setBackground(Color.WHITE);
 
-        model = new DefaultTableModel(new Object[]{Constants.NAME, Constants.CPF, Constants.ITEM + " / " + Constants.SERVICE, Constants.QUANTITY, "Pagar"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.NAME, Constants.CPF, Constants.ITEM + " / " + Constants.SERVICE, Constants.QUANTITY, "Valor total", "Pagar"}, 0);
 
         final JTable guestsTable = new JTable(model);
         guestsTable.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -118,92 +119,19 @@ public class ReservationCheckoutForm extends JFrame {
 
         populateExpenseTable(reservation, role);
         updateTotalDays(reservation, role);
-        updateTotalExpenses(reservation, role);
-//        updateTotal();
+        updateTotalExpenses(reservation);
+        updateTotal(reservation, role);
 
         setLocationRelativeTo(null);
         setVisible(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-//        super("Finalizar reserva");
-//        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        setLayout(new MigLayout("fill, insets 50", "[grow]", "[grow]"));
-//        getContentPane().setBackground(Constants.BLUE);
-//        setIconImage(Constants.LOGO);
-//
-//        JPanel mainPanel = new JPanel(new MigLayout("fill, insets 20", "[grow]", "[align center][grow]"));
-//
-//        final JLabel titleLabel = new JLabel("Finalizar reserva");
-//        titleLabel.setFont(Constants.FONT.deriveFont(40f));
-//        titleLabel.setForeground(Constants.WHITE);
-//        mainPanel.add(titleLabel, "align center, wrap");
-//
-//        final JPanel subPanel = new JPanel(new MigLayout("fill, insets 10", "[grow][grow]", "[align center]"));
-//        subPanel.setBackground(Constants.BLUE);
-//
-//        model = new DefaultTableModel(new Object[]{Constants.NAME, Constants.CPF, Constants.ITEM + " / " + Constants.SERVICE, Constants.QUANTITY, "Pagar"}, 0);
-//
-//        final JTable table = new JTable(model);
-//        table.setFont(new Font("Sans", Font.PLAIN, 20));
-//        table.setSelectionForeground(Color.WHITE);
-//        table.setAutoCreateRowSorter(true);
-//        table.setRowHeight(30);
-//        table.setDefaultEditor(Object.class, null);
-//        table.getTableHeader().setReorderingAllowed(false);
-//        table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-//        subPanel.add(new JScrollPane(table), "span, grow");
-//
-//        final JPanel valuesPanel = new JPanel(new MigLayout("fill, insets 10", "[grow]", "[][][][]"));
-//        valuesPanel.setBackground(Constants.BLUE);
-//
-//        final JLabel daysLabel = new JLabel("Diárias: " + 0);
-//        daysLabel.setFont(Constants.FONT.deriveFont(20f));
-//        daysLabel.setForeground(Constants.WHITE);
-//        valuesPanel.add(daysLabel, "wrap");
-//
-//        final JLabel expenseLabel = new JLabel("Despesas: R$ " + 0);
-//        expenseLabel.setFont(Constants.FONT.deriveFont(20f));
-//        expenseLabel.setForeground(Constants.WHITE);
-//        valuesPanel.add(expenseLabel, "wrap");
-//
-//        final JLabel totalLabel = new JLabel("Total: R$ " + 0);
-//        totalLabel.setFont(Constants.FONT.deriveFont(20f));
-//        totalLabel.setForeground(Constants.WHITE);
-//        valuesPanel.add(totalLabel, "wrap");
-//
-//        final JButton backButton = new JButton(Constants.BACK);
-//        backButton.setFont(Constants.FONT.deriveFont(Font.BOLD));
-//        backButton.setBackground(Constants.WHITE);
-//        backButton.setIcon(Constants.BACK_ICON);
-//        backButton.addActionListener(e -> {
-//            new ReservationView(role);
-//            dispose();
-//        });
-//        valuesPanel.add(backButton, "align left");
-//
-//        final JButton checkoutButton = new JButton("Finalizar reserva");
-//        checkoutButton.setFont(Constants.FONT.deriveFont(Font.BOLD));
-//        checkoutButton.setBackground(Constants.WHITE);
-//        checkoutButton.addActionListener(e -> {
-////            reservation.setActive(false);
-//            new ReservationView(role);
-//            dispose();
-//        });
-//        valuesPanel.add(checkoutButton, "align right");
-//
-//        subPanel.add(valuesPanel, "grow");
-//
-//        mainPanel.add(subPanel, "grow");
-//
-//        add(mainPanel);
-//        setExtendedState(JFrame.MAXIMIZED_BOTH);
-//        setLocationRelativeTo(null);
-//        setVisible(true);
     }
 
     private static void updateTotalDays(Reservation reservation, Role role) {
         final Float result = ReservationService.getTotalDays(reservation, new Date(), role);
 
         if (Objects.nonNull(result)) {
+            System.out.println(result);
             totalDaysLabel.setText("Total das Diárias: R$ " + result);
         }
     }
@@ -215,21 +143,30 @@ public class ReservationCheckoutForm extends JFrame {
             for (Expense expense : expenses) {
                 model.addRow(new Object[]{
                         expense.getGuest().getName(),
-                        expense.getGuest().getCpf(),
+                        Util.maskCpf(expense.getGuest().getCpf()),
                         expense.getItem() != null ? expense.getItem().getName() : expense.getService().getDescription(),
                         expense.getAmount(),
+                        expense.getItem() != null ? expense.getItem().getPrice() * expense.getAmount() : expense.getService().getPrice() * expense.getAmount(),
                         null
                 });
             }
         }
     }
 
-    private static void updateTotalExpenses(Reservation reservation, Role role) {
-//        final Float result = ReservationService.getTotalExpenses(reservation, role);
-        float result = 0f;
+    private static void updateTotalExpenses(Reservation reservation) {
+        final Float result = ReservationService.getTotalExpensesByReservationId(reservation.getIdReservation());
         if (Objects.nonNull(result)) {
             totalExpensesLabel.setText("Total das Despesas: R$ " + result);
         }
+    }
+
+    private static void updateTotal(Reservation reservation, Role role) {
+        final Float daily = ReservationService.getTotalDays(reservation, new Date(), role);
+        final Float expenses = ReservationService.getTotalExpensesByReservationId(reservation.getIdReservation());
+        final Float result = (daily != null ? daily : 0) + (expenses != null ? expenses : 0);
+
+        grandTotalLabel.setText("Preço total: R$ " + String.format("%.2f", result));
+        
     }
 
     private static class ButtonRenderer extends JButton implements TableCellRenderer {

@@ -222,6 +222,15 @@ public class ReservationService {
         }
     }
 
+    public static Float getTotalExpensesByReservationId(Integer reservationId){
+        try {
+            return ReservationRepository.getTotalExpensesByReservationId(reservationId);
+        } catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
+
     public static List<Expense> getExpensesReservation(Reservation reservation, Role role) {
         try {
             return ReservationRepository.getExpenses(reservation.getIdReservation());
