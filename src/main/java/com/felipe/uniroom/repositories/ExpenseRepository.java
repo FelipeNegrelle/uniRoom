@@ -5,6 +5,8 @@ import com.felipe.uniroom.entities.Expense;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 
+import java.util.List;
+
 public class ExpenseRepository extends DatabaseRepository {
     public static boolean hasDuplicateItem(Expense expense) {
         final String query = "SELECT e.idExpense FROM Expense e WHERE e.reservation.idReservation = :idReservation AND e.item.idItem = :idItem";
@@ -31,6 +33,18 @@ public class ExpenseRepository extends DatabaseRepository {
         } catch (
                 NoResultException e) {
             return false;
+        }
+    }
+
+    public static List<Expense> findByReservationId(Integer reservationId){
+        final String query = "SELECT e from Expense e WHERE e.reservation.idReservation = :idReservation";
+
+        try(EntityManager em = ConnectionManager.getEntityManager()){
+            return em.createQuery(query, Expense.class)
+                    .setParameter("idReservation", reservationId)
+                    .getResultList();
+        } catch (NoResultException e){
+            return null;
         }
     }
 }

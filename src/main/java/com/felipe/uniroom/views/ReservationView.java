@@ -153,9 +153,10 @@ public class ReservationView extends JFrame {
                     popupMenu.add(checkinItem);
                 }
 
-                if(reservation.getDateTimeCheckOut() == null){
+                if(reservation.getDateTimeCheckIn() != null && reservation.getDateTimeCheckOut() == null){
                     popupMenu.add(checkoutItem);
                 }
+
                 popupMenu.add(expenseItem);
                 if (!reservation.getStatus().equals("C") && !reservation.getStatus().equals("CO")) {
                     popupMenu.add(editItem);

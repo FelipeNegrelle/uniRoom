@@ -3,6 +3,7 @@ package com.felipe.uniroom.services;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Expense;
 import com.felipe.uniroom.repositories.ExpenseRepository;
+import com.felipe.uniroom.repositories.ReservationRepository;
 import com.felipe.uniroom.views.Components;
 
 import javax.swing.*;
@@ -18,7 +19,7 @@ public class ExpenseService {
                 errorsSb.append("Item não pode ser vazio!\n");
             }
 
-            if (Objects.nonNull(expense.getItem()) && ExpenseRepository.hasDuplicateItem(expense)) {
+            if (Objects.nonNull(expense.getItem()) && ExpenseRepository.hasDuplicateItem(expense) && !isUpdate) {
                 errorsSb.append("Item já cadastrado!\n");
             }
         } else {
@@ -26,7 +27,7 @@ public class ExpenseService {
                 errorsSb.append("Serviço não pode ser vazio!\n");
             }
 
-            if (Objects.nonNull(expense.getService()) && ExpenseRepository.hasDuplicateService(expense)) {
+            if (Objects.nonNull(expense.getService()) && ExpenseRepository.hasDuplicateService(expense) && !isUpdate) {
                 errorsSb.append("Serviço já cadastrado!\n");
             }
         }
@@ -100,6 +101,16 @@ public class ExpenseService {
             e.printStackTrace();
             Components.showGenericError(null);
             return false;
+        }
+    }
+
+    public static List<Expense> findByReservationId(Integer reservationId){
+        try {
+            return ExpenseRepository.findByReservationId(reservationId);
+        } catch (Exception e){
+            e.printStackTrace();
+
+            return null;
         }
     }
 

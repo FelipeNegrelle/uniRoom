@@ -73,14 +73,14 @@ public class ExpenseView extends JFrame {
             @Override
             public void keyReleased(KeyEvent e) {
                 searchItens.addAll(ExpenseService.search(searchField.getText(), null, role));
-                updateExpenseTable(role);
+                updateExpenseTable(reservation ,role);
             }
         });
         searchPanel.add(searchField, "align right");
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Item", "Serviço", "Quantidade", "Data/Hora despesa"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Item", "Serviço", "Quantidade",Constants.GUEST , "Data/Hora despesa"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -120,7 +120,7 @@ public class ExpenseView extends JFrame {
                     expense.setIdExpense((int) model.getValueAt(row, 1));
 
                     if (ExpenseService.delete(expense)) {
-                        updateExpenseTable(role);
+                        updateExpenseTable(reservation ,role);
                     } else {
                         Components.showGenericError(this);
                     }
@@ -141,14 +141,14 @@ public class ExpenseView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateExpenseTable(role);
+        updateExpenseTable(reservation ,role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
     }
 
-    private static void updateExpenseTable(Role role) {
+    private static void updateExpenseTable(Reservation reservation,  Role role) {
         model.setRowCount(0);
 
         if (!searchItens.isEmpty()) {
@@ -159,12 +159,13 @@ public class ExpenseView extends JFrame {
                         Objects.isNull(expense.getItem()) ? "-" : expense.getItem().getName(),
                         Objects.isNull(expense.getService()) ? "-" : expense.getService().getDescription(),
                         expense.getAmount(),
+                        expense.getGuest().getName(),
                         Util.formatNullableDate(expense.getDateTimeExpense(), "dd/MM/yyyy HH:mm"),
                 });
             }
             searchItens.clear();
         } else {
-            final List<Expense> expenseList = ExpenseService.findAll(role);
+            final List<Expense> expenseList = ExpenseService.findByReservationId(reservation.getIdReservation());
             if (Objects.nonNull(expenseList)) {
                 for (Expense expense : expenseList) {
                     model.addRow(new Object[]{
@@ -173,6 +174,7 @@ public class ExpenseView extends JFrame {
                             Objects.isNull(expense.getItem()) ? "-" : expense.getItem().getName(),
                             Objects.isNull(expense.getService()) ? "-" : expense.getService().getDescription(),
                             expense.getAmount(),
+                            expense.getGuest().getName(),
                             Util.formatNullableDate(expense.getDateTimeExpense(), "dd/MM/yyyy HH:mm"),
                     });
                 }

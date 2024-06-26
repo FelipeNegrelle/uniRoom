@@ -2,6 +2,7 @@ package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.*;
 import com.felipe.uniroom.services.ExpenseService;
 import com.felipe.uniroom.services.GuestService;
@@ -250,7 +251,7 @@ public class ExpenseForm extends JFrame {
                     if (guest.getIsForeigner()) {
                         guestName = guest.getName() + " - " + guest.getPassportNumber();
                     } else {
-                        guestName = guest.getName() + " - " + guest.getCpf();
+                        guestName = guest.getName() + " - " + Util.maskCpf(guest.getCpf());
                     }
 
                     guestCombo.addItem(guestName);
