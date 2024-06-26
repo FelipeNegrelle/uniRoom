@@ -7,6 +7,7 @@ import com.felipe.uniroom.repositories.RoomRepository;
 import com.felipe.uniroom.views.Components;
 
 import javax.swing.*;
+import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -137,5 +138,14 @@ public class RoomService {
 
     public static List<RoomType> findByBranchId(List<Integer> idBranches){
         return RoomRepository.findByBranchId(idBranches);
+    }
+
+    public static List<Room> findAvailableRooms(Date checkInDate, Date checkOutDate) {
+        try {
+            return RoomRepository.findAvailableRooms(checkInDate, checkOutDate);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

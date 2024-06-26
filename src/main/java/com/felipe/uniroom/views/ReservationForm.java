@@ -12,6 +12,8 @@ import com.felipe.uniroom.services.RoomService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
@@ -31,6 +33,10 @@ public class ReservationForm extends JFrame {
     private final List<Room> rooms = new ArrayList<>();
 
     private static DefaultTableModel model;
+    private JFormattedTextField checkInField;
+    private JFormattedTextField checkOutField;
+    private JComboBox<String> roomsCombo;
+    private JComboBox<String> guestsCombo;
 
     public ReservationForm(Role role, Reservation entity) {
         super(Constants.RESERVATION);
@@ -39,51 +45,130 @@ public class ReservationForm extends JFrame {
         getContentPane().setBackground(Constants.BLUE);
         setIconImage(Constants.LOGO);
 
+        JPanel mainPanel = createMainPanel();
+        JLabel titlePage = createTitleLabel();
+        add(titlePage, "align center, wrap");
+
+        JPanel inputPanel = createInputPanel(entity, role);
+        mainPanel.add(inputPanel, "wrap, grow");
+
+        if (Objects.nonNull(entity)) {
+            loadReservationGuests(entity);
+        }
+
+        JButton saveButton = createSaveButton(role, entity);
+        JButton cancelButton = createCancelButton(role);
+
+        mainPanel.add(saveButton, "split 2, align center");
+        mainPanel.add(cancelButton, "align center, wrap");
+
+        add(mainPanel, BorderLayout.CENTER);
+        setLocationRelativeTo(null);
+        setVisible(true);
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+    }
+
+    private JPanel createMainPanel() {
         JPanel mainPanel = new JPanel(new MigLayout("fill, insets 20", "[][grow]", "[align center]"));
         mainPanel.setBackground(Color.WHITE);
+        return mainPanel;
+    }
 
+    private JLabel createTitleLabel() {
         JLabel titlePage = new JLabel(Constants.RESERVATION);
         titlePage.setFont(new Font("Sans", Font.BOLD, 60));
         titlePage.setForeground(Color.WHITE);
-        add(titlePage, "align center, wrap");
+        return titlePage;
+    }
 
+    private JPanel createInputPanel(Reservation entity, Role role) {
         JPanel inputPanel = new JPanel(new MigLayout("fillx, insets 20", "[grow]", "[]10[]"));
         inputPanel.setBackground(Color.WHITE);
 
         JLabel checkInLabel = new JLabel("Data de entrada:");
         checkInLabel.setFont(new Font("Sans", Font.BOLD, 20));
-        JFormattedTextField checkInField = createFormattedDateField();
+        checkInField = createFormattedDateField();
         checkInField.setPreferredSize(new Dimension(400, 30));
         checkInField.setFont(Constants.FONT);
-        if (Objects.nonNull(entity) && Objects.nonNull(entity.getInitialDate())) {
-            checkInField.setText(formatDateTime(convertToLocalDateTimeViaInstant(entity.getInitialDate())));
-        }
 
         JLabel checkOutLabel = new JLabel("Data de saída:");
         checkOutLabel.setFont(new Font("Sans", Font.BOLD, 20));
-        JFormattedTextField checkOutField = createFormattedDateField();
+        checkOutField = createFormattedDateField();
         checkOutField.setPreferredSize(new Dimension(400, 30));
         checkOutField.setFont(Constants.FONT);
-        if (Objects.nonNull(entity) && Objects.nonNull(entity.getFinalDate())) {
-            checkOutField.setText(formatDateTime(convertToLocalDateTimeViaInstant(entity.getFinalDate())));
-        }
 
-        final JLabel guestsLabel = Components.getLabel(Constants.GUEST + ":", null, Font.BOLD, null, null);
-        final JComboBox<String> guestsCombo = new JComboBox<>();
+        setInitialDates(entity);
+
+        addDateFieldListeners();
+
+        JLabel guestsLabel = createLabel(Constants.GUEST + ":");
+        guestsCombo = new JComboBox<>();
         guestsCombo.setPreferredSize(new Dimension(300, 30));
         guestsCombo.setFont(Constants.FONT);
 
-        model = new DefaultTableModel(new Object[]{"Nome", "CPF", "Passaporte"}, 0);
+        populateGuestCombo(role);
 
-        final JTable guestsTable = new JTable();
+        model = new DefaultTableModel(new Object[]{"Nome", "CPF", "Passaporte"}, 0);
+        JTable guestsTable = createGuestsTable();
+        JButton addGuestButton = createAddGuestButton();
+        JButton removeGuestButton = createRemoveGuestButton(guestsTable);
+
+        JLabel roomsLabel = createLabel(Constants.ROOM + ":");
+        roomsCombo = new JComboBox<>();
+        roomsCombo.setPreferredSize(new Dimension(300, 30));
+        roomsCombo.setFont(Constants.FONT);
+
+        inputPanel.add(checkInLabel);
+        inputPanel.add(checkInField, "wrap");
+        inputPanel.add(checkOutLabel);
+        inputPanel.add(checkOutField, "wrap");
+        inputPanel.add(roomsLabel);
+        inputPanel.add(roomsCombo, "wrap");
+        inputPanel.add(guestsLabel);
+        inputPanel.add(guestsCombo);
+        inputPanel.add(addGuestButton, "span, split 2");
+        inputPanel.add(removeGuestButton, "wrap");
+        inputPanel.add(new JScrollPane(guestsTable), "grow, span, wrap");
+
+        return inputPanel;
+    }
+
+    private JLabel createLabel(String text) {
+        JLabel label = new JLabel(text);
+        label.setFont(new Font("Sans", Font.BOLD, 20));
+        return label;
+    }
+
+    private void setInitialDates(Reservation entity) {
+        LocalDate today = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
+
+        if (Objects.nonNull(entity) && Objects.nonNull(entity.getInitialDate())) {
+            checkInField.setText(formatDate(convertToLocalDateTimeViaInstant(entity.getInitialDate())));
+        } else {
+            checkInField.setText(formatDate(today.atStartOfDay()));
+        }
+
+        if (Objects.nonNull(entity) && Objects.nonNull(entity.getFinalDate())) {
+            checkOutField.setText(formatDate(convertToLocalDateTimeViaInstant(entity.getFinalDate())));
+        } else {
+            checkOutField.setText(formatDate(tomorrow.atStartOfDay()));
+        }
+    }
+
+    private JTable createGuestsTable() {
+        JTable guestsTable = new JTable();
         guestsTable.setModel(model);
         guestsTable.setFont(new Font("Sans", Font.PLAIN, 20));
         guestsTable.setSelectionForeground(Color.WHITE);
         guestsTable.setAutoCreateRowSorter(true);
         guestsTable.setRowHeight(30);
         guestsTable.setDefaultEditor(Object.class, null);
+        return guestsTable;
+    }
 
-        final JButton addGuestButton = new JButton("Adicionar hóspede");
+    private JButton createAddGuestButton() {
+        JButton addGuestButton = new JButton("Adicionar hóspede");
         addGuestButton.addActionListener(e -> {
             final Guest selectedGuest = guests.get(guestsCombo.getSelectedIndex());
             if (!guestsTableList.contains(selectedGuest)) {
@@ -93,8 +178,11 @@ public class ReservationForm extends JFrame {
                 JOptionPane.showMessageDialog(this, "Hóspede já adicionado!", "Aviso", JOptionPane.WARNING_MESSAGE);
             }
         });
+        return addGuestButton;
+    }
 
-        final JButton removeGuestButton = new JButton("Remover hóspede");
+    private JButton createRemoveGuestButton(JTable guestsTable) {
+        JButton removeGuestButton = new JButton("Remover hóspede");
         removeGuestButton.addActionListener(e -> {
             final int selectedRow = guestsTable.getSelectedRow();
             if (selectedRow != -1) {
@@ -104,50 +192,69 @@ public class ReservationForm extends JFrame {
                 JOptionPane.showMessageDialog(this, "Selecione um hóspede para remover!", "Aviso", JOptionPane.WARNING_MESSAGE);
             }
         });
+        return removeGuestButton;
+    }
 
-        final JLabel roomsLabel = Components.getLabel(Constants.ROOM + ":", null, Font.BOLD, null, null);
-        final JComboBox<String> roomsCombo = new JComboBox<>();
-        roomsCombo.setPreferredSize(new Dimension(300, 30));
-        roomsCombo.setFont(Constants.FONT);
-
-        populateGuestCombo(guestsCombo, entity, role);
-        populateRoomsCombo(roomsCombo, entity, role);
-
-        if (Objects.nonNull(entity)) {
-            loadReservationGuests(entity);
-        }
-
-        inputPanel.add(checkInLabel);
-        inputPanel.add(checkInField, "wrap");
-        inputPanel.add(checkOutLabel);
-        inputPanel.add(checkOutField, "wrap");
-        mainPanel.add(inputPanel, "wrap, grow");
-        inputPanel.add(roomsLabel);
-        inputPanel.add(roomsCombo, "wrap");
-        inputPanel.add(guestsLabel);
-        inputPanel.add(guestsCombo);
-        inputPanel.add(addGuestButton, "span, split 2");
-        inputPanel.add(removeGuestButton, "wrap");
-        inputPanel.add(new JScrollPane(guestsTable), "grow, span, wrap");
-
-
+    private JButton createSaveButton(Role role, Reservation entity) {
         JButton saveButton = new JButton(Constants.SAVE);
         saveButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
         saveButton.setPreferredSize(Constants.BUTTON_SIZE);
         saveButton.setBackground(Constants.BLUE);
         saveButton.setForeground(Color.WHITE);
-        saveButton.addActionListener(e -> {
-            final LocalDate checkInDate;
-            final LocalDate checkOutDate;
+        saveButton.addActionListener(e -> saveReservation(role, entity));
+        return saveButton;
+    }
 
-            try {
-                checkInDate = LocalDate.parse(checkInField.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-                checkOutDate = LocalDate.parse(checkOutField.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-            } catch (
-                    Exception ex) {
-                JOptionPane.showMessageDialog(this, "Datas de entrada/saída inválidas!", "Aviso", JOptionPane.WARNING_MESSAGE);
-                return;
+    private JButton createCancelButton(Role role) {
+        JButton cancelButton = new JButton(Constants.BACK);
+        cancelButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
+        cancelButton.setPreferredSize(Constants.BUTTON_SIZE);
+        cancelButton.setBackground(Constants.RED);
+        cancelButton.setForeground(Color.WHITE);
+        cancelButton.addActionListener(e -> {
+            new ReservationView(role);
+            dispose();
+        });
+        return cancelButton;
+    }
+
+    private void addDateFieldListeners() {
+        DocumentListener dateFieldListener = new DocumentListener() {
+            @Override
+            public void insertUpdate(DocumentEvent e) {
+                updateRoomsCombo();
             }
+
+            @Override
+            public void removeUpdate(DocumentEvent e) {
+                updateRoomsCombo();
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent e) {
+                updateRoomsCombo();
+            }
+        };
+        checkInField.getDocument().addDocumentListener(dateFieldListener);
+        checkOutField.getDocument().addDocumentListener(dateFieldListener);
+    }
+
+    private void updateRoomsCombo() {
+        if (isDateFieldValid(checkInField) && isDateFieldValid(checkOutField)) {
+            try {
+                LocalDate checkInDate = LocalDate.parse(checkInField.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                LocalDate checkOutDate = LocalDate.parse(checkOutField.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+                populateRoomsCombo(convertToDateViaInstant(checkInDate.atStartOfDay()), convertToDateViaInstant(checkOutDate.atStartOfDay()));
+            } catch (Exception ex) {
+                // Silenciar exceção para evitar mensagens repetidas desnecessárias
+            }
+        }
+    }
+
+    private void saveReservation(Role role, Reservation entity) {
+        try {
+            LocalDate checkInDate = LocalDate.parse(checkInField.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
+            LocalDate checkOutDate = LocalDate.parse(checkOutField.getText(), DateTimeFormatter.ofPattern("dd/MM/yyyy"));
 
             final Reservation reservation = new Reservation();
             reservation.setIdReservation(Objects.nonNull(entity) ? entity.getIdReservation() : null);
@@ -166,26 +273,9 @@ public class ReservationForm extends JFrame {
                 new ReservationView(role);
                 dispose();
             }
-        });
-
-        JButton cancelButton = new JButton(Constants.BACK);
-        cancelButton.setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-        cancelButton.setPreferredSize(Constants.BUTTON_SIZE);
-        cancelButton.setBackground(Constants.RED);
-        cancelButton.setForeground(Color.WHITE);
-        cancelButton.addActionListener(e -> {
-            new ReservationView(role);
-            dispose();
-        });
-
-        mainPanel.add(saveButton, "split 2, align center");
-        mainPanel.add(cancelButton, "align center, wrap");
-
-        add(mainPanel, BorderLayout.CENTER);
-
-        setLocationRelativeTo(null);
-        setVisible(true);
-        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Datas de entrada/saída inválidas!", "Aviso", JOptionPane.WARNING_MESSAGE);
+        }
     }
 
     private void updateGuestsTable() {
@@ -206,22 +296,22 @@ public class ReservationForm extends JFrame {
         updateGuestsTable();
     }
 
-    private void populateGuestCombo(JComboBox<String> guestCombo, Reservation entity, Role role) {
+    private void populateGuestCombo(Role role) {
         final List<Guest> guestList = GuestService.findAll(role);
 
         if (Objects.nonNull(guestList) && !guestList.isEmpty()) {
-            guestCombo.removeAllItems();
+            guestsCombo.removeAllItems();
             guests.clear();
 
             for (Guest guest : guestList) {
-                guestCombo.addItem(guest.getName() + " - " + (Objects.isNull(guest.getCpf()) ? guest.getPassportNumber() : Util.maskCpf(guest.getCpf())));
+                guestsCombo.addItem(guest.getName() + " - " + (Objects.isNull(guest.getCpf()) ? guest.getPassportNumber() : Util.maskCpf(guest.getCpf())));
                 guests.add(guest);
             }
         }
     }
 
-    private void populateRoomsCombo(JComboBox<String> roomsCombo, Reservation entity, Role role) {
-        final List<Room> roomList = RoomService.findAll(role);
+    private void populateRoomsCombo(Date checkInDate, Date checkOutDate) {
+        final List<Room> roomList = RoomService.findAvailableRooms(checkInDate, checkOutDate);
 
         if (Objects.nonNull(roomList) && !roomList.isEmpty()) {
             roomsCombo.removeAllItems();
@@ -231,10 +321,8 @@ public class ReservationForm extends JFrame {
                 roomsCombo.addItem(room.getRoomNumber().toString() + " - " + room.getBranch().getName());
                 rooms.add(room);
             }
-        }
-
-        if (Objects.nonNull(entity) && Objects.nonNull(entity.getRoom())) {
-            roomsCombo.setSelectedItem(entity.getRoom().getRoomNumber().toString());
+        } else {
+            System.out.println("Nenhum quarto disponível.");
         }
     }
 
@@ -243,14 +331,13 @@ public class ReservationForm extends JFrame {
             MaskFormatter dateMask = new MaskFormatter("##/##/####");
             dateMask.setPlaceholderCharacter('_');
             return new JFormattedTextField(dateMask);
-        } catch (
-                ParseException e) {
+        } catch (ParseException e) {
             e.printStackTrace();
             return new JFormattedTextField();
         }
     }
 
-    private String formatDateTime(LocalDateTime dateTime) {
+    private String formatDate(LocalDateTime dateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
         return dateTime.format(formatter);
     }
@@ -273,5 +360,9 @@ public class ReservationForm extends JFrame {
             return null;
         }
         return Date.from(dateToConvert.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    private boolean isDateFieldValid(JFormattedTextField dateField) {
+        return dateField != null && dateField.getText() != null && !dateField.getText().contains("_");
     }
 }
