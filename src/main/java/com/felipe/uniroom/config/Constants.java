@@ -65,6 +65,7 @@ public class Constants {
     public static final String CHECKIN = "Check-in";
     public static final String STATUS = "Situação";
     public static final String TOTAL = "Total";
+    public static final String FILTER = "Filtro";
 
     //Colors
     public static final Color WHITE = new Color(0xFFFFFF);
@@ -75,6 +76,7 @@ public class Constants {
     public static final Color GRAY = new Color(0xCCCCCC);
     public static final Color BROWN = new Color(0x563412);
     public static final Color YELLOW = new Color(0xE49E00);
+    public static final Color PURPLE = new Color(0xE56200FF, true);
 
     //Fonts
     public static final Font FONT = new Font("Sans", Font.PLAIN, 20);
@@ -102,5 +104,6 @@ public class Constants {
     public static final Icon EXIT_ICON = new ImageIcon("src/main/resources/images/icons/exit.png");
     public static final Icon SERVICE_ICON = new ImageIcon("src/main/resources/images/icons/service.png");
     public static final Icon EXPENSE_ICON = new ImageIcon("src/main/resources/images/icons/expense.png");
+    public static final Icon FILTER_ICON = new ImageIcon("src/main/resources/images/icons/filter.png");
     public static final Image LOGO = Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/images/uniroom.jpeg"));
 }

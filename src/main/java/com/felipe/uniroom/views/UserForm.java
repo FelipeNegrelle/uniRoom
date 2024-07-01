@@ -69,8 +69,9 @@ public class UserForm extends JFrame {
         final JComboBox<String> roleCombo = new JComboBox<>(Util.getRoleCombo(role.getRole()));
         roleCombo.setPreferredSize(new Dimension(300, 30));
         roleCombo.setFont(new Font("Sans", Font.PLAIN, 20));
-        if (Objects.nonNull(entity))
-            roleCombo.setSelectedItem(entity.getRole());
+        if (Objects.nonNull(entity)) {
+            roleCombo.setSelectedItem(Util.convertRoleName(entity.getRole()));
+        }
 
         final JLabel secretQuestionLabel = new JLabel(Constants.SECRET_PHRASE + ":");
         secretQuestionLabel.setFont(new Font("Sans", Font.BOLD, 20));
@@ -198,12 +199,12 @@ public class UserForm extends JFrame {
     private void populateCorporateCombo(JComboBox<String> corporateCombo, User entity, Role role) {
         final List<Corporate> corporateList = CorporateService.findAll(role);
 
-        if (Objects.nonNull(corporateList) && !corporateList.isEmpty()) {
-            corporateCombo.removeAllItems();
-            corporates.clear();
+        corporateCombo.removeAllItems();
+        corporates.clear();
 
-            corporateCombo.addItem("- ");
-            corporates.add(null);
+        corporateCombo.addItem("-");
+        corporates.add(null);
+        if (Objects.nonNull(corporateList) && !corporateList.isEmpty()) {
             for (Corporate corporate : corporateList) {
                 corporateCombo.addItem(corporate.getName());
                 corporates.add(corporate);
@@ -221,12 +222,12 @@ public class UserForm extends JFrame {
     private void populateBranchCombo(JComboBox<String> branchCombo, User entity, Role role) {
         final List<Branch> branchList = BranchService.findAll(role);
 
-        if (Objects.nonNull(branchList) && !branchList.isEmpty()) {
-            branchCombo.removeAllItems();
-            branches.clear();
+        branchCombo.removeAllItems();
+        branches.clear();
 
-            branchCombo.addItem("-");
-            branches.add(null);
+        branchCombo.addItem("-");
+        branches.add(null);
+        if (Objects.nonNull(branchList) && !branchList.isEmpty()) {
             for (Branch branch : branchList) {
                 branchCombo.addItem(branch.getName());
                 branches.add(branch);

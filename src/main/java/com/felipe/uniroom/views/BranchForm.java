@@ -39,7 +39,7 @@ public class BranchForm extends JFrame {
         final JPanel inputPanel = new JPanel(new MigLayout("fillx, insets 20", "[grow]", "[]10[]"));
         inputPanel.setBackground(Color.WHITE);
 
-        final JLabel nameLabel = new JLabel("Nome da Filial:");
+        final JLabel nameLabel = new JLabel("Nome do estabelecimento:");
         nameLabel.setFont(new Font("Sans", Font.BOLD, 20));
 
         final JTextField nameField = new JTextField(20);

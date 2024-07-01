@@ -18,12 +18,12 @@ public class RoomService {
         if (isUpdate) {
             List<Room> existingRooms = RoomRepository.findRoomsByNumberBranchAndNotId(room.getRoomNumber(), room.getBranch().getIdBranch(), room.getIdRoom());
             if (!existingRooms.isEmpty()) {
-                errorsSb.append("Quarto com este número já cadastrado nesta filial\n");
+                errorsSb.append("Quarto com este número já cadastrado neste estabelecimento\n");
             }
         } else {
             List<Room> existingRooms = RoomRepository.findRoomsByNumberAndBranch(room.getRoomNumber(), room.getBranch().getIdBranch());
             if (!existingRooms.isEmpty()) {
-                errorsSb.append("Quarto com este número já cadastrado nesta filial\n");
+                errorsSb.append("Quarto com este número já cadastrado neste estabelecimento\n");
             }
         }
 
@@ -36,7 +36,7 @@ public class RoomService {
         }
 
         if (room.getBranch() == null) {
-            errorsSb.append("Filial não pode ser vazia\n");
+            errorsSb.append("Estabelecimento não pode ser vazia\n");
         }
 
         if (room.getRoomType() == null) {
@@ -46,12 +46,12 @@ public class RoomService {
         return errorsSb.toString();
     }
 
-    public static List<Room> findAll(Role role){
+    public static List<Room> findAll(Role role) {
         return RoomRepository.findAll(Room.class, role);
     }
 
-    public static Room findById(int id){
-        return RoomRepository.findById(Room.class,id);
+    public static Room findById(int id) {
+        return RoomRepository.findById(Room.class, id);
     }
 
     public static Boolean save(Room room) {
@@ -114,9 +114,11 @@ public class RoomService {
 
     public static Boolean delete(Room room) {
         try {
-            Room result = RoomRepository.findById(Room.class, room.getIdRoom());
+            final Room result = RoomRepository.findById(Room.class, room.getIdRoom());
+
             if (Objects.nonNull(result)) {
-                return RoomRepository.delete(Room.class, result.getIdRoom());
+                result.setActive(false);
+                return RoomRepository.saveOrUpdate(result);
             } else {
                 JOptionPane.showMessageDialog(null, "Quarto não encontrado!");
                 return false;
@@ -136,7 +138,7 @@ public class RoomService {
         return RoomRepository.search(Room.class, search, field, role);
     }
 
-    public static List<RoomType> findByBranchId(List<Integer> idBranches){
+    public static List<RoomType> findByBranchId(List<Integer> idBranches) {
         return RoomRepository.findByBranchId(idBranches);
     }
 
@@ -147,5 +149,24 @@ public class RoomService {
             e.printStackTrace();
             return null;
         }
+    }
+
+    public static Boolean isRoomOccupied(Room room) {
+        try {
+            return RoomRepository.isRoomOccupied(room);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public static List<Room> getRoomByStatus(boolean occupied, Role role) {
+        final List<Room> rooms = RoomRepository.findAll(Room.class, role);
+
+        if(Objects.nonNull(rooms)) {
+            rooms.removeIf(r -> isRoomOccupied(r) != occupied);
+        }
+
+        return rooms;
     }
 }

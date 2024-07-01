@@ -53,7 +53,7 @@ public class ServiceForm extends JFrame {
         if (Objects.nonNull(entity))
             priceField.setValue(entity.getPrice());
 
-        final JLabel branchLabel = new JLabel("Filial:");
+        final JLabel branchLabel = new JLabel(Constants.BRANCH + ": ");
         branchLabel.setFont(new Font("Sans", Font.BOLD, 20));
         final JComboBox<String> branchCombo = new JComboBox<>();
         branchCombo.setPreferredSize(new Dimension(300, 30));

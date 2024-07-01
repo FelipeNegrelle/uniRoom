@@ -22,7 +22,7 @@ public class ServiceService {
         }
 
         if (service.getBranch() == null) {
-            errorsSb.append("O item deve estar associado a uma filial.\n");
+            errorsSb.append("O item deve estar associado a um estabelecimento.\n");
         }
 
         return errorsSb.toString();

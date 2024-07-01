@@ -68,14 +68,14 @@ public class GuestForm extends JFrame {
         passportField.setPreferredSize(new Dimension(300, 30));
         passportField.setFont(new Font("Sans", Font.PLAIN, 20));
 
-        final JLabel branchLabel = new JLabel("Filial:");
+        final JLabel branchLabel = new JLabel(Constants.BRANCH + ": ");
         branchLabel.setFont(new Font("Sans", Font.BOLD, 20));
         final JComboBox<String> branchCombo = new JComboBox<>();
         branchCombo.setPreferredSize(new Dimension(300, 30));
         branchCombo.setFont(Constants.FONT);
 
         foreignerCheckBox.addActionListener(e -> {
-            boolean isForeigner = foreignerCheckBox.isSelected();
+            final boolean isForeigner = foreignerCheckBox.isSelected();
             cpfLabel.setVisible(!isForeigner);
             cpfField.setVisible(!isForeigner);
             passportLabel.setVisible(isForeigner);

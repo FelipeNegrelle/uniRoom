@@ -75,6 +75,10 @@ public class GuestService {
         return GuestRepository.findById(Guest.class,id);
     }
 
+    public static Boolean isHosted(Guest guest) {
+        return GuestRepository.isHosted(guest);
+    }
+
     public static Boolean save(Guest guest, Role role) {
         try {
             if (Objects.nonNull(guest.getCpf())) {

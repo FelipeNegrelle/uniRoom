@@ -38,7 +38,7 @@ public class RoomTypeService {
         }
 
         if (roomType.getBranch() == null) {
-            errors.append("Uma filial deve ser selecionada.\n");
+            errors.append("Um estabelecimento deve ser selecionada.\n");
         }
 
         return errors.toString();

@@ -158,7 +158,7 @@ public class GuestView extends JFrame {
                         guest.getName(),
                         guest.getCpf() != null ? Util.maskCpf(guest.getCpf()) : "-",
                         guest.getPassportNumber() != null ? guest.getPassportNumber() : "-",
-//                        guest.isHosted()
+                        GuestService.isHosted(guest)
                 });
             }
             searchItens.clear();
@@ -172,7 +172,7 @@ public class GuestView extends JFrame {
                             guest.getName(),
                             guest.getCpf() != null ? Util.maskCpf(guest.getCpf()) : "-",
                             guest.getPassportNumber() != null ? guest.getPassportNumber() : "-",
-//                            guest.isHosted()
+                            GuestService.isHosted(guest)
                     });
                 }
             } else {

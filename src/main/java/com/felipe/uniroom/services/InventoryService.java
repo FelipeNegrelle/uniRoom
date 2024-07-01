@@ -19,7 +19,7 @@ public class InventoryService {
         }
 
         if (Objects.isNull(inventory.getBranch())) {
-            errorsSb.append("O inventário deve estar associado a uma filial!\n");
+            errorsSb.append("O inventário deve estar associado a um estabelecimento!\n");
         }
 
         if (inventory.getDescription().isBlank()) {

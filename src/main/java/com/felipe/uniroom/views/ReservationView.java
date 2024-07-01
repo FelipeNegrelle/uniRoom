@@ -8,6 +8,7 @@ import com.felipe.uniroom.services.ReservationService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
@@ -61,7 +62,7 @@ public class ReservationView extends JFrame {
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Quarto", "Funcionário", "Filial", "Data inicial", "Data final", "Check-In", "Check-out", "Situação"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Quarto", "Funcionário", Constants.BRANCH, "Data inicial", "Data final", "Check-In", "Check-out", "Situação"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -72,6 +73,7 @@ public class ReservationView extends JFrame {
         table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         table.getTableHeader().setReorderingAllowed(false);
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
+        table.getColumnModel().getColumn(9).setCellRenderer(new Components.StatusCellRenderer());
 
         final TableColumn optionsColumn = table.getColumnModel().getColumn(0);
         optionsColumn.setCellRenderer(new Components.OptionsCellRenderer());
@@ -99,7 +101,7 @@ public class ReservationView extends JFrame {
                 checkinItem.addActionListener(e -> {
                     if (ReservationService.checkin(reservation)) {
                         try {
-                            updateReservationTable(role);
+                            updateReservationTable(table, role);
                         } catch (ParseException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -139,7 +141,7 @@ public class ReservationView extends JFrame {
                 deleteItem.addActionListener(e -> {
                     if (ReservationService.cancel(reservation)) {
                         try {
-                            updateReservationTable(role);
+                            updateReservationTable(table, role);
                         } catch (ParseException ex) {
                             throw new RuntimeException(ex);
                         }
@@ -153,7 +155,7 @@ public class ReservationView extends JFrame {
                     popupMenu.add(checkinItem);
                 }
 
-                if(reservation.getDateTimeCheckIn() != null && reservation.getDateTimeCheckOut() == null){
+                if (reservation.getDateTimeCheckIn() != null && reservation.getDateTimeCheckOut() == null) {
                     popupMenu.add(checkoutItem);
                 }
 
@@ -174,7 +176,7 @@ public class ReservationView extends JFrame {
         panel.add(scrollPane, "grow");
 
         try {
-            updateReservationTable(role);
+            updateReservationTable(table, role);
         } catch (ParseException ex) {
             throw new RuntimeException(ex);
         }
@@ -184,19 +186,43 @@ public class ReservationView extends JFrame {
         setVisible(true);
     }
 
-    private static void updateReservationTable(Role role) throws ParseException {
+    private static void updateReservationTable(JTable table, Role role) throws ParseException {
         model.setRowCount(0);
 
         if (!searchItens.isEmpty()) {
             for (Reservation reservation : searchItens) {
-                model.addRow(new Object[]{null, reservation.getIdReservation(), reservation.getRoom().getRoomNumber(), reservation.getUser().getName(), reservation.getBranch().getName(), formatNullableDate(reservation.getInitialDate(), "dd/MM/yyyy"), formatNullableDate(reservation.getFinalDate(), "dd/MM/yyyy"), formatNullableDate(reservation.getDateTimeCheckIn(), "dd/MM/yyyy HH:mm"), formatNullableDate(reservation.getDateTimeCheckOut(), "dd/MM/yyyy HH:mm"), Util.convertStatusReservation(reservation.getStatus())});
+                model.addRow(new Object[]{
+                        null,
+                        reservation.getIdReservation(),
+                        reservation.getRoom().getRoomNumber() + " - " + reservation.getBranch().getName(),
+                        reservation.getUser().getName(),
+                        reservation.getBranch().getName(),
+                        formatNullableDate(reservation.getInitialDate(), "dd/MM/yyyy"),
+                        formatNullableDate(reservation.getFinalDate(), "dd/MM/yyyy"),
+                        formatNullableDate(reservation.getDateTimeCheckIn(), "dd/MM/yyyy HH:mm"),
+                        formatNullableDate(reservation.getDateTimeCheckOut(), "dd/MM/yyyy HH:mm"),
+                        Util.convertStatusReservation(reservation.getStatus())
+                });
+
+
             }
             searchItens.clear();
         } else {
             final List<Reservation> reservationList = ReservationService.findAll(role);
             if (Objects.nonNull(reservationList)) {
                 for (Reservation reservation : reservationList) {
-                    model.addRow(new Object[]{null, reservation.getIdReservation(), reservation.getRoom().getRoomNumber(), reservation.getUser().getName(), reservation.getBranch().getName(), formatNullableDate(reservation.getInitialDate(), "dd/MM/yyyy"), formatNullableDate(reservation.getFinalDate(), "dd/MM/yyyy"), formatNullableDate(reservation.getDateTimeCheckIn(), "dd/MM/yyyy HH:mm"), formatNullableDate(reservation.getDateTimeCheckOut(), "dd/MM/yyyy HH:mm"), Util.convertStatusReservation(reservation.getStatus())});
+                    model.addRow(new Object[]{
+                            null,
+                            reservation.getIdReservation(),
+                            reservation.getRoom().getRoomNumber() + " - " + reservation.getBranch().getName(),
+                            reservation.getUser().getName(),
+                            reservation.getBranch().getName(),
+                            formatNullableDate(reservation.getInitialDate(), "dd/MM/yyyy"),
+                            formatNullableDate(reservation.getFinalDate(), "dd/MM/yyyy"),
+                            formatNullableDate(reservation.getDateTimeCheckIn(), "dd/MM/yyyy HH:mm"),
+                            formatNullableDate(reservation.getDateTimeCheckOut(), "dd/MM/yyyy HH:mm"),
+                            Util.convertStatusReservation(reservation.getStatus())
+                    });
                 }
             } else {
                 JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);

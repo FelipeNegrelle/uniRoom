@@ -133,7 +133,7 @@ public class CorporateService {
             if (Objects.nonNull(result)) {
                 return CorporateRepository.delete(Corporate.class, result.getIdCorporate());
             } else {
-                JOptionPane.showMessageDialog(null, "Filial não encontrada.");
+                JOptionPane.showMessageDialog(null, "Estabelecimento não encontrado.");
 
                 return false;
             }

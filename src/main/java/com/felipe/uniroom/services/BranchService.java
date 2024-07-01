@@ -45,11 +45,11 @@ public class BranchService {
         }
 
         if (branch.getName().isBlank()) {
-            errorsSb.append("Nome da filial não pode ser vazio!\n");
+            errorsSb.append("Nome do estabelecimento não pode ser vazio!\n");
         }
 
         if (branch.getName().length() > 50) {
-            errorsSb.append("Nome da filial deve ter no máximo 50 caracteres!\n");
+            errorsSb.append("Nome do estabelecimento deve ter no máximo 50 caracteres!\n");
         }
 
 //        if (Objects.isNull(branch.getCorporate())) {
@@ -112,7 +112,7 @@ public class BranchService {
                     return BranchRepository.saveOrUpdate(branch);
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Filial não encontrada!");
+                JOptionPane.showMessageDialog(null, "Estabelecimento não encontrado!");
 
                 return false;
             }
@@ -132,7 +132,7 @@ public class BranchService {
             if (Objects.nonNull(result)) {
                 return BranchRepository.delete(Branch.class, result.getIdBranch());
             } else {
-                JOptionPane.showMessageDialog(null, "Filial não encontrada!");
+                JOptionPane.showMessageDialog(null, "Estabelecimento não encontrado!");
 
                 return false;
             }

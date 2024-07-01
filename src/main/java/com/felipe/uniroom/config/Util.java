@@ -1,6 +1,7 @@
 package com.felipe.uniroom.config;
 
 import javax.swing.text.MaskFormatter;
+import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -14,8 +15,7 @@ public class Util {
             mask.setValueContainsLiteralCharacters(false);
 
             return mask.valueToString(cnpj);
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "";
         }
@@ -28,8 +28,7 @@ public class Util {
             mask.setValueContainsLiteralCharacters(false);
 
             return mask.valueToString(cpf);
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return "";
         }
@@ -69,6 +68,8 @@ public class Util {
                     "Check-out";
             case "H" ->
                     "Hospedado";
+            case "P" ->
+                    "Pendente";
             default ->
                     "Situação Desconhecida";
         };
@@ -80,7 +81,7 @@ public class Util {
                     'A';
             case "Gerente de Matriz" ->
                     'C';
-            case "Gerente de Filial" ->
+            case "Gerente de Estabelecimento" ->
                     'B';
             case "Funcionário" ->
                     'E';
@@ -89,16 +90,48 @@ public class Util {
         };
     }
 
+    public static String convertRoleName(Character role) {
+        return switch (role) {
+            case 'A' ->
+                    "Administrador";
+            case 'C' ->
+                    "Gerente de Matriz";
+            case 'B' ->
+                    "Gerente de Estabelecimento";
+            case 'E' ->
+                    "Funcionário";
+            default ->
+                    "Desconhecido";
+        };
+    }
+
     public static String[] getRoleCombo(Character role) {
         return switch (role) {
             case 'A' ->
-                    new String[]{"Administrador", "Gerente de Matriz", "Gerente de Filial", "Funcionário"};
+                    new String[]{"Administrador", "Gerente de Matriz", "Gerente de Estabelecimento", "Funcionário"};
             case 'C' ->
-                    new String[]{"Gerente de Matriz", "Gerente de Filial", "Funcionário"};
+                    new String[]{"Gerente de Matriz", "Gerente de Estabelecimento", "Funcionário"};
             case 'B' ->
-                    new String[]{"Gerente de Filial", "Funcionário"};
+                    new String[]{"Gerente de Estabelecimento", "Funcionário"};
             default ->
                     new String[]{};
+        };
+    }
+
+    public static Color getColorReservation(String status) {
+        return switch (status) {
+            case "Cancelada" ->
+                    Constants.RED;
+            case "Check-In" ->
+                    Constants.YELLOW;
+            case "Check-out" ->
+                    Constants.GREEN;
+            case "Hospedado" ->
+                    Constants.PURPLE;
+            case "Pendente" ->
+                    Constants.GRAY;
+            default ->
+                    Constants.WHITE;
         };
     }
 }

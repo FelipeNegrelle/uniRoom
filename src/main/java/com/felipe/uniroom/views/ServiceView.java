@@ -78,7 +78,7 @@ public class ServiceView extends JFrame {
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Descrição", "Preço", "Filial"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Descrição", "Preço", Constants.BRANCH}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));

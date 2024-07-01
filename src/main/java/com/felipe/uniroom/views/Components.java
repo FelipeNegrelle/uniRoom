@@ -1,9 +1,7 @@
 package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
-import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.config.Util;
-import com.felipe.uniroom.entities.Reservation;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
@@ -164,6 +162,16 @@ public class Components {
             if (col == column) {
                 action.execute(table, evt);
             }
+        }
+    }
+
+    public static class StatusCellRenderer extends DefaultTableCellRenderer {
+        @Override
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+            Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
+            String status = (String) value;
+            c.setBackground(Util.getColorReservation(status));
+            return c;
         }
     }
 

@@ -48,7 +48,7 @@ public class RoomForm extends JFrame {
         numberField.setFont(new Font("Sans", Font.PLAIN, 20));
         numberField.setFocusLostBehavior(JFormattedTextField.PERSIST);
 
-        final JLabel branchLabel = new JLabel("Filial:");
+        final JLabel branchLabel = new JLabel(Constants.BRANCH + ": ");
         branchLabel.setFont(new Font("Sans", Font.BOLD, 20));
 
         final JComboBox<String> branchCombo = new JComboBox<>();

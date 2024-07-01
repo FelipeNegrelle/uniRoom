@@ -10,8 +10,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -19,7 +17,8 @@ import java.util.Objects;
 public class RoomView extends JFrame {
 
     private static DefaultTableModel model;
-    private static final List<Room> searchItems = new ArrayList<>();
+    private static final List<Room> rooms = new ArrayList<>();
+    private static boolean filterApplied = false;
 
     public RoomView(Role role) {
         super(Constants.ROOM);
@@ -58,28 +57,35 @@ public class RoomView extends JFrame {
         });
         searchPanel.add(newRoom, "align left");
 
-        final JLabel searchLabel = new JLabel(Constants.SEARCH);
-        searchLabel.setFont(Constants.FONT.deriveFont(Font.BOLD));
-        searchLabel.setForeground(Color.WHITE);
-        searchLabel.setPreferredSize(new Dimension(70, 40));
-        searchPanel.add(searchLabel, "align right");
+        final JLabel isHostedLabel = Components.getLabel("Ocupado?", null, Font.BOLD, null, Constants.WHITE);
+        searchPanel.add(isHostedLabel, "align right");
 
-        final JTextField searchField = new JTextField(20);
-        searchField.setFont(Constants.FONT.deriveFont(Font.BOLD));
-        searchField.setPreferredSize(new Dimension(200, 40));
-        searchField.addKeyListener(new KeyAdapter() {
-            @Override
-            public void keyReleased(KeyEvent e) {
-                searchItems.clear();
-                searchItems.addAll(RoomService.search(searchField.getText(), null, role));
-                updateRoomTable(role);
-            }
+        final JComboBox<String> isHostedComboBox = new JComboBox<>(new String[]{"Sim", "Não"});
+        isHostedComboBox.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        isHostedComboBox.setBackground(Constants.WHITE);
+        searchPanel.add(isHostedComboBox, "align right");
+
+        final JButton filterButton = new JButton("Filtrar");
+        filterButton.setBackground(Constants.WHITE);
+        filterButton.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        filterButton.addActionListener(e1 -> {
+            filterApplied = true;
+            updateRoomTable(isHostedComboBox, role);
         });
-        searchPanel.add(searchField, "align left");
+        searchPanel.add(filterButton, "align left");
+
+        final JButton clearFilter = new JButton("Limpar filtro");
+        clearFilter.setBackground(Constants.WHITE);
+        clearFilter.setFont(Constants.FONT.deriveFont(Font.BOLD));
+        clearFilter.addActionListener(e -> {
+            filterApplied = false;
+            updateRoomTable(isHostedComboBox, role);
+        });
+        searchPanel.add(clearFilter, "align left");
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nº quarto", "Tipo", "Preço", "Capacidade", "Filial", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nº quarto", "Tipo", "Preço", "Capacidade", Constants.BRANCH, "Ocupado"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -120,7 +126,7 @@ public class RoomView extends JFrame {
                     final Room Room = new Room();
                     Room.setIdRoom((Integer) model.getValueAt(row, 1));
                     if (RoomService.delete(Room)) {
-                        updateRoomTable(role);
+                        updateRoomTable(isHostedComboBox, role);
                     } else {
                         JOptionPane.showMessageDialog(null, "Erro ao deletar quarto", "Error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -139,30 +145,36 @@ public class RoomView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateRoomTable(role);
+        updateRoomTable(isHostedComboBox, role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
     }
 
-    private static void updateRoomTable(Role role) {
+    private static void updateRoomTable(JComboBox<String> isHostedComboBox, Role role) {
         model.setRowCount(0);
 
-        if (!searchItems.isEmpty()) {
-            for (Room room : searchItems) {
-                model.addRow(new Object[]{
-                        null,
-                        room.getIdRoom(),
-                        room.getRoomNumber(),
-                        room.getRoomType().getName(),
-                        "R$ " + room.getRoomType().getPrice(),
-                        room.getRoomType().getCapacity(),
-                        room.getBranch().getName(),
-                        room.getActive()
-                });
+        if (filterApplied) {
+            final boolean isOccupied = isHostedComboBox.getSelectedItem().equals("Sim");
+
+            final List<Room> filteredRooms = RoomService.getRoomByStatus(isOccupied, role);
+            if (Objects.nonNull(filteredRooms)) {
+                for (Room room : filteredRooms) {
+                    model.addRow(new Object[]{
+                            null,
+                            room.getIdRoom(),
+                            room.getRoomNumber(),
+                            room.getRoomType().getName(),
+                            "R$ " + room.getRoomType().getPrice(),
+                            room.getRoomType().getCapacity(),
+                            room.getBranch().getName(),
+                            RoomService.isRoomOccupied(room)
+                    });
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, "Falha ao carregar os dados do quarto");
             }
-            searchItems.clear();
         } else {
             final List<Room> RoomList = RoomService.findAll(role);
             if (Objects.nonNull(RoomList)) {
@@ -175,11 +187,11 @@ public class RoomView extends JFrame {
                             "R$ " + room.getRoomType().getPrice(),
                             room.getRoomType().getCapacity(),
                             room.getBranch().getName(),
-                            room.getActive()
+                            RoomService.isRoomOccupied(room)
                     });
                 }
             } else {
-                JOptionPane.showMessageDialog(null, "Failed to load room type data");
+                JOptionPane.showMessageDialog(null, "Falha ao carregar os dados do quarto");
             }
         }
     }

@@ -64,4 +64,23 @@ public class RoomRepository extends DatabaseRepository {
             return Collections.emptyList();
         }
     }
+
+    public static Boolean isRoomOccupied(Room room) {
+        final String query = "SELECT "
+        + "r.idRoom "
+        + "FROM Room r "
+        + "LEFT OUTER JOIN Reservation res ON res.room.idRoom = r.idRoom "
+        + "WHERE r.idRoom = :idRoom "
+        + "AND res.status = 'CI'";
+
+        try(EntityManager em = ConnectionManager.getEntityManager()) {
+            return em.createQuery(query, Room.class)
+                    .setParameter("idRoom", room.getIdRoom())
+                    .getSingleResult() != null;
+        } catch (NoResultException e) {
+//            e.printStackTrace();
+
+            return false;
+        }
+    }
 }

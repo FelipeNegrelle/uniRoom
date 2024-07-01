@@ -11,6 +11,7 @@ import jakarta.persistence.criteria.*;
 import jakarta.transaction.Transactional;
 
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,7 +23,7 @@ public class DatabaseRepository {
     public static <T> List<T> findAll(Class<T> entity, Role role) {
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             final Map<String, Object> params = new HashMap<>();
-            final StringBuilder queryString = new StringBuilder("SELECT e FROM ").append(entity.getSimpleName()).append(" e ");
+            final StringBuilder queryString = new StringBuilder("SELECT e FROM ").append(entity.getSimpleName()).append(" e WHERE TRUE");
 
             switch (role.getRole()) {
                 case 'A':
@@ -40,35 +41,39 @@ public class DatabaseRepository {
                         }
 
                         if (hasBranch) {
-                            queryString.append(" WHERE e.branch.corporate IN :corporates");
+                            queryString.append(" AND e.branch.corporate IN :corporates");
                             params.put("corporates", role.getCorporates());
                         } else {
-                            queryString.append("WHERE e.corporate IN :corporates");
+                            queryString.append("AND e.corporate IN :corporates");
                             params.put("corporates", role.getCorporates());
                         }
                     } else {
-                        queryString.append(" WHERE e.idCorporate IN :idCorporates");
+                        queryString.append(" AND e.idCorporate IN :idCorporates");
                         params.put("idCorporates", role.getCorporates().stream().map(Corporate::getIdCorporate).toList());
                     }
                     break;
                 case 'B':
                     if (!entity.getSimpleName().equals("Branch")) {
-                        queryString.append(" WHERE e.branch IN :branches");
+                        queryString.append(" AND e.branch IN :branches");
                         params.put("branches", role.getBranches());
                     } else {
-                        queryString.append(" WHERE e.idBranch IN :idBranches");
+                        queryString.append(" AND e.idBranch IN :idBranches");
                         params.put("idBranches", role.getBranches().stream().map(Branch::getIdBranch).toList());
                     }
                     break;
                 case 'E':
                     if (!entity.getSimpleName().equals("Branch")) {
-                        queryString.append(" WHERE e.branch = :branch");
+                        queryString.append(" AND e.branch = :branch");
                         params.put("branch", role.getBranches().getFirst());
                     } else {
-                        queryString.append(" WHERE e.idBranch = :idBranch");
+                        queryString.append(" AND e.idBranch = :idBranch");
                         params.put("idBranch", role.getBranches().getFirst());
                     }
                     break;
+            }
+
+            if (Arrays.stream(entity.getDeclaredFields()).anyMatch(f -> f.getName().equals("active"))) {
+                queryString.append(" AND e.active = true");
             }
 
             final TypedQuery<T> query = em.createQuery(queryString.toString(), entity);

@@ -11,12 +11,8 @@ public class GuestRepository extends DatabaseRepository {
         final String query = "SELECT g FROM Guest g WHERE g.cpf = :cpf AND g.branch IN :branches";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            return em.createQuery(query, Guest.class)
-                    .setParameter("cpf", cpf)
-                    .setParameter("branches", role.getBranches())
-                    .getSingleResult();
-        } catch (
-                NoResultException e) {
+            return em.createQuery(query, Guest.class).setParameter("cpf", cpf).setParameter("branches", role.getBranches()).getSingleResult();
+        } catch (NoResultException e) {
             return null;
         }
     }
@@ -25,13 +21,8 @@ public class GuestRepository extends DatabaseRepository {
         final String query = "SELECT g FROM Guest g WHERE g.cpf = :cpf and g.idGuest <> :idGuest AND g.branch IN :branches";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            return em.createQuery(query, Guest.class)
-                    .setParameter("cpf", cpf)
-                    .setParameter("idGuest", idGuest)
-                    .setParameter("branches", role.getBranches())
-                    .getSingleResult() != null;
-        } catch (
-                NoResultException e) {
+            return em.createQuery(query, Guest.class).setParameter("cpf", cpf).setParameter("idGuest", idGuest).setParameter("branches", role.getBranches()).getSingleResult() != null;
+        } catch (NoResultException e) {
             return false;
         }
     }
@@ -41,8 +32,7 @@ public class GuestRepository extends DatabaseRepository {
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             return em.createQuery(query, Guest.class).setParameter("name", name).setParameter("idGuest", idGuest).getSingleResult() != null;
-        } catch (
-                NoResultException e) {
+        } catch (NoResultException e) {
             return false;
         }
     }
@@ -52,8 +42,7 @@ public class GuestRepository extends DatabaseRepository {
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             return em.createQuery(query, Guest.class).setParameter("name", name).getSingleResult();
-        } catch (
-                NoResultException e) {
+        } catch (NoResultException e) {
             return null;
         }
     }
@@ -63,8 +52,7 @@ public class GuestRepository extends DatabaseRepository {
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             return em.createQuery(query, Guest.class).setParameter("passport", passport).getSingleResult();
-        } catch (
-                NoResultException e) {
+        } catch (NoResultException e) {
             return null;
         }
     }
@@ -74,8 +62,24 @@ public class GuestRepository extends DatabaseRepository {
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             return em.createQuery(query, Guest.class).setParameter("passport", passport).setParameter("idGuest", idGuest).getSingleResult() != null;
-        } catch (
-                NoResultException e) {
+        } catch (NoResultException e) {
+            return false;
+        }
+    }
+
+    public static Boolean isHosted(Guest guest) {
+        final StringBuilder query = new StringBuilder();
+        query.append("SELECT\n");
+        query.append("g.id_guest\n");
+        query.append("FROM guest g\n");
+        query.append("LEFT OUTER JOIN reservation_guest rg ON rg.id_guest = g.id_guest\n");
+        query.append("LEFT OUTER JOIN reservation r ON rg.id_reservation = r.id_reservation\n");
+        query.append("WHERE rg.id_guest = :idGuest\n");
+        query.append("AND r.status = 'CI'");
+
+        try (EntityManager em = ConnectionManager.getEntityManager()) {
+            return em.createNativeQuery(query.toString()).setParameter("idGuest", guest.getIdGuest()).getSingleResult() != null;
+        } catch (NoResultException e) {
             return false;
         }
     }

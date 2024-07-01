@@ -25,7 +25,7 @@ public class ReservationService {
         }
 
         if (Objects.isNull(reservation.getBranch())) {
-            errorsSb.append("Filial da reserva não pode ser vazio.\n");
+            errorsSb.append("Estabelecimento da reserva não pode ser vazio.\n");
         }
 
         if (Objects.isNull(reservation.getUser())) {
@@ -69,7 +69,6 @@ public class ReservationService {
                 errorsSb.append("O hóspede ").append(guest.getName()).append(" já possui uma reserva no período escolhido.\n");
             }
         }
-
 
         return errorsSb.toString();
     }

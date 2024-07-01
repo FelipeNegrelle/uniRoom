@@ -60,7 +60,7 @@ public class RoomTypeForm extends JFrame {
         capacityField.setFont(new Font("Sans", Font.PLAIN, 20));
         if (Objects.nonNull(entity)) capacityField.setText(String.valueOf(entity.getCapacity()));
 
-        final JLabel branchLabel = new JLabel("Filial:");
+        final JLabel branchLabel = new JLabel(Constants.BRANCH + ": ");
         branchLabel.setFont(new Font("Sans", Font.BOLD, 20));
         final JComboBox<String> branchCombo = new JComboBox<>();
         branchCombo.setPreferredSize(new Dimension(300, 30));
