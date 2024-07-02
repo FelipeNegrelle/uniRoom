@@ -10,14 +10,12 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumn;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class RoomView extends JFrame {
 
     private static DefaultTableModel model;
-    private static final List<Room> rooms = new ArrayList<>();
     private static boolean filterApplied = false;
 
     public RoomView(Role role) {
@@ -110,6 +108,15 @@ public class RoomView extends JFrame {
             if (column == 0) {
                 final JPopupMenu popupMenu = new JPopupMenu();
 
+                final JMenuItem inventoryItem = new JMenuItem(Constants.INVENTORY);
+                inventoryItem.setIcon(Constants.INVENTORY_ICON);
+                inventoryItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
+                inventoryItem.addActionListener(e -> {
+                    final Room room = RoomService.findById((Integer) model.getValueAt(row, 1));
+                    new InventoryView(role, room);
+                    dispose();
+                });
+
                 final JMenuItem editItem = new JMenuItem(Constants.EDIT);
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
@@ -132,6 +139,7 @@ public class RoomView extends JFrame {
                     }
                 });
 
+                popupMenu.add(inventoryItem);
                 popupMenu.add(editItem);
                 popupMenu.add(deleteItem);
 

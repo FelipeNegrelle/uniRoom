@@ -3,6 +3,7 @@ package com.felipe.uniroom.views;
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Inventory;
+import com.felipe.uniroom.entities.Room;
 import com.felipe.uniroom.services.InventoryService;
 import net.miginfocom.swing.MigLayout;
 
@@ -20,7 +21,7 @@ public class InventoryView extends JFrame {
     private static DefaultTableModel model;
     private static final List<Inventory> searchItems = new ArrayList<>();
 
-    public InventoryView(Role role) {
+    public InventoryView(Role role, Room room) {
         super(Constants.INVENTORY);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
@@ -32,7 +33,10 @@ public class InventoryView extends JFrame {
         final JLabel titleLabel = new JLabel(Constants.INVENTORY);
         titleLabel.setFont(Constants.FONT.deriveFont(Font.BOLD, 40));
         titleLabel.setForeground(Color.WHITE);
-        panel.add(titleLabel, "align center");
+        panel.add(titleLabel, "align center, wrap");
+
+        final JLabel roomLabel = Components.getLabel(Constants.ROOM + " " + room.getRoomNumber() + " - " + room.getBranch().getName(), null, Font.PLAIN, null, Constants.WHITE);
+        panel.add(roomLabel, "align center");
 
         final JPanel searchPanel = new JPanel(new MigLayout("insets 0", "[right]unrel[grow]unrel[]", "[grow]"));
         searchPanel.setBackground(Constants.BLUE);
@@ -42,7 +46,7 @@ public class InventoryView extends JFrame {
         backButton.setBackground(Constants.WHITE);
         backButton.setIcon(Constants.BACK_ICON);
         backButton.addActionListener(e -> {
-            new Home(role);
+            new RoomView(role);
             dispose();
         });
         searchPanel.add(backButton, "align left");
@@ -52,7 +56,7 @@ public class InventoryView extends JFrame {
         newInventory.setForeground(Constants.BLACK);
         newInventory.setFont(Constants.FONT.deriveFont(Font.BOLD));
         newInventory.addActionListener(e -> {
-            new InventoryForm(role, null);
+            new InventoryForm(role, null, room);
             dispose();
         });
         searchPanel.add(newInventory, "align left");
@@ -71,14 +75,14 @@ public class InventoryView extends JFrame {
             public void keyReleased(KeyEvent e) {
                 searchItems.clear();
                 searchItems.addAll(InventoryService.search(searchField.getText(), null, role));
-                updateInventoryTable(role);
+                updateInventoryTable(role, room);
             }
         });
         searchPanel.add(searchField, "align left");
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", Constants.ROOM, Constants.BRANCH,"Descrição", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", Constants.BRANCH, "Descrição", "Ativo"}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -90,7 +94,7 @@ public class InventoryView extends JFrame {
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
 
         final Components.IconCellRenderer iconCellRenderer = new Components.IconCellRenderer();
-        final TableColumn activeColumn = table.getColumnModel().getColumn(5);
+        final TableColumn activeColumn = table.getColumnModel().getColumn(4);
         activeColumn.setCellRenderer(iconCellRenderer);
 
         final Components.OptionsCellRenderer optionsCellRenderer = new Components.OptionsCellRenderer();
@@ -117,7 +121,7 @@ public class InventoryView extends JFrame {
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
                 editItem.addActionListener(e -> {
                     final Inventory inventory = InventoryService.findById((Integer) model.getValueAt(row, 1));
-                    new InventoryForm(role, inventory);
+                    new InventoryForm(role, inventory, room);
                     dispose();
                 });
 
@@ -128,7 +132,7 @@ public class InventoryView extends JFrame {
                     final Inventory inventory = new Inventory();
                     inventory.setIdInventory((Integer) model.getValueAt(row, 1));
                     if (InventoryService.delete(inventory)) {
-                        updateInventoryTable(role);
+                        updateInventoryTable(role, room);
                     } else {
                         JOptionPane.showMessageDialog(null, "Erro ao deletar item", "Error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -148,40 +152,42 @@ public class InventoryView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateInventoryTable(role);
+        updateInventoryTable(role, room);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
     }
 
-    private static void updateInventoryTable(Role role) {
+    private static void updateInventoryTable(Role role, Room room) {
         model.setRowCount(0);
 
         if (!searchItems.isEmpty()) {
             for (Inventory inventory : searchItems) {
-                model.addRow(new Object[]{
-                        null,
-                        inventory.getIdInventory(),
-                        inventory.getRoom().getRoomNumber(),
-                        inventory.getBranch().getName(),
-                        inventory.getDescription(),
-                        inventory.getActive()
-                });
+                if (inventory.getRoom().equals(room)) {
+                    model.addRow(new Object[]{
+                            null,
+                            inventory.getIdInventory(),
+                            inventory.getBranch().getName(),
+                            inventory.getDescription(),
+                            inventory.getActive()
+                    });
+                }
             }
             searchItems.clear();
         } else {
             final List<Inventory> inventoryList = InventoryService.findAll(role);
             if (Objects.nonNull(inventoryList)) {
                 for (Inventory inventory : inventoryList) {
-                    model.addRow(new Object[]{
-                            null,
-                            inventory.getIdInventory(),
-                            inventory.getRoom().getRoomNumber(),
-                            inventory.getBranch().getName(),
-                            inventory.getDescription(),
-                            inventory.getActive()
-                    });
+                    if (inventory.getRoom().equals(room)) {
+                        model.addRow(new Object[]{
+                                null,
+                                inventory.getIdInventory(),
+                                inventory.getBranch().getName(),
+                                inventory.getDescription(),
+                                inventory.getActive()
+                        });
+                    }
                 }
             } else {
                 JOptionPane.showMessageDialog(null, "Falha ao carregar dados do inventário.");

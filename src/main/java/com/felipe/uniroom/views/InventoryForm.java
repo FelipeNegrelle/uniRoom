@@ -2,10 +2,8 @@ package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
-import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Inventory;
 import com.felipe.uniroom.entities.Room;
-import com.felipe.uniroom.services.BranchService;
 import com.felipe.uniroom.services.InventoryService;
 import com.felipe.uniroom.services.RoomService;
 import net.miginfocom.swing.MigLayout;
@@ -17,9 +15,10 @@ import java.util.List;
 import java.util.Objects;
 
 public class InventoryForm extends JFrame {
-    final List<Branch> branches = new ArrayList<>();
+    //    final List<Branch> branches = new ArrayList<>();
+    final List<Room> rooms = new ArrayList<>();
 
-    public InventoryForm(Role role, Inventory entity) {
+    public InventoryForm(Role role, Inventory entity, Room inventoryRoom) {
         super(Constants.INVENTORY);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 50", "[grow]", "[grow]"));
@@ -37,11 +36,11 @@ public class InventoryForm extends JFrame {
         JPanel inputPanel = new JPanel(new MigLayout("fillx, insets 20", "[grow]", "[]10[]"));
         inputPanel.setBackground(Color.WHITE);
 
-        JLabel roomLabel = new JLabel(Constants.ROOM + ":");
-        roomLabel.setFont(new Font("Sans", Font.BOLD, 20));
-        JComboBox<RoomItem> roomCombo = new JComboBox<>();
-        roomCombo.setPreferredSize(new Dimension(300, 30));
-        roomCombo.setFont(new Font("Sans", Font.PLAIN, 20));
+//        JLabel roomLabel = new JLabel(Constants.ROOM + ":");
+//        roomLabel.setFont(new Font("Sans", Font.BOLD, 20));
+//        JComboBox<String> roomCombo = new JComboBox<>();
+//        roomCombo.setPreferredSize(new Dimension(300, 30));
+//        roomCombo.setFont(new Font("Sans", Font.PLAIN, 20));
 
         JLabel branchLabel = new JLabel(Constants.BRANCH + ":");
         branchLabel.setFont(new Font("Sans", Font.BOLD, 20));
@@ -55,15 +54,10 @@ public class InventoryForm extends JFrame {
         nameField.setPreferredSize(new Dimension(300, 30));
         nameField.setFont(new Font("Sans", Font.PLAIN, 20));
 
-        if (Objects.nonNull(entity)) {
-            roomCombo.setSelectedItem(new RoomItem(entity.getRoom().getIdRoom(), entity.getRoom().getRoomNumber() + " - " + entity.getRoom().getBranch().getName()));
-            nameField.setText(entity.getDescription());
-        }
-
-        inputPanel.add(roomLabel);
-        inputPanel.add(roomCombo, "wrap");
-        inputPanel.add(branchLabel);
-        inputPanel.add(branchCombo, "wrap");
+//        inputPanel.add(roomLabel);
+//        inputPanel.add(roomCombo, "wrap");
+//        inputPanel.add(branchLabel);
+//        inputPanel.add(branchCombo, "wrap");
         inputPanel.add(descriptionLabel);
         inputPanel.add(nameField, "wrap");
 
@@ -76,24 +70,18 @@ public class InventoryForm extends JFrame {
         saveButton.setForeground(Color.WHITE);
 
         saveButton.addActionListener(e -> {
-            Inventory inventory = new Inventory();
-            RoomItem selectedItem = (RoomItem) roomCombo.getSelectedItem();
-            if (selectedItem == null) {
-                JOptionPane.showMessageDialog(this, "Por favor, selecione um quarto válido.", Constants.WARN, JOptionPane.WARNING_MESSAGE);
-                return;
-            }
-            Room room = RoomService.findById(selectedItem.getId());
+            final Inventory inventory = new Inventory();
             inventory.setIdInventory(Objects.nonNull(entity) ? entity.getIdInventory() : null);
-            inventory.setRoom(room);
-            inventory.setBranch(branches.get(branchCombo.getSelectedIndex()));
+            inventory.setRoom(inventoryRoom);
+            inventory.setBranch(inventoryRoom.getBranch());
             inventory.setDescription(nameField.getText());
             inventory.setActive(true);
 
             final Boolean result = Objects.nonNull(entity) ? InventoryService.update(inventory) : InventoryService.save(inventory);
 
-            if (Objects.nonNull(result) && result) {
+            if (result) {
                 JOptionPane.showMessageDialog(this, Constants.SUCCESSFUL_REGISTER, Constants.SUCCESS, JOptionPane.PLAIN_MESSAGE);
-                new InventoryView(role);
+                new InventoryView(role, inventoryRoom);
                 dispose();
             }
         });
@@ -105,7 +93,7 @@ public class InventoryForm extends JFrame {
         cancelButton.setForeground(Color.WHITE);
         cancelButton.addActionListener(e -> {
             dispose();
-            new InventoryView(role);
+            new InventoryView(role, inventoryRoom);
         });
 
         mainPanel.add(saveButton, "split 2, align center");
@@ -113,8 +101,8 @@ public class InventoryForm extends JFrame {
 
         add(mainPanel, BorderLayout.CENTER);
 
-        populateRoomCombo(roomCombo, saveButton, role);
-        populateBranchCombo(branchCombo, entity, role);
+//        populateRoomCombo(roomCombo, role, entity);
+//        populateBranchCombo(branchCombo, entity, role);
 
         pack();
         setLocationRelativeTo(null);
@@ -123,36 +111,44 @@ public class InventoryForm extends JFrame {
     }
 
 
-    private void populateRoomCombo(JComboBox<RoomItem> roomCombo, JButton saveButton, Role role) {
-        List<Room> rooms = RoomService.findAll(role);
-        if (rooms.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Não há quartos registrados.\nNão é possível fazer inventários sem quartos.", Constants.WARN, JOptionPane.PLAIN_MESSAGE);
-            roomCombo.addItem(null);
-            roomCombo.setEnabled(false);
-            saveButton.setEnabled(false);
-        } else {
-            rooms.forEach(room -> {
-                String displayText = room.getRoomNumber() + " - " + room.getBranch().getName();
-                roomCombo.addItem(new RoomItem(room.getIdRoom(), displayText));
-            });
-        }
-    }
+//    private void populateRoomCombo(JComboBox<String> roomCombo, Role role, Inventory entity) {
+//        final List<Room> roomsList = RoomService.findAll(role);
+//
+//        if (Objects.nonNull(roomsList)) {
+//            roomCombo.removeAllItems();
+//            rooms.clear();
+//
+//            for (Room room : roomsList) {
+//                roomCombo.addItem(room.getRoomNumber() + " - " + room.getBranch().getName());
+//                rooms.add(room);
+//            }
+//        }
+//
+//        if (Objects.nonNull(entity)) {
+//            for (Room room : rooms) {
+//                if (room.getIdRoom().equals(entity.getRoom().getIdRoom())) {
+//                    roomCombo.setSelectedItem(room.getRoomNumber() + " - " + room.getBranch().getName());
+//                    break;
+//                }
+//            }
+//        }
+//    }
 
-    private void populateBranchCombo(JComboBox<String> branchCombo, Inventory entity, Role role) {
-        final List<Branch> branchList = BranchService.findAll(role);
-
-        if (Objects.nonNull(branchList) && !branchList.isEmpty()) {
-            branchCombo.removeAllItems();
-            branches.clear();
-
-            for (Branch branch : branchList) {
-                branchCombo.addItem(branch.getName());
-                branches.add(branch);
-            }
-        }
-
-        if (Objects.nonNull(entity)) {
-            branchCombo.setSelectedItem(entity.getBranch().getName());
-        }
-    }
+//    private void populateBranchCombo(JComboBox<String> branchCombo, Inventory entity, Role role) {
+//        final List<Branch> branchList = BranchService.findAll(role);
+//
+//        if (Objects.nonNull(branchList) && !branchList.isEmpty()) {
+//            branchCombo.removeAllItems();
+//            branches.clear();
+//
+//            for (Branch branch : branchList) {
+//                branchCombo.addItem(branch.getName());
+//                branches.add(branch);
+//            }
+//        }
+//
+//        if (Objects.nonNull(entity)) {
+//            branchCombo.setSelectedItem(entity.getBranch().getName());
+//        }
+//    }
 }

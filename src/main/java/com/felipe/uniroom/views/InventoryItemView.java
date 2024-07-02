@@ -53,7 +53,7 @@ InventoryItemView extends JFrame {
         backButton.setBackground(Constants.WHITE);
         backButton.setIcon(Constants.BACK_ICON);
         backButton.addActionListener(e -> {
-            new InventoryView(role);
+            new InventoryView(role, inventory.getRoom());
             dispose();
         });
         searchPanel.add(backButton, "align left");

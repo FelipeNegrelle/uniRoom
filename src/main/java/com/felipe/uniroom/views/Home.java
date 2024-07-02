@@ -37,6 +37,16 @@ public class Home extends JFrame {
         });
         mainPanel.add(exit, "align center, wrap");
 
+        final JLabel branchLabel = Components.getLabel(Constants.BRANCH + ": ", null, Font.BOLD, 20, Constants.BLACK);
+        mainPanel.add(branchLabel, "split, span, align center");
+
+        final JComboBox<String> branchCombo = new JComboBox<>();
+        branchCombo.setPreferredSize(new Dimension(300, 30));
+        branchCombo.setFont(new Font("Sans", Font.PLAIN, 20));
+        mainPanel.add(branchCombo, "wrap, span, align center");
+
+        role.getBranches().forEach(branch -> branchCombo.addItem(branch.getName()));
+
         final JPanel gridPanel = new JPanel(new MigLayout("fill, insets 0", "[grow]", "[align top]"));
         JScrollPane scrollPane = new JScrollPane(gridPanel);
         scrollPane.getVerticalScrollBar().setUnitIncrement(16);

@@ -16,6 +16,7 @@ public class Role {
     private User user;
     private List<Corporate> corporates;
     private List<Branch> branches;
+    private boolean multi;
 
     public Role(Character role) {
         this.role = role;
@@ -23,6 +24,7 @@ public class Role {
         this.user = null;
         this.corporates = null;
         this.branches = null;
+        this.multi = false;
     }
 
     public Role(Character role, User user, List<Corporate> corporates, List<Branch> branches) {
@@ -31,6 +33,7 @@ public class Role {
         this.user = user;
         this.corporates = corporates;
         this.branches = branches;
+        this.multi = branches.size() > 1;
     }
 
     public Character getRole() {
@@ -65,6 +68,14 @@ public class Role {
         this.branches = branches;
     }
 
+    public boolean getMulti() {
+        return multi;
+    }
+
+    public void setMulti(boolean multi) {
+        this.multi = multi;
+    }
+
     public static List<Menu> getMenusByRole(Character role) {
         switch (role) {
             case 'A':
@@ -77,7 +88,6 @@ public class Role {
                 menusCorporate.add(Menus.MENU_USER.getMenu());
                 menusCorporate.add(Menus.MENU_CORPORATE.getMenu());
                 menusCorporate.add(Menus.MENU_BRANCH.getMenu());
-                menusCorporate.add(Menus.MENU_INVENTORY.getMenu());
                 menusCorporate.add(Menus.MENU_ITEM.getMenu());
                 menusCorporate.add(Menus.MENU_RESERVATION.getMenu());
                 menusCorporate.add(Menus.MENU_ROOM.getMenu());
@@ -90,7 +100,6 @@ public class Role {
                 final List<Menu> menusBranch = new ArrayList<>();
                 menusBranch.add(Menus.MENU_USER.getMenu());
                 menusBranch.add(Menus.MENU_BRANCH.getMenu());
-                menusBranch.add(Menus.MENU_INVENTORY.getMenu());
                 menusBranch.add(Menus.MENU_ITEM.getMenu());
                 menusBranch.add(Menus.MENU_RESERVATION.getMenu());
                 menusBranch.add(Menus.MENU_ROOM.getMenu());
@@ -103,7 +112,6 @@ public class Role {
                 final List<Menu> menusEmployee = new ArrayList<>();
                 menusEmployee.add(Menus.MENU_RESERVATION.getMenu());
                 menusEmployee.add(Menus.MENU_ROOM.getMenu());
-                menusEmployee.add(Menus.MENU_INVENTORY.getMenu());
                 menusEmployee.add(Menus.MENU_ITEM.getMenu());
                 menusEmployee.add(Menus.MENU_GUEST.getMenu());
 

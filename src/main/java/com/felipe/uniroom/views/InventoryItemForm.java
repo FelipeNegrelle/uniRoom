@@ -113,6 +113,7 @@ public class InventoryItemForm extends JFrame {
 
     private void populateItemCombo(JComboBox<String> itemCombo, InventoryItem entity, Role role) {
         final List<Item> itemList = ItemService.findAll(role);
+
         if (Objects.nonNull(itemList)) {
             itemCombo.removeAllItems();
             items.clear();
@@ -122,6 +123,7 @@ public class InventoryItemForm extends JFrame {
                 items.add(item);
             }
         }
+
         if (Objects.nonNull(entity)) {
             for (Item item : items) {
                 if (item.getIdItem().equals(entity.getId().getIdItem())) {

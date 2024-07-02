@@ -30,20 +30,19 @@ public class InventoryService {
             errorsSb.append("Nome do inventário deve ter no máximo 255 caracteres!\n");
         }
 
-
         return errorsSb.toString();
     }
 
-    public static List<Inventory> findAll(Role role){
+    public static List<Inventory> findAll(Role role) {
         return InventoryRepository.findAll(Inventory.class, role);
     }
 
-    public static Inventory findById(int id){
-        return InventoryRepository.findById(Inventory.class,id);
+    public static Inventory findById(int id) {
+        return InventoryRepository.findById(Inventory.class, id);
     }
 
-    public static List<Item> getItemsFromInventory(Inventory inventory){
-       return InventoryRepository.getItemsFromInventory(inventory);
+    public static List<Item> getItemsFromInventory(Inventory inventory) {
+        return InventoryRepository.getItemsFromInventory(inventory);
     }
 
     public static Boolean save(Inventory inventory) {
@@ -56,8 +55,7 @@ public class InventoryService {
             } else {
                 return InventoryRepository.saveOrUpdate(inventory);
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(null, "Erro ao salvar o inventário: " + e.getMessage(), "Erro", JOptionPane.ERROR_MESSAGE);
             return false;
@@ -90,8 +88,7 @@ public class InventoryService {
 
                 return false;
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
 
             Components.showGenericError(null);
@@ -111,8 +108,7 @@ public class InventoryService {
 
                 return false;
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
 
             Components.showGenericError(null);
