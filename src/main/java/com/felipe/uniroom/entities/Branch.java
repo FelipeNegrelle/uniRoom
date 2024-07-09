@@ -114,13 +114,14 @@ public class Branch {
     }
 
     @Override
-    public int hashCode() {
-        int result = idBranch != null ? idBranch.hashCode() : 0;
-        result = 31 * result + (name != null ? name.hashCode() : 0);
-        result = 31 * result + (corporate != null ? corporate.hashCode() : 0);
-        result = 31 * result + (user != null ? user.hashCode() : 0);
-        result = 31 * result + (cnpj != null ? cnpj.hashCode() : 0);
-        result = 31 * result + (active != null ? active.hashCode() : 0);
-        return result;
+    public String toString() {
+        return "Branch{" +
+                "idBranch=" + idBranch +
+                ", name='" + name + '\'' +
+                ", corporate=" + corporate +
+                ", user=" + user +
+                ", cnpj='" + cnpj + '\'' +
+                ", active=" + active +
+                '}';
     }
 }

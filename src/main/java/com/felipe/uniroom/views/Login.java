@@ -5,6 +5,8 @@ import com.felipe.uniroom.config.Role;
 import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Corporate;
 import com.felipe.uniroom.entities.User;
+import com.felipe.uniroom.services.BranchService;
+import com.felipe.uniroom.services.CorporateService;
 import com.felipe.uniroom.services.UserService;
 import net.miginfocom.swing.MigLayout;
 
@@ -81,7 +83,16 @@ public class Login extends JFrame {
 
                             if (user.getRole().equals('E')) {
                                 role = new Role(user.getRole(), user, Collections.emptyList(), Collections.singletonList(user.getBranch()));
-                            } else {
+                            }
+                            else if (user.getRole().equals('A')) {
+                                role = new Role('A');
+
+                                final java.util.List<Corporate> userCorporate = CorporateService.findAll(role);
+                                final java.util.List<Branch> userBranch = BranchService.findAll(role);
+
+                                role = new Role(user.getRole(), user, userCorporate, userBranch);
+                            }
+                            else {
                                 final java.util.List<Corporate> userCorporate = UserService.getCorporateUser(user);
                                 final java.util.List<Branch> userBranch = UserService.getBranchUser(user);
 
@@ -96,8 +107,7 @@ public class Login extends JFrame {
                         JOptionPane.showMessageDialog(this, "Usuário não encontrado.");
                     }
                 }
-            } catch (
-                    Exception exception) {
+            } catch (Exception exception) {
                 exception.printStackTrace();
             }
         });
@@ -111,8 +121,7 @@ public class Login extends JFrame {
             try {
                 new RecoverPasswordForm();
                 dispose();
-            } catch (
-                    Exception exception) {
+            } catch (Exception exception) {
                 exception.printStackTrace();
             }
         });
@@ -121,7 +130,6 @@ public class Login extends JFrame {
         mainPanel.add(forgetPasswordButton, "align center, wrap");
         add(mainPanel, BorderLayout.CENTER);
 
-        pack();
         setLocationRelativeTo(null);
         setVisible(true);
         setExtendedState(JFrame.MAXIMIZED_BOTH);

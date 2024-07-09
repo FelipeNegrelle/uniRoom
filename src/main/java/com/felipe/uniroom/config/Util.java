@@ -1,10 +1,14 @@
 package com.felipe.uniroom.config;
 
+import javax.swing.*;
 import javax.swing.text.MaskFormatter;
 import java.awt.*;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 public class Util {
@@ -133,5 +137,24 @@ public class Util {
             default ->
                     Constants.WHITE;
         };
+    }
+
+    public static LocalDate getLocalDate(Date date) {
+        if (date instanceof java.sql.Date) {
+            return ((java.sql.Date) date).toLocalDate();
+        } else {
+            return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        }
+    }
+
+    public static JFormattedTextField createFormattedDateField() {
+        try {
+            MaskFormatter dateMask = new MaskFormatter("##/##/####");
+            dateMask.setPlaceholderCharacter('_');
+            return new JFormattedTextField(dateMask);
+        } catch (ParseException e) {
+            e.printStackTrace();
+            return new JFormattedTextField();
+        }
     }
 }

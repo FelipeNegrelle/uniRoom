@@ -14,11 +14,8 @@ public class UserRepository extends DatabaseRepository {
         final String query = "SELECT u FROM User u WHERE u.username = :username";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            return em.createQuery(query, User.class)
-                    .setParameter("username", username)
-                    .getSingleResult();
-        } catch (
-                NoResultException e) {
+            return em.createQuery(query, User.class).setParameter("username", username).getSingleResult();
+        } catch (NoResultException e) {
             return null;
         }
     }
@@ -27,11 +24,8 @@ public class UserRepository extends DatabaseRepository {
         final String query = "SELECT u FROM User u WHERE u.username LIKE :searchText OR u.name LIKE :searchText";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            return em.createQuery(query, User.class)
-                    .setParameter("searchText", "%" + searchText + "%")
-                    .getResultList();
-        } catch (
-                Exception e) {
+            return em.createQuery(query, User.class).setParameter("searchText", "%" + searchText + "%").getResultList();
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -41,11 +35,8 @@ public class UserRepository extends DatabaseRepository {
         final String query = "SELECT c FROM Corporate c WHERE c.user.idUser = :idUser";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            return em.createQuery(query, Corporate.class)
-                    .setParameter("idUser", user.getIdUser())
-                    .getResultList();
-        } catch (
-                NoResultException e) {
+            return em.createQuery(query, Corporate.class).setParameter("idUser", user.getIdUser()).getResultList();
+        } catch (NoResultException e) {
             return null;
         }
     }
@@ -54,11 +45,8 @@ public class UserRepository extends DatabaseRepository {
         final String query = "SELECT b FROM Branch b WHERE b.user.idUser = :idUser";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            return em.createQuery(query, Branch.class)
-                    .setParameter("idUser", user.getIdUser())
-                    .getResultList();
-        } catch (
-                NoResultException e) {
+            return em.createQuery(query, Branch.class).setParameter("idUser", user.getIdUser()).getResultList();
+        } catch (NoResultException e) {
             return null;
         }
     }

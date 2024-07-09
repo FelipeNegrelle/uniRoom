@@ -2,14 +2,13 @@ package com.felipe.uniroom.views;
 
 import com.felipe.uniroom.config.Constants;
 import com.felipe.uniroom.config.Role;
+import com.felipe.uniroom.config.Util;
 import com.felipe.uniroom.entities.User;
-import com.felipe.uniroom.repositories.UserRepository;
 import com.felipe.uniroom.services.UserService;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -69,14 +68,14 @@ public class UserView extends JFrame {
         searchField.addKeyListener(new KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                String searchText = searchField.getText().trim().toLowerCase();
-                updateUserTable(searchText);
+                String searchText = searchField.getText().trim().toLowerCase().replaceAll(" ", "");
+                updateUserTable(searchText, role);
             }
         });
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "Username", "Cargo", "Matriz", "Estabelecimento", "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", Constants.NAME, "Nome de usuário", "Cargo", Constants.CORPORATE, Constants.BRANCH}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -85,14 +84,10 @@ public class UserView extends JFrame {
         table.setRowHeight(30);
         table.setDefaultEditor(Object.class, null);
         table.getTableHeader().setReorderingAllowed(false);
-        table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
+        table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD));
 
-
-        final TableColumn optionsColumn = table.getColumnModel().getColumn(0);
-        optionsColumn.setCellRenderer(new Components.OptionsCellRenderer());
-
-        final TableColumn activeColumn = table.getColumnModel().getColumn(7);
-        activeColumn.setCellRenderer(new Components.IconCellRenderer());
+        final Components.OptionsCellRenderer optionsCellRenderer = new Components.OptionsCellRenderer();
+        table.getColumnModel().getColumn(0).setCellRenderer(optionsCellRenderer);
 
         final Components.MouseAction mouseAction = (tableEvt, evt) -> {
             final int row = tableEvt.rowAtPoint(evt.getPoint());
@@ -116,8 +111,8 @@ public class UserView extends JFrame {
                 deleteItem.addActionListener(e -> {
                     final User user = UserService.findById((int) model.getValueAt(row, 1));
 
-                    if (UserRepository.delete(User.class, user.getIdUser())) {
-                        updateUserTable(searchField.getText());
+                    if (UserService.delete(user)) {
+                        updateUserTable(searchField.getText(), role);
                     } else {
                         Components.showGenericError(this);
                     }
@@ -136,47 +131,50 @@ public class UserView extends JFrame {
         final JScrollPane scrollPane = new JScrollPane(table);
         panel.add(scrollPane, "grow");
 
-        updateUserTable("");
+        updateUserTable("", role);
 
         add(panel, "grow");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setVisible(true);
     }
 
-    private static String getRoleTranslation(char roleCode) {
-        return switch (roleCode) {
-            case 'A' ->
-                    "Administrador";
-            case 'C' ->
-                    "Gerente de Matriz";
-            case 'B' ->
-                    "Gerente de Estabelecimento";
-            case 'E' ->
-                    "Funcionário";
-            default ->
-                    "Desconhecido";
-        };
-    }
-
-    private static void updateUserTable(String searchText) {
+    private static void updateUserTable(String searchText, Role role) {
         model.setRowCount(0);
 
-        final List<User> userList = UserService.searchByUsernameOrName(searchText);
-        if (Objects.nonNull(userList)) {
-            for (User user : userList) {
+        if (!searchText.isEmpty()) {
+            final List<User> searchItens = UserService.search(searchText, role);
+
+            for (User user : searchItens) {
                 model.addRow(new Object[]{
-                        "...",
+                        null,
                         user.getIdUser(),
                         user.getName(),
                         user.getUsername(),
-                        getRoleTranslation(user.getRole()),
+                        Util.convertRoleName(user.getRole()),
                         Objects.isNull(user.getCorporate()) ? "-" : user.getCorporate().getName(),
                         Objects.isNull(user.getBranch()) ? "-" : user.getBranch().getName(),
-                        user.getActive()
                 });
             }
+
+            searchItens.clear();
         } else {
-            JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);
+            final List<User> userList = UserService.findAll(role);
+
+            if (Objects.nonNull(userList)) {
+                for (User user : userList) {
+                    model.addRow(new Object[]{
+                            null,
+                            user.getIdUser(),
+                            user.getName(),
+                            user.getUsername(),
+                            Util.convertRoleName(user.getRole()),
+                            Objects.isNull(user.getCorporate()) ? "-" : user.getCorporate().getName(),
+                            Objects.isNull(user.getBranch()) ? "-" : user.getBranch().getName(),
+                    });
+                }
+            } else {
+                JOptionPane.showMessageDialog(null, Constants.GENERIC_ERROR);
+            }
         }
     }
 }

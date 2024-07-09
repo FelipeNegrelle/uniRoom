@@ -86,9 +86,12 @@ public class RoomTypeService {
 
     public static Boolean delete(RoomType roomType) {
         try {
-            RoomType result = RoomTypeRepository.findById(RoomType.class, roomType.getIdRoomType());
+            final RoomType result = RoomTypeRepository.findById(RoomType.class, roomType.getIdRoomType());
+
             if (Objects.nonNull(result)) {
-                return RoomTypeRepository.delete(RoomType.class, result.getIdRoomType());
+                result.setActive(false);
+
+                return update(result);
             } else {
                 JOptionPane.showMessageDialog(null, "Tipo não encontrado!");
                 return false;

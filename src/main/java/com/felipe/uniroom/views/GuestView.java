@@ -102,6 +102,16 @@ public class GuestView extends JFrame {
             if (column == 0) {
                 final JPopupMenu popupMenu = new JPopupMenu();
 
+                final JMenuItem expensesItem = new JMenuItem(Constants.EXPENSE);
+                expensesItem.setIcon(Constants.EXPENSE_ICON);
+                expensesItem.setFont(Constants.FONT.deriveFont(Font.BOLD));
+                expensesItem.addActionListener(e -> {
+                    final Guest guest = GuestService.findById((int) model.getValueAt(row, 1));
+
+                    new GuestExpenseView(guest, role);
+                    dispose();
+                });
+
                 final JMenuItem editItem = new JMenuItem(Constants.EDIT);
                 editItem.setIcon(Constants.EDIT_ICON);
                 editItem.setFont(Constants.FONT.deriveFont(Font.BOLD));

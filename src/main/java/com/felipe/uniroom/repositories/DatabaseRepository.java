@@ -83,8 +83,7 @@ public class DatabaseRepository {
             }
 
             return query.getResultList();
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -94,8 +93,7 @@ public class DatabaseRepository {
     public static <T> T findById(Class<T> entity, Object id) {
         try (EntityManager em = ConnectionManager.getEntityManager()) {
             return em.find(entity, id);
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
@@ -116,8 +114,7 @@ public class DatabaseRepository {
             transaction.commit();
 
             return true;
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
@@ -144,8 +141,7 @@ public class DatabaseRepository {
             transaction.commit();
 
             return true;
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             if (transaction != null && transaction.isActive()) {
                 transaction.rollback();
             }
@@ -159,8 +155,7 @@ public class DatabaseRepository {
     public static <T> List<T> search(Class<T> entity, String search, String field, Role role) {
         try {
             entity.getDeclaredField(field);
-        } catch (
-                NoSuchFieldException e) {
+        } catch (NoSuchFieldException e) {
             e.printStackTrace();
             return null;
         }
@@ -210,8 +205,7 @@ public class DatabaseRepository {
             cq.where(predicate);
 
             return em.createQuery(cq).getResultList();
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return null;
         }

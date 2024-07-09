@@ -8,7 +8,6 @@ import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableColumn;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -78,7 +77,7 @@ public class RoomTypeView extends JFrame {
 
         panel.add(searchPanel, "growx");
 
-        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "Preço", "Capacidade", Constants.BRANCH, "Ativo"}, 0);
+        model = new DefaultTableModel(new Object[]{Constants.ACTIONS, "Código", "Nome", "Preço", "Capacidade", Constants.BRANCH}, 0);
 
         final JTable table = new JTable(model);
         table.setFont(new Font("Sans", Font.PLAIN, 20));
@@ -88,10 +87,6 @@ public class RoomTypeView extends JFrame {
         table.setDefaultEditor(Object.class, null);
         table.getTableHeader().setReorderingAllowed(false);
         table.getTableHeader().setFont(Constants.FONT.deriveFont(Font.BOLD, 20));
-
-        final Components.IconCellRenderer iconCellRenderer = new Components.IconCellRenderer();
-        final TableColumn activeColumn = table.getColumnModel().getColumn(6);
-        activeColumn.setCellRenderer(iconCellRenderer);
 
         final Components.OptionsCellRenderer optionsCellRenderer = new Components.OptionsCellRenderer();
         table.getColumnModel().getColumn(0).setCellRenderer(optionsCellRenderer);
@@ -121,7 +116,7 @@ public class RoomTypeView extends JFrame {
                     if (RoomTypeService.delete(roomType)) {
                         updateRoomTypeTable(role);
                     } else {
-                        JOptionPane.showMessageDialog(null, "Error deleting room type", "Error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, "Error ao apagar o tipo de quarto", "Error", JOptionPane.ERROR_MESSAGE);
                     }
                 });
 
@@ -157,7 +152,6 @@ public class RoomTypeView extends JFrame {
                         "R$ " + roomType.getPrice(),
                         roomType.getCapacity(),
                         roomType.getBranch().getName(),
-                        roomType.getActive()
                 });
             }
             searchItems.clear();
@@ -172,7 +166,6 @@ public class RoomTypeView extends JFrame {
                             "R$ " + roomType.getPrice(),
                             roomType.getCapacity(),
                             roomType.getBranch().getName(),
-                            roomType.getActive()
                     });
                 }
             } else {

@@ -66,9 +66,9 @@ public class Components {
         final JLabel label = new JLabel(text);
 
         final Font font = new Font(
-                !Objects.isNull(fontFamily) && !fontFamily.isEmpty() ? fontFamily : "Sans",
-                !Objects.isNull(fontStyle) && fontStyle >= 0 ? fontStyle : Font.PLAIN,
-                !Objects.isNull(fontSize) && fontSize > 0 ? fontSize : 20);
+                Objects.nonNull(fontFamily) && !fontFamily.isEmpty() ? fontFamily : "Sans",
+                Objects.nonNull(fontStyle) && fontStyle >= 0 ? fontStyle : Font.PLAIN,
+                Objects.nonNull(fontSize) && fontSize > 0 ? fontSize : 20);
         label.setFont(font);
 
         if (Objects.nonNull(color)) {

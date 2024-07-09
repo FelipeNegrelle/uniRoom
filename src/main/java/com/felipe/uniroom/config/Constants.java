@@ -66,6 +66,7 @@ public class Constants {
     public static final String STATUS = "Situação";
     public static final String TOTAL = "Total";
     public static final String FILTER = "Filtro";
+    public static final String RESUME = "Resumo";
 
     //Colors
     public static final Color WHITE = new Color(0xFFFFFF);
@@ -105,5 +106,6 @@ public class Constants {
     public static final Icon SERVICE_ICON = new ImageIcon("src/main/resources/images/icons/service.png");
     public static final Icon EXPENSE_ICON = new ImageIcon("src/main/resources/images/icons/expense.png");
     public static final Icon FILTER_ICON = new ImageIcon("src/main/resources/images/icons/filter.png");
+    public static final Icon DASHBOARD_ICON = new ImageIcon("src/main/resources/images/icons/dashboard.png");
     public static final Image LOGO = Toolkit.getDefaultToolkit().getImage(Main.class.getResource("/images/uniroom.jpeg"));
 }

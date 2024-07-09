@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Objects;
 
 @Entity
 @Table(name = "reservation")
@@ -147,33 +146,18 @@ public class Reservation {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof Reservation))
-            return false;
-        Reservation that = (Reservation) o;
-        return Objects.equals(idReservation, that.idReservation);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(idReservation);
-    }
-
-    @Override
     public String toString() {
         return "Reservation{" +
-                "idReservation=" + idReservation +
-                ", room=" + room +
-                ", user=" + user +
-                ", status='" + status + '\'' +
-                ", branch=" + branch +
-                ", dateTimeCheckIn=" + dateTimeCheckIn +
-                ", dateTimeCheckOut=" + dateTimeCheckOut +
-                ", initialDate=" + initialDate +
-                ", finalDate=" + finalDate +
-                ", guestList=" + guestList +
+                "\nidReservation=" + idReservation +
+                "\nroom=" + room +
+                "\nuser=" + user +
+                "\nstatus='" + status + '\'' +
+                "\nbranch=" + branch +
+                "\ndateTimeCheckIn=" + dateTimeCheckIn +
+                "\ndateTimeCheckOut=" + dateTimeCheckOut +
+                "\ninitialDate=" + initialDate +
+                "\nfinalDate=" + finalDate +
+                "\nguestList=" + guestList +
                 '}';
     }
 }

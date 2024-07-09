@@ -1,9 +1,10 @@
 package com.felipe.uniroom.services;
 
 import com.felipe.uniroom.config.Role;
-import com.felipe.uniroom.entities.Branch;
 import com.felipe.uniroom.entities.Guest;
+import com.felipe.uniroom.entities.ReservationMovement;
 import com.felipe.uniroom.repositories.GuestRepository;
+import com.felipe.uniroom.repositories.ReservationMovementRespository;
 import com.felipe.uniroom.views.Components;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
@@ -39,7 +40,7 @@ public class GuestService {
             errorsSb.append("Nome do hóspede deve ter no máximo 50 caracteres!\n");
         }
 
-        if(guest.getIsForeigner()) {
+        if (guest.getIsForeigner()) {
             if (guest.getPassportNumber().length() > 9) {
                 errorsSb.append("Passaporte do hóspede deve ter no máximo 9 caracteres!\n");
             }
@@ -67,12 +68,12 @@ public class GuestService {
         return errorsSb.toString();
     }
 
-    public static List<Guest> findAll(Role role){
+    public static List<Guest> findAll(Role role) {
         return GuestRepository.findAll(Guest.class, role);
     }
 
-    public static Guest findById(int id){
-        return GuestRepository.findById(Guest.class,id);
+    public static Guest findById(int id) {
+        return GuestRepository.findById(Guest.class, id);
     }
 
     public static Boolean isHosted(Guest guest) {
@@ -160,6 +161,22 @@ public class GuestService {
         }
 
         return GuestRepository.search(Guest.class, search, field, role);
+    }
+
+    public static List<ReservationMovement> getGuestMovements(Guest guest, Role role) {
+        final List<ReservationMovement> movements = ReservationMovementRespository.findAll(ReservationMovement.class, role);
+
+        if (Objects.nonNull(movements)) {
+            for (ReservationMovement movement : movements) {
+                if (!movement.getReservation().getGuestList().contains(guest)) {
+                    movements.remove(movement);
+                }
+            }
+
+            return movements;
+        }
+
+        return null;
     }
 }
 

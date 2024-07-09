@@ -14,7 +14,6 @@ import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -26,10 +25,6 @@ public class BranchView extends JFrame {
         super(Constants.BRANCH);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLayout(new MigLayout("fill, insets 0"));
-
-        System.out.println(role.getRole());
-        System.out.println(Arrays.toString(role.getCorporates().toArray()));
-        System.out.println(Arrays.toString(role.getBranches().toArray()));
 
         final JPanel panel = new JPanel(new MigLayout("fill, wrap 1", "[grow]", ""));
         panel.setBackground(Constants.BLUE);

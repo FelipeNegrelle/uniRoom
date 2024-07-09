@@ -17,38 +17,19 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class ReservationRepository extends DatabaseRepository {
-    public static Boolean cancel(Reservation reservation) {
-        try {
-            final Reservation result = findById(Reservation.class, reservation.getIdReservation());
-
-            if (result != null) {
-                result.setStatus("C");
-
-                return saveOrUpdate(result);
-            } else {
-                return false;
-            }
-        } catch (
-                NoResultException e) {
-            return null;
-        }
-    }
-
     public static List<Room> getAvailableRooms(Role role, Reservation currentReservation) {
         List<Room> allRooms = findAll(Room.class, role);
 
         if (Objects.nonNull(allRooms) && !allRooms.isEmpty()) {
-            final String query = "SELECT res.room.idRoom FROM Reservation res WHERE res.status = 'CI' OR res.status = 'H'";
+            final String query = "SELECT res.room.idRoom FROM Reservation res WHERE res.status = 'CI'";
             try (EntityManager em = ConnectionManager.getEntityManager()) {
-                List<Long> reservedRoomIds = em.createQuery(query, Long.class).getResultList();
+                List<Integer> reservedRoomIds = em.createQuery(query, Integer.class).getResultList();
 
                 if (Objects.nonNull(currentReservation) && Objects.nonNull(currentReservation.getRoom())) {
                     reservedRoomIds.remove(currentReservation.getRoom().getIdRoom());
                 }
 
-                return allRooms.stream()
-                        .filter(room -> !reservedRoomIds.contains(room.getIdRoom()))
-                        .collect(Collectors.toList());
+                return allRooms.stream().filter(room -> !reservedRoomIds.contains(room.getIdRoom())).collect(Collectors.toList());
             } catch (NoResultException e) {
                 return allRooms;
             } catch (Exception e) {
@@ -62,18 +43,12 @@ public class ReservationRepository extends DatabaseRepository {
 
 
     public static Reservation findByIdWithGuests(Integer id) {
-        EntityManager em = ConnectionManager.getEntityManager();
-        try {
-            TypedQuery<Reservation> query = em.createQuery(
-                    "SELECT r FROM Reservation r LEFT JOIN FETCH r.guestList WHERE r.idReservation = :id",
-                    Reservation.class
-            );
+        try (EntityManager em = ConnectionManager.getEntityManager()) {
+            TypedQuery<Reservation> query = em.createQuery("SELECT r FROM Reservation r LEFT JOIN FETCH r.guestList WHERE r.idReservation = :id", Reservation.class);
             query.setParameter("id", id);
             return query.getSingleResult();
         } catch (NoResultException e) {
             return null;
-        } finally {
-            em.close();
         }
     }
 
@@ -81,12 +56,7 @@ public class ReservationRepository extends DatabaseRepository {
         String query = "SELECT COUNT(r) FROM Reservation r WHERE r.room.idRoom = :roomId AND r.idReservation <> :reservationId AND r.status != 'C' AND r.status != 'CO' AND (:checkInDate < r.finalDate AND :checkOutDate > r.initialDate)";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            Long count = em.createQuery(query, Long.class)
-                    .setParameter("roomId", roomId)
-                    .setParameter("reservationId", reservationId != null ? reservationId : -1)
-                    .setParameter("checkInDate", checkInDate)
-                    .setParameter("checkOutDate", checkOutDate)
-                    .getSingleResult();
+            Long count = em.createQuery(query, Long.class).setParameter("roomId", roomId).setParameter("reservationId", reservationId != null ? reservationId : -1).setParameter("checkInDate", checkInDate).setParameter("checkOutDate", checkOutDate).getSingleResult();
 
             return count == 0;
         } catch (Exception e) {
@@ -99,12 +69,7 @@ public class ReservationRepository extends DatabaseRepository {
         String query = "SELECT COUNT(r) FROM Reservation r JOIN r.guestList g WHERE g.idGuest = :guestId AND r.idReservation <> :reservationId AND r.status != 'C' AND r.status != 'CO' AND (:checkInDate < r.finalDate AND :checkOutDate > r.initialDate)";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            Long count = em.createQuery(query, Long.class)
-                    .setParameter("guestId", guestId)
-                    .setParameter("reservationId", reservationId != null ? reservationId : -1)
-                    .setParameter("checkInDate", checkInDate)
-                    .setParameter("checkOutDate", checkOutDate)
-                    .getSingleResult();
+            Long count = em.createQuery(query, Long.class).setParameter("guestId", guestId).setParameter("reservationId", reservationId != null ? reservationId : -1).setParameter("checkInDate", checkInDate).setParameter("checkOutDate", checkOutDate).getSingleResult();
 
             return count == 0;
         } catch (Exception e) {
@@ -123,39 +88,31 @@ public class ReservationRepository extends DatabaseRepository {
         return conflictingGuests;
     }
 
-    public static Float getTotalDays(Integer idReservation, Date finalDate, Role role) {
+    public static Double getTotalDays(Integer idReservation, Date finalDate, Role role) {
         final StringBuilder query = new StringBuilder();
-        query.append("SELECT CAST(rt.price * DATEDIFF(DATE(:date), r.initial_date) AS FLOAT4) as total_days\n");
+        query.append("SELECT CAST(rt.price * (DATEDIFF(DATE(:date), r.initial_date) + 1) AS DOUBLE) as total_days\n");
         query.append("FROM reservation r\n");
         query.append("LEFT OUTER JOIN room rr ON r.id_room = rr.id_room\n");
         query.append("LEFT OUTER JOIN room_type rt ON rt.id_room_type = rr.id_room_type\n");
         query.append("WHERE r.id_reservation = :idReservation");
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            return (Float) em.createNativeQuery(query.toString())
-                    .setParameter("date", finalDate)
-                    .setParameter("idReservation", idReservation)
-                    .getSingleResult();
+            return (Double) em.createNativeQuery(query.toString()).setParameter("date", finalDate).setParameter("idReservation", idReservation).getSingleResult();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
 
-    public static Float getTotalExpensesByReservationId(Integer reservationId) {
-        String query = "SELECT SUM(COALESCE(i.price * e.amount, 0) + COALESCE(s.price * e.amount, 0)) " +
-                "FROM Expense e " +
-                "LEFT JOIN e.item i " +
-                "LEFT JOIN e.service s " +
-                "WHERE e.reservation.idReservation = :idReservation";
+    public static Double getTotalExpensesByReservationId(Integer reservationId) {
+        String query = "SELECT SUM(COALESCE(i.price * e.amount, 0) + COALESCE(s.price * e.amount, 0)) " + "FROM Expense e " + "LEFT JOIN e.item i " + "LEFT JOIN e.service s " + "WHERE e.reservation.idReservation = :idReservation";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            Double result = em.createQuery(query, Double.class)
-                    .setParameter("idReservation", reservationId)
-                    .getSingleResult();
-            return result != null ? result.floatValue() : 0f;
+            final Double result = em.createQuery(query, Double.class).setParameter("idReservation", reservationId).getSingleResult();
+
+            return result != null ? result : 0D;
         } catch (NoResultException e) {
-            return 0f;
+            return 0D;
         }
     }
 
@@ -163,23 +120,7 @@ public class ReservationRepository extends DatabaseRepository {
         final String query = "SELECT e from Expense e LEFT OUTER JOIN Reservation r ON e.reservation.idReservation = r.idReservation WHERE e.reservation.idReservation = :idReservation ";
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            return em.createQuery(query, Expense.class)
-                    .setParameter("idReservation", idReservation)
-                    .getResultList();
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            return null;
-        }
-    }
-
-    public static List<Guest> getGuests(Integer idReservation) {
-        final String query = "SELECT g from Guest g LEFT OUTER JOIN ReservationGuest rg ON rg.guest.idGuest = g.idGuest WHERE rg.reservation.idReservation = :idReservation";
-
-        try(EntityManager em = ConnectionManager.getEntityManager()) {
-            return em.createQuery(query, Guest.class)
-                    .setParameter("idReservation", idReservation)
-                    .getResultList();
+            return em.createQuery(query, Expense.class).setParameter("idReservation", idReservation).getResultList();
         } catch (Exception e) {
             e.printStackTrace();
 

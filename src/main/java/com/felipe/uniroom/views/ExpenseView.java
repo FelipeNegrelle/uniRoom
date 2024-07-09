@@ -57,7 +57,7 @@ public class ExpenseView extends JFrame {
             new ExpenseForm(role, reservation, null);
             dispose();
         });
-        if (!reservation.getStatus().equals("C") && !reservation.getStatus().equals("CO")) {
+        if (reservation.getStatus().equals("CI")) {
 //            newExpense.setEnabled(false);
             searchPanel.add(newExpense, "align left");
         }

@@ -266,7 +266,7 @@ public class ReservationForm extends JFrame {
             reservation.setStatus(Objects.nonNull(entity) ? entity.getStatus() : "P");
             reservation.setGuestList(guestsTableList);
 
-            final Boolean result = Objects.nonNull(entity) ? ReservationService.update(reservation) : ReservationService.save(reservation);
+            final Boolean result = Objects.nonNull(entity) ? ReservationService.update(reservation, 'U') : ReservationService.save(reservation);
 
             if (Objects.nonNull(result) && result) {
                 JOptionPane.showMessageDialog(this, Constants.SUCCESSFUL_REGISTER, Constants.SUCCESS, JOptionPane.PLAIN_MESSAGE);

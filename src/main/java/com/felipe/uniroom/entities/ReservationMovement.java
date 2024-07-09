@@ -17,6 +17,10 @@ public class ReservationMovement {
     @JoinColumn(name = "id_reservation", nullable = false)
     private Reservation reservation;
 
+    @ManyToOne
+    @JoinColumn(name = "id_expense")
+    private Expense expense;
+
     @Column(nullable = false)
     private Double value;
 
@@ -33,13 +37,14 @@ public class ReservationMovement {
     public ReservationMovement() {
     }
 
-    public ReservationMovement(Integer id, Reservation reservation, Double value, String description, String movementType, Date dateTimeMovement) {
+    public ReservationMovement(Integer id, Reservation reservation, Double value, String description, String movementType, Date dateTimeMovement, Expense expense) {
         this.id = id;
         this.reservation = reservation;
         this.value = value;
         this.description = description;
         this.movementType = movementType;
         this.dateTimeMovement = dateTimeMovement;
+        this.expense = expense;
     }
 
     public Integer getId() {
@@ -90,23 +95,16 @@ public class ReservationMovement {
         this.dateTimeMovement = dateTimeMovement;
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o)
-            return true;
-        if (!(o instanceof ReservationMovement))
-            return false;
-        ReservationMovement that = (ReservationMovement) o;
-        return Objects.equals(id, that.id) && Objects.equals(reservation, that.reservation) && Objects.equals(value, that.value) && Objects.equals(description, that.description) && Objects.equals(movementType, that.movementType) && Objects.equals(dateTimeMovement, that.dateTimeMovement);
+    public Expense getExpense() {
+        return expense;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, reservation, value, description, movementType, dateTimeMovement);
+    public void setExpense(Expense expense) {
+        this.expense = expense;
     }
 
     @Override
     public String toString() {
-        return "ReservationMovement{" + "id=" + id + ", reservation=" + reservation + ", value=" + value + ", description='" + description + '\'' + ", movementType='" + movementType + '\'' + ", dateTimeMovement=" + dateTimeMovement + '}';
+        return "ReservationMovement{" + "id=" + id + ", reservation=" + reservation + ", expense=" + expense + ", value=" + value + ", description='" + description + '\'' + ", movementType='" + movementType + '\'' + ", dateTimeMovement=" + dateTimeMovement + '}';
     }
 }

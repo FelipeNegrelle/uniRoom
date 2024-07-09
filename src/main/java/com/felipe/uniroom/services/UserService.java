@@ -20,11 +20,7 @@ import java.util.Objects;
 import java.util.Set;
 
 public class UserService {
-    private static final Validator validator = Validation.byDefaultProvider()
-            .configure()
-            .messageInterpolator(new ParameterMessageInterpolator())
-            .buildValidatorFactory()
-            .getValidator();
+    private static final Validator validator = Validation.byDefaultProvider().configure().messageInterpolator(new ParameterMessageInterpolator()).buildValidatorFactory().getValidator();
 
     public static String validateUser(User user, boolean isUpdate) {
         final StringBuilder errorsSb = new StringBuilder();
@@ -35,13 +31,12 @@ public class UserService {
             violations.forEach(violation -> errorsSb.append(violation.getMessage()).append("\n"));
         }
 
-
         if (user.getUsername().isBlank()) {
             errorsSb.append("Nome de usuário não pode ser vazio!\n");
         }
 
         if (isUpdate) {
-            User existingUser = UserRepository.findByUsername(user.getUsername());
+            final User existingUser = UserRepository.findByUsername(user.getUsername());
 
             if (existingUser != null && !existingUser.getIdUser().equals(user.getIdUser())) {
                 errorsSb.append("Nome de usuário já cadastrado!\n");
@@ -75,12 +70,12 @@ public class UserService {
         return errorsSb.toString();
     }
 
-    public static List<User> findAll(Role role){
+    public static List<User> findAll(Role role) {
         return UserRepository.findAll(User.class, role);
     }
 
-    public static User findById(int id){
-        return UserRepository.findById(User.class,id);
+    public static User findById(int id) {
+        return UserRepository.findById(User.class, id);
     }
 
     public static Boolean register(User user) {
@@ -96,8 +91,7 @@ public class UserService {
                 user.setSecretAnswer(user.getSecretAnswer().trim().toLowerCase().replace(" ", ""));
                 return UserRepository.saveOrUpdate(user);
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             Components.showGenericError(null);
             return null;
@@ -111,8 +105,7 @@ public class UserService {
             if (result != null) {
                 return BCrypt.checkpw(user.getPassword(), result.getPassword());
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
@@ -125,8 +118,7 @@ public class UserService {
             user.setPassword(hashedPassword);
 
             return UserRepository.saveOrUpdate(user);
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return false;
@@ -162,8 +154,23 @@ public class UserService {
 
                 return UserRepository.saveOrUpdate(existingUser);
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    public static Boolean delete(User user) {
+        try {
+            final User result = UserRepository.findById(User.class, user.getIdUser());
+
+            if (result != null) {
+                result.setActive(false);
+
+                return update(result);
+            }
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -177,8 +184,7 @@ public class UserService {
             if (result != null) {
                 return user.getSecretAnswer().equals(result.getSecretAnswer());
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
         }
         return false;
@@ -198,8 +204,7 @@ public class UserService {
             } else {
                 return null;
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             Components.showGenericError(null);
         }
         return null;
@@ -214,26 +219,29 @@ public class UserService {
                     return new Role(user.getRole(), user, UserRepository.getCorporateUser(user), UserRepository.getBranchUser(user));
                 }
             }
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static List<User> searchByUsernameOrName(String searchText){
+    public static List<User> searchByUsernameOrName(String searchText) {
         return UserRepository.searchByUsernameOrName(searchText);
     }
 
-    public static List<Corporate> getCorporateUser(User user){
+    public static List<Corporate> getCorporateUser(User user) {
         return UserRepository.getCorporateUser(user);
     }
 
-    public static List<Branch> getBranchUser(User user){
+    public static List<Branch> getBranchUser(User user) {
         return UserRepository.getBranchUser(user);
     }
 
-    public static User findByUsername(String username){
+    public static User findByUsername(String username) {
         return UserRepository.findByUsername(username);
+    }
+
+    public static List<User> search(String search, Role role) {
+        return UserRepository.search(User.class, search, "username", role);
     }
 }

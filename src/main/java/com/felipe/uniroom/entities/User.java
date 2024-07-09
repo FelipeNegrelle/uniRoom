@@ -162,9 +162,4 @@ public class User {
             return false;
         return Objects.equals(active, user.active);
     }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(idUser, corporate, branch, name, username, password, role, secretPhrase, secretAnswer, active);
-    }
 }
