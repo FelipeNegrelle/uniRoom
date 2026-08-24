@@ -44,8 +44,7 @@ public class Main {
             }
 
             Runtime.getRuntime().addShutdownHook(new Thread(ConnectionManager::closeEntityManagerFactory));
-        } catch (
-                Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
