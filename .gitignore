@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Compiled class file
 *.class
 
@@ -62,3 +61,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+
+# Local database credentials (use persistence.xml.example as a template)
+src/main/resources/META-INF/persistence.xml
