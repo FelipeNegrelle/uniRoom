@@ -2,87 +2,38 @@ package com.felipe.uniroom.repositories;
 
 import com.felipe.uniroom.config.ConnectionManager;
 import com.felipe.uniroom.config.Role;
-import com.felipe.uniroom.entities.Branch;
-import com.felipe.uniroom.entities.Corporate;
+import com.felipe.uniroom.config.filters.AccessFilterFactory;
+import com.felipe.uniroom.config.filters.AccessFilterStrategy;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityTransaction;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import jakarta.transaction.Transactional;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 //TODO talvez tornar esta classe do tipo <T> e fazer como no spring boot
 @Transactional
 public class DatabaseRepository {
     public static <T> List<T> findAll(Class<T> entity, Role role) {
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            final Map<String, Object> params = new HashMap<>();
-            final StringBuilder queryString = new StringBuilder("SELECT e FROM ").append(entity.getSimpleName()).append(" e WHERE TRUE");
+            final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+            final CriteriaQuery<T> query = criteriaBuilder.createQuery(entity);
+            final Root<T> root = query.from(entity);
+            final AccessFilterStrategy accessFilter = AccessFilterFactory.create(role);
 
-            switch (role.getRole()) {
-                case 'A':
-                    // Administrador tem acesso a todos os registros, então não precisa de filtro
-                    break;
-                case 'C':
-                    if (!entity.getSimpleName().equals("Corporate")) {
-                        boolean hasBranch = false;
+            Predicate predicate = accessFilter.createFilter(entity, root, criteriaBuilder, role);
 
-                        for (Field f : entity.getDeclaredFields()) {
-                            if (f.getName().equals("branch")) {
-                                hasBranch = true;
-                                break;
-                            }
-                        }
-
-                        if (hasBranch) {
-                            queryString.append(" AND e.branch.corporate IN :corporates");
-                            params.put("corporates", role.getCorporates());
-                        } else {
-                            queryString.append("AND e.corporate IN :corporates");
-                            params.put("corporates", role.getCorporates());
-                        }
-                    } else {
-                        queryString.append(" AND e.idCorporate IN :idCorporates");
-                        params.put("idCorporates", role.getCorporates().stream().map(Corporate::getIdCorporate).toList());
-                    }
-                    break;
-                case 'B':
-                    if (!entity.getSimpleName().equals("Branch")) {
-                        queryString.append(" AND e.branch IN :branches");
-                        params.put("branches", role.getBranches());
-                    } else {
-                        queryString.append(" AND e.idBranch IN :idBranches");
-                        params.put("idBranches", role.getBranches().stream().map(Branch::getIdBranch).toList());
-                    }
-                    break;
-                case 'E':
-                    if (!entity.getSimpleName().equals("Branch")) {
-                        queryString.append(" AND e.branch = :branch");
-                        params.put("branch", role.getBranches().getFirst());
-                    } else {
-                        queryString.append(" AND e.idBranch = :idBranch");
-                        params.put("idBranch", role.getBranches().getFirst());
-                    }
-                    break;
+            if (hasActiveField(entity)) {
+                predicate = criteriaBuilder.and(predicate, criteriaBuilder.isTrue(root.get("active")));
             }
 
-            if (Arrays.stream(entity.getDeclaredFields()).anyMatch(f -> f.getName().equals("active"))) {
-                queryString.append(" AND e.active = true");
-            }
+            query.where(predicate);
 
-            final TypedQuery<T> query = em.createQuery(queryString.toString(), entity);
-
-            for (Map.Entry<String, Object> entry : params.entrySet()) {
-                query.setParameter(entry.getKey(), entry.getValue());
-            }
-
-            return query.getResultList();
+            return em.createQuery(query).getResultList();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -161,53 +112,24 @@ public class DatabaseRepository {
         }
 
         try (EntityManager em = ConnectionManager.getEntityManager()) {
-            final CriteriaBuilder cb = em.getCriteriaBuilder();
-            final CriteriaQuery<T> cq = cb.createQuery(entity);
-            final Root<T> root = cq.from(entity);
+            final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
+            final CriteriaQuery<T> query = criteriaBuilder.createQuery(entity);
+            final Root<T> root = query.from(entity);
+            final AccessFilterStrategy accessFilter = AccessFilterFactory.create(role);
+            final Predicate searchFilter = criteriaBuilder.like(root.get(field).as(String.class), "%" + search + "%");
+            final Predicate accessPredicate = accessFilter.createFilter(entity, root, criteriaBuilder, role);
 
-            Predicate predicate = cb.like(root.get(field).as(String.class), "%" + search + "%");
+            query.where(criteriaBuilder.and(searchFilter, accessPredicate));
 
-            switch (role.getRole()) {
-                case 'A':
-                    break;
-                case 'C':
-                    if (entity.getSimpleName().equals("Corporate")) {
-                        predicate = cb.and(predicate, root.get("idCorporate").in(role.getCorporates().stream().map(Corporate::getIdCorporate).collect(Collectors.toList())));
-                    } else {
-                        boolean hasBranch = false;
-
-                        for (Field f : entity.getDeclaredFields()) {
-                            if (f.getName().equals("branch")) {
-                                hasBranch = true;
-                                break;
-                            }
-                        }
-
-                        if (hasBranch) {
-                            final Join<T, Branch> branchJoin = root.join("branch");
-
-                            predicate = cb.and(predicate, branchJoin.get("corporate").in(role.getCorporates()));
-                        } else {
-                            predicate = cb.and(predicate, root.get("corporate").in(role.getCorporates()));
-                        }
-                    }
-                    break;
-                case 'B':
-                case 'E':
-                    if (entity.getSimpleName().equals("Branch")) {
-                        predicate = cb.and(predicate, root.get("idBranch").in(role.getBranches().stream().map(Branch::getIdBranch).collect(Collectors.toList())));
-                    } else {
-                        predicate = cb.and(predicate, root.get("branch").in(role.getBranches()));
-                    }
-                    break;
-            }
-
-            cq.where(predicate);
-
-            return em.createQuery(cq).getResultList();
+            return em.createQuery(query).getResultList();
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
+    }
+
+    private static boolean hasActiveField(Class<?> entity) {
+        return Arrays.stream(entity.getDeclaredFields())
+                .anyMatch(field -> field.getName().equals("active"));
     }
 }
